@@ -47,7 +47,7 @@ I will make an HTML rendering of the code available soon.
 
 ## Credits
 
-This is joint work with Thierry Coquand, my master's thesis supervisor.
+This work was carried out under the supervision of Thierry Coquand.
 
 ## References
 
