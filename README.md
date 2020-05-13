@@ -24,9 +24,11 @@ Here is an answer by Giovanni Sambin [1]:
 The main development comprises nine modules. If you are interested in reading the code, I
 suggest the following order:
 
-1. `Basis`. Definitions of foundational notions (powerset, etc).
+1. `Basis`. Basic definitions of univalent type theory, many of which are imported from
+    `agda/cubical` and some of which are adapted from Martín Escardó's
+    [introduction to HoTT/UF][4].
 2. `Poset`.
-3. `Frame`. A rudimentary development of frames.
+3. `Frame`. A rudimentary development of [frames][5].
 4. `Nucleus`. The notion of a [nucleus][3] on a frame.
 5. `FormalTopology`. Definition of a formal topology as an interaction system.
 6. `Cover`. The cover relation induced by the structure of a formal topology.
@@ -48,3 +50,5 @@ This is joint work with Thierry Coquand, my master's thesis supervisor.
 
 [2]: http://www.dcs.ed.ac.uk/home/pgh/interactive_systems.html
 [3]: https://ncatlab.org/nlab/show/nucleus
+[4]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
+[5]: https://ncatlab.org/nlab/show/nucleus
