@@ -18,6 +18,9 @@ Here is an answer by Giovanni Sambin [1]:
 > What is formal topology? A good approximation to the correct answer is: formal topology
 > is topology as developed in (Martin-Löf's) type theory.
 
+Also, [this blog post][6] by Mike Shulman contains interesting remarks about predicative
+mathematics and formal topology.
+
 ## Overview
 
 The main development comprises nine modules. If you are interested in reading the code, I
@@ -55,3 +58,4 @@ This is joint work with Thierry Coquand, my master's thesis supervisor.
 [3]: https://ncatlab.org/nlab/show/nucleus
 [4]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
 [5]: https://ncatlab.org/nlab/show/frame
+[6]: https://golem.ph.utexas.edu/category/2011/01/topos_theory_can_make_you_a_pr.html
