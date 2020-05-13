@@ -22,8 +22,7 @@ module NucleusFrom (F : FormalTopology ℓ₀ ℓ₀) where
 ```
 
 We refer to the underlying poset of `F` as `P` and the frame of downwards-closed subsets
-of `P` as `F↓`. `sim` and `mono` refer to the simulation and monotonicity properties of
-`F`.
+of `P` as `P↓`.
 
 ```
   private
@@ -48,11 +47,6 @@ nothing but the map `U ↦ - ◀ U`.
       U▶-dc : [ isDownwardsClosed P (λ - → (- ◀ U) , squash) ]
       U▶-dc a a₀ aεU₁ a₀⊑a = ◀-lem₁ U-down a₀⊑a aεU₁
 
-  _<<_ : ∣ P↓ ∣F → ∣ P↓ ∣F → hProp ℓ₀
-  x << y = x ⊑[ pos P↓ ] y
-
-  <<-antisym = ⊑[ pos P↓ ]-antisym
-
   𝕛-nuclear : isNuclear P↓ 𝕛
   𝕛-nuclear = N₀ , N₁ , N₂
     where
@@ -60,9 +54,9 @@ nothing but the map `U ↦ - ◀ U`.
       -- in (u) (𝕛 a₀) ⊓ (𝕛 a₁) ⊑ 𝕛 (a₀ ⊓ a₁).
       N₀ : (𝔘 𝔙 : ∣ P↓ ∣F) → 𝕛 (𝔘 ⊓[ P↓ ] 𝔙) ≡ (𝕛 𝔘) ⊓[ P↓ ] (𝕛 𝔙)
       N₀ 𝕌@(U , U-down) 𝕍@(V , V-down) =
-        <<-antisym (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) down up
+        ⊑[ pos P↓ ]-antisym (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) down up
         where
-          down : [ (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) << (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ]
+          down : [ (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) ⊑[ pos P↓ ] (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ]
           down a (dir (a∈U , a∈V)) = dir a∈U , dir a∈V
           down a (branch b f)      = branch b (π₀ ∘ IH) , branch b (π₁ ∘ IH)
             where
@@ -75,10 +69,10 @@ nothing but the map `U ↦ - ◀ U`.
               IH₀ = down a p
               IH₁ = down a q
 
-          up : [ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) << 𝕛 (𝕌 ⊓[ P↓ ] 𝕍) ]
+          up : [ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ⊑[ pos P↓ ] 𝕛 (𝕌 ⊓[ P↓ ] 𝕍) ]
           up a (a◀U , a◀V) = lem₃ V U V-down U-down (⊑[ P ]-refl a) a◀V a◀U
 
-      N₁ : (𝔘 : ∣ P↓ ∣F) → [ 𝔘 << (𝕛 𝔘) ]
+      N₁ : (𝔘 : ∣ P↓ ∣F) → [ 𝔘 ⊑[ pos P↓ ] (𝕛 𝔘) ]
       N₁ _ a₀ a∈U = dir a∈U
 
       N₂ : (𝔘 : ∣ P↓ ∣F) → [ π₀ (𝕛 (𝕛 𝔘)) ⊆ π₀ (𝕛 𝔘) ]
@@ -90,7 +84,13 @@ We denote by `L` the frame of fixed points for `𝕛`.
 ```
   L : Frame (suc ℓ₀) ℓ₀ ℓ₀
   L = 𝔣𝔦𝔵 P↓ (𝕛 , 𝕛-nuclear)
+```
 
+The following is a just a piece of convenient notation for projecting out the underlying
+set of a downwards-closed subset equipped with the information that it is a fixed point
+for `𝕛`.
+
+```
   ⦅_⦆ : ∣ L ∣F → 𝒫 ∣ P ∣ₚ
   ⦅ ((U , _) , _) ⦆ = U
 ```
@@ -109,10 +109,10 @@ Given some `x` in `F`, we define a map taking `x` to its *downwards-closure*.
   x◀x↓ x = dir (⊑[ P ]-refl x)
 ```
 
-By composing this with the covering nucleus, we define a map `e` from `F` to `F↓`.
+By composing this with the covering nucleus, we define a map `e` from `F` to `P↓`.
 
 ```
-  e : stage F → ∣ P↓ ∣F
+  e : ∣ P ∣ₚ → ∣ P↓ ∣F
   e z = (λ a → (a ◀ (π₀ (↓-clos z))) , squash) , NTS
     where
       NTS : [ isDownwardsClosed P (λ a → (a ◀ (λ - → - ⊑[ P ] z)) , squash) ]
@@ -123,7 +123,7 @@ We can further refine the codomain of `e` to `L`. In other words, we can prove t
 x) = e x` for every `x`. We call the version `e` with the refined codomain `η`.
 
 ```
-  fixing : (x : stage F) → 𝕛 (e x) ≡ e x
+  fixing : (x : ∣ P ∣ₚ) → 𝕛 (e x) ≡ e x
   fixing x = ⊑[ pos P↓ ]-antisym (𝕛 (e x)) (e x) down up
     where
       down : ∀ y → [ π₀ (𝕛 (e x)) y ] → [ π₀ (e x) y ]
