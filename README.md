@@ -3,11 +3,10 @@
 This is the Agda development accompanying my (upcoming) master's thesis at Chalmers
 University of Technology to be titled _Formal Topology in Univalent Foundations_.
 
-The development of formal topology presented here follows an idea of Thierry Coquand [0]
-to define formal topologies as posets endowed with [interaction systems][2]. The novelty
-presented in this development is that the usual cover relation of formal topologies is
-defined as an HIT. This seems to be necessary to avoid the use of a form of choice
-principle in the context of univalent type theory.
+The approach to formal topology implemented here follows an idea of Thierry Coquand [0] to
+define formal topologies as posets endowed with [interaction systems][2]. The main novelty
+in this development is the definition of covering as an HIT. This seems to be necessary in
+the context of univalent type theory to avoid using a form of the axiom of choice.
 
 The version of the code presented in the thesis will be archived whereas this repository
 (which is, as of now, mostly the same) will be maintained and developed further.
