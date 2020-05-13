@@ -38,6 +38,10 @@ suggest the following order:
 9. `CantorSpace`. The definition of the formal Cantor topology along with a proof that it
    is compact.
    
+## Clickable HTML
+
+I will make an HTML rendering of the code available soon.
+
 ## Credits
 
 This is joint work with Thierry Coquand, my master's thesis supervisor.
