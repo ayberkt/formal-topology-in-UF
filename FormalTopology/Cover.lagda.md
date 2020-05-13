@@ -1,4 +1,4 @@
-```
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 module Cover where
@@ -11,7 +11,7 @@ open import Basis
 
 ## Some lemmas about the cover relation
 
-```
+```agda
 module CoverFromFormalTopology (ℱ : FormalTopology ℓ ℓ′) where
   private
     P    = pos ℱ
@@ -27,7 +27,7 @@ module CoverFromFormalTopology (ℱ : FormalTopology ℓ ℓ′) where
   ◀-prop a U = squash
 ```
 
-```
+```agda
   module _ {U : ∣ P ∣ₚ → hProp ℓ} (U-down : [ isDownwardsClosed P U ]) where
 
     ◀-lem₁ : {a a′ : ∣ P ∣ₚ} → [ a′ ⊑[ P ] a ] →  a ◀ U → a′ ◀ U
@@ -56,7 +56,7 @@ module CoverFromFormalTopology (ℱ : FormalTopology ℓ ℓ′) where
   module _ (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ) (V-dc : [ isDownwardsClosed P V ]) where
 ```
 
-```
+```agda
     lem₂ : {a : ∣ P ∣ₚ} → a ◀ U → [ a ∈ V ] → a ◀ (U ∩ V)
     lem₂ (squash p₀ p₁ i) h = squash (lem₂ p₀ h) (lem₂ p₁ h) i
     lem₂ (dir q)          h = dir (q , h)
