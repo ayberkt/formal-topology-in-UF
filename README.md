@@ -6,7 +6,8 @@ University of Technology to be titled "Formal Topology in Univalent Foundations"
 The development of formal topology presented here follows an idea of Thierry Coquand [0]
 to define formal topologies as posets endowed with [interaction systems][1]. The novelty
 presented in this development is that the usual cover relation of formal topologies is
-defined as an HIT. This seems to be necessary to avoid having to use a form of choice.
+defined as an HIT. This seems to be necessary to avoid the use of a form of choice
+principle in the context of univalent type theory.
 
 The version of the code presented in the thesis will be archived whereas this repository
 (which is, as of now, mostly the same) will maintained and developed further.
