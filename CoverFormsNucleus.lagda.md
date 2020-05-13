@@ -28,7 +28,6 @@ of `P` as `F↓`. `sim` and `mono` refer to the simulation and monotonicity prop
 ```
   private
     P       = pos′ F
-    𝔉       = ∣ P ∣ₚ
     P↓      = DCFrame P
     _⊑_     = λ (x y : stage F) → x ⊑[ P ] y
 
@@ -43,7 +42,7 @@ nothing but the map `U ↦ - ◀ U`.
   𝕛 (U , U-down) = (λ - → U ▶ -) , U▶-dc
     where
       -- This is not propositional unless we force it to be using the HIT definition!
-      _▶_ : 𝒫 𝔉 → 𝒫 𝔉
+      _▶_ : 𝒫 ∣ P ∣ₚ → 𝒫 ∣ P ∣ₚ
       U ▶ a = a ◀ U , squash
 
       U▶-dc : [ isDownwardsClosed P (λ - → (- ◀ U) , squash) ]
