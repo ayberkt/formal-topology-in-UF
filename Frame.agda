@@ -26,7 +26,7 @@ RawFrameStr-set ℓ₁ ℓ₂ A = isSetΣ (PosetStr-set ℓ₁ A) NTS
   where
     NTS : _
     NTS pos = isSetΣ A-set λ _ →
-              isSetΣ (isSetΠ λ _ → isSetΠ λ _ → A-set) λ _ →
+              isSetΣ (isSetΠ2 λ _ _ → A-set) λ _ →
               isSetΠ λ _ → A-set
       where
         A-set : isSet A

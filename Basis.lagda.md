@@ -28,7 +28,7 @@ open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
 open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
 open FH  public using     (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevelSuc; isSetΣ;
-                           isSetΠ; isPropΠ; isPropΠ2; isPropΠ3)
+                           isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
 open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
 open FEE public using     (funExtEquiv; funExt₂; funExt₂Equiv; funExt₂Path)
 open HAE public using     (isHAEquiv; equiv→HAEquiv)
