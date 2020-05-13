@@ -10,7 +10,7 @@ defined as an HIT. This seems to be necessary to avoid the use of a form of choi
 principle in the context of univalent type theory.
 
 The version of the code presented in the thesis will be archived whereas this repository
-(which is, as of now, mostly the same) will maintained and developed further.
+(which is, as of now, mostly the same) will be maintained and developed further.
 
 ## Question: what is formal topology?
 
