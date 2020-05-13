@@ -11,7 +11,7 @@ open import Function using (_∘_; id)
 
 ## Definition of poset
 
-```
+```agda
 Order : (ℓ₁ : Level) → Type ℓ → Type (ℓ ⊔ suc ℓ₁)
 Order ℓ₁ A = A → A → hProp ℓ₁
 
@@ -52,7 +52,7 @@ PosetAx {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} A _⊑_ = isAPartialSet , isAPartial
 
 A poset structure with level `ℓ₁`.
 
-```
+```agda
 PosetStr : (ℓ₁ : Level) → Type ℓ → Type (ℓ ⊔ suc ℓ₁)
 PosetStr ℓ₁ A = Σ[ ⊑ ∈ Order ℓ₁ A ] [ PosetAx A ⊑ ]
 
@@ -65,7 +65,7 @@ PosetStr-set ℓ₁ A =
 
 A poset with carrier level `ℓ₀` and relation level `ℓ₁`.
 
-```
+```agda
 Poset : (ℓ₀ ℓ₁ : Level) → Type (suc ℓ₀ ⊔ suc ℓ₁)
 Poset ℓ₀ ℓ₁ = Σ (Type ℓ₀) (PosetStr ℓ₁)
 ```
@@ -74,7 +74,7 @@ Poset ℓ₀ ℓ₁ = Σ (Type ℓ₀) (PosetStr ℓ₁)
 
 Given a poset `P`, `∣ P ∣ₚ` denotes its carrier set and `strₚ P` its order structure.
 
-```
+```agda
 ∣_∣ₚ : Poset ℓ₀ ℓ₁ → Type ℓ₀
 ∣ X , _ ∣ₚ = X
 
@@ -84,7 +84,7 @@ strₚ (_ , s) = s
 
 We refer to to the order of `P` as `_⊑[ P ]_`.
 
-```
+```agda
 rel : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp ℓ₁
 rel (_ , _⊑_ , _) = _⊑_
 
@@ -96,7 +96,7 @@ syntax rel P x y = x ⊑[ P ] y
 
 Similarly, we define projections for the poset properties.
 
-```
+```agda
 ⊑[_]-refl : (P : Poset ℓ₀ ℓ₁) → (x : ∣ P ∣ₚ) → [ x ⊑[ P ] x ]
 ⊑[_]-refl (_ , _ , _ , ⊑-refl , _) = ⊑-refl
 
@@ -116,7 +116,7 @@ carrier-is-set (_ , _ , is-set , _) = is-set
 
 Some convenient notation for carrying out inequality reasoning.
 
-```
+```agda
 module PosetReasoning (P : Poset ℓ₀ ℓ₁) where
 
   _⊑⟨_⟩_ : (x : ∣ P ∣ₚ) {y z : ∣ P ∣ₚ}
@@ -133,7 +133,7 @@ module PosetReasoning (P : Poset ℓ₀ ℓ₁) where
 It is not convenient to have to keep applying `subst` for the show that two equal things
 are below each other so let us make note of the following trivial fact.
 
-```
+```agda
 ≡⇒⊑ : (P : Poset ℓ₀ ℓ₁) → {x y : ∣ P ∣ₚ} → x ≡ y → [ x ⊑[ P ] y ]
 ≡⇒⊑ P {x = x} p = subst (λ z → [ x ⊑[ P ] z ]) p (⊑[ P ]-refl x)
 ```
@@ -143,7 +143,7 @@ are below each other so let us make note of the following trivial fact.
 We can define the notion preserving the order of a order structure for all types with
 orders.
 
-```
+```agda
 isOrderPreserving : (M : Σ (Type ℓ₀) (Order ℓ₁)) (N : Σ (Type ℓ₀′) (Order ℓ₁′))
                   → (π₀ M → π₀ N) → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₁′)
 isOrderPreserving (A , _⊑₀_) (B , _⊑₁_) f = (x y : A) → [ x ⊑₀ y ] → [ f x ⊑₁ f y ]
@@ -151,7 +151,7 @@ isOrderPreserving (A , _⊑₀_) (B , _⊑₁_) f = (x y : A) → [ x ⊑₀ y ]
 
 Technically, this is called "monotonic" as well but we will reserve that term for posets.
 
-```
+```agda
 isMonotonic : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′)
             → (∣ P ∣ₚ → ∣ Q ∣ₚ) → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₁′)
 isMonotonic (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) = isOrderPreserving (A , _⊑₀_) (B , _⊑₁_)
@@ -159,7 +159,7 @@ isMonotonic (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) = isOrderPreserving (A , _
 
 Both of these notions are propositional.
 
-```
+```agda
 isOrderPreserving-prop : (M : Σ (Type ℓ₀) (Order ℓ₁)) (N : Σ (Type ℓ₀′) (Order ℓ₁′))
                          (f : π₀ M → π₀ N)
                        → isProp (isOrderPreserving M N f)
@@ -173,20 +173,20 @@ isMonotonic-prop (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) f =
 
 We then collect monotonic functions in the following type.
 
-```
+```agda
 _─m→_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀′ ℓ₁′ → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₀′ ⊔ ℓ₁′)
 _─m→_ P Q = Σ (∣ P ∣ₚ → ∣ Q ∣ₚ) (isMonotonic P Q)
 ```
 
 Projection for the underlying function of a monotonic map.
 
-```
+```agda
 _$ₘ_ = π₀
 ```
 
 The identity monotonic map and composition of monotonic maps.
 
-```
+```agda
 𝟏m : (P : Poset ℓ₀ ℓ₁) → P ─m→ P
 𝟏m P = id , (λ x y x⊑y → x⊑y)
 
@@ -201,7 +201,7 @@ being monotonic is propositional, we can quickly reduce this to showing the equa
 the underlying functions using `ΣProp≡` but it is more convenient to record this fact in
 advance.
 
-```
+```agda
 forget-mono : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) ((f , f-mono) (g , g-mono) : P ─m→ Q)
             → f ≡ g
             → (f , f-mono) ≡ (g , g-mono)
@@ -213,12 +213,12 @@ forget-mono P Q (f , f-mono) (g , g-mono) =
 
 We denote by `↓[ P ] x` the type of everything in `P` that is below `x`.
 
-```
+```agda
 ↓[_]_ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → Type (ℓ₀ ⊔ ℓ₁)
 ↓[ P ] a = Σ[ b ∈ ∣ P ∣ₚ ] [ b ⊑[ P ] a ]
 ```
 
-```
+```agda
 isDownwardsClosed : (P : Poset ℓ₀ ℓ₁) → 𝒫 ∣ P ∣ₚ → hProp (ℓ₀ ⊔ ℓ₁)
 isDownwardsClosed P U =
   ((x y : ∣ P ∣ₚ) → [ x ∈ U ] → [ y ⊑[ P ] x ] → [ y ∈ U ]) , prop
@@ -236,7 +236,7 @@ DCSubset-set P =
 
 ## Product of two posets
 
-```
+```agda
 _×ₚ_ : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) → Poset (ℓ₀ ⊔ ℓ₀′) (ℓ₁ ⊔ ℓ₁′)
 P ×ₚ Q = (∣ P ∣ₚ × ∣ Q ∣ₚ) , _⊑_ , carrier-set , (⊑-refl , ⊑-trans , ⊑-antisym)
   where
@@ -268,7 +268,7 @@ notion of structure. As we have already written down what it means for a functio
 order-preserving, we can express what it means for a *type equivalence* to be order
 preserving.
 
-```
+```agda
 isAnOrderPreservingEqv : (M N : Σ (Type ℓ₀) (Order ℓ₁)) → π₀ M ≃ π₀ N → Type (ℓ₀ ⊔ ℓ₁)
 isAnOrderPreservingEqv M N e@(f , _) =
   isOrderPreserving M N f × isOrderPreserving N M g
@@ -278,7 +278,7 @@ isAnOrderPreservingEqv M N e@(f , _) =
 
 `Order` coupled with `isAnOrdePreservingEqv` gives us an SNS.
 
-```
+```agda
 Order-is-SNS : SNS {ℓ} (Order ℓ₁) isAnOrderPreservingEqv
 Order-is-SNS {ℓ = ℓ} {ℓ₁ = ℓ₁} {X = X}  _⊑₀_ _⊑₁_ = f , record { equiv-proof = f-equiv }
   where
@@ -325,7 +325,7 @@ Adding partial order axioms on top of this is not too hard.
 
 First, let us define what is means for a type equivalence to be monotonic.
 
-```
+```agda
 isAMonotonicEqv : (P Q : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ ≃ ∣ Q ∣ₚ → Type (ℓ₀ ⊔ ℓ₁)
 isAMonotonicEqv (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) =
   isAnOrderPreservingEqv (A , _⊑₀_) (B , _⊑₁_)
@@ -340,7 +340,7 @@ isAMonotonicEqv-prop P Q e@(f , _) =
 
 We denote by `_≃ₚ_` the type of monotonic poset equivalences.
 
-```
+```agda
 _≃ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type (ℓ₀ ⊔ ℓ₁)
 _≃ₚ_ P Q = Σ[ i ∈ ∣ P ∣ₚ ≃ ∣ Q ∣ₚ ] isAMonotonicEqv P Q i
 ```
@@ -348,7 +348,7 @@ _≃ₚ_ P Q = Σ[ i ∈ ∣ P ∣ₚ ≃ ∣ Q ∣ₚ ] isAMonotonicEqv P Q i
 From this, we can already establish that posets form an SNS and prove that the category
 of posets is univalent.
 
-```
+```agda
 poset-is-SNS : SNS {ℓ} (PosetStr ℓ₁) isAMonotonicEqv
 poset-is-SNS {ℓ₁ = ℓ₁} =
   SNS-PathP→SNS-≡
@@ -370,7 +370,7 @@ them.
 
 Let us start by writing down what a poset isomorphisms is.
 
-```
+```agda
 isPosetIso : (P Q : Poset ℓ₀ ℓ₁) → (P ─m→ Q) → Type (ℓ₀ ⊔ ℓ₁)
 isPosetIso P Q (f , _) = Σ[ (g , _) ∈ (Q ─m→ P) ] section f g × retract f g
 
@@ -394,14 +394,14 @@ isPosetIso-prop P Q (f , f-mono) (g₀ , sec₀ , ret₀) (g₁ , sec₁ , ret�
 
 We will denote by `P ≅ₚ Q` the type of isomorphisms between posets `P` and `Q`.
 
-```
+```agda
 _≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type (ℓ₀ ⊔ ℓ₁)
 P ≅ₚ Q = Σ[ f ∈ P ─m→ Q ] isPosetIso P Q f
 ```
 
 As we have mentioned before, `P ≅ₚ Q` is equivalent to `P ≃ₚ Q`.
 
-```
+```agda
 ≃ₚ≃≅ₚ : (P Q : Poset ℓ₀ ℓ₁) → (P ≅ₚ Q) ≃ (P ≃ₚ Q)
 ≃ₚ≃≅ₚ P Q = isoToEquiv (iso from to ret sec)
   where
@@ -433,7 +433,7 @@ As we have mentioned before, `P ≅ₚ Q` is equivalent to `P ≃ₚ Q`.
 Once this equivalence has been established, the main result follows easily: *the category
 of posets is univalent*.
 
-```
+```agda
 poset-univ : (P Q : Poset ℓ₀ ℓ₁) → (P ≅ₚ Q) ≃ (P ≡ Q)
 poset-univ P Q = P ≅ₚ Q ≃⟨ ≃ₚ≃≅ₚ P Q ⟩ P ≃ₚ Q ≃⟨ poset-univ₀ P Q ⟩ P ≡ Q 𝔔𝔈𝔇
 ```
