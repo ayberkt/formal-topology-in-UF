@@ -1,7 +1,7 @@
 # Formal Topology in Univalent Foundations
 
 This is the Agda development accompanying my (upcoming) master's thesis at Chalmers
-University of Technology to be titled "Formal Topology in Univalent Foundations".
+University of Technology to be titled _Formal Topology in Univalent Foundations_.
 
 The development of formal topology presented here follows an idea of Thierry Coquand [0]
 to define formal topologies as posets endowed with [interaction systems][2]. The novelty
