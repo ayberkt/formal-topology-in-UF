@@ -13,7 +13,8 @@ jobs:
       with:
         main-file: Main.lagda.md
         source-dir: FormalTopology
-    - run: cp -f ../resources/Agda.css html
+    - run: pwd
+    - run: cp -f resources/Agda.css FormalTopology/html
     - name: Upload HTML
       id: html-upload
       uses: actions/upload-artifact@v1
