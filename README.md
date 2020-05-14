@@ -43,7 +43,7 @@ suggest the following order:
    
 ## Clickable HTML
 
-I will make an HTML rendering of the code available soon.
+A rendering of the code in glorious clickable HTML can be [accessed here][7].
 
 ## Credits
 
@@ -59,3 +59,4 @@ This work was carried out under the supervision of Thierry Coquand.
 [4]: https://www.cs.bham.ac.uk/~mhe/HoTT-UF-in-Agda-Lecture-Notes/HoTT-UF-Agda.html
 [5]: https://ncatlab.org/nlab/show/frame
 [6]: https://golem.ph.utexas.edu/category/2011/01/topos_theory_can_make_you_a_pr.html
+[7]: https://ayberkt.github.io/formal-topology-in-UF/Main.html
