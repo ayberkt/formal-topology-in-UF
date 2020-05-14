@@ -1,0 +1,223 @@
+/* Copied from the Agda tutorial by Péter Diviánszky, Ambrus Kaposi, and     */
+/* Gábor Páli. Contains modifications.                                       */
+
+/* See https://hub.darcs.net/divip/AgdaTutorial/browse/LICENSE for their     */
+/* license.                                                                  */
+
+/* Aspects. */
+.Comment       { color: #B22222 }
+.Keyword       { color: #CD6600 }
+.String        { color: #B22222 }
+.Number        { color: #A020F0 }
+.Symbol        { color: #404040 }
+.PrimitiveType { color: #0000CD }
+.Operator      {}
+
+/* NameKinds. */
+.Bound                  { color: black   }
+.InductiveConstructor   { color: #008B00 }
+.CoinductiveConstructor { color: #8B7500 }
+.Datatype               { color: #0000CD }
+.Field                  { color: #EE1289 }
+.Function               { color: #0000CD }
+.Module                 { color: #A020F0 }
+.Postulate              { color: #0000CD }
+.Primitive              { color: #0000CD }
+.Record                 { color: #0000CD }
+
+/* OtherAspects. */
+.DottedPattern      {}
+.UnsolvedMeta       { color: black; background: yellow         }
+.UnsolvedConstraint { color: black; background: yellow         }
+.TerminationProblem { color: black; background: #FFA07A        }
+.IncompletePattern  { color: black; background: #F5DEB3        }
+.Error              { color: red;   text-decoration: underline }
+.TypeChecks         { color: black; background: #ADD8E6        }
+
+/* Standard attributes. */
+a { text-decoration: none }
+a[href]:hover { background-color: #B4EEB4 }
+
+
+
+/* padding */
+
+body {
+  margin: auto;
+  padding: 1em 1em 1em 1em;
+  max-width: 50em; 
+  line-height: 130%;
+  background-color: white;
+  color: black;
+}
+
+h1 {
+  padding-top: 1.5em;
+}
+
+h2 {
+  padding-top: 1em;
+}
+
+h3 {
+  padding-top: 0.5em;
+}
+
+h1.title {
+  padding-top: 3em;
+  padding-bottom: 2em;
+}
+h1.title, h2.author, h3.date {
+  text-align: center;
+  line-height: normal;
+}
+
+h2.author, h3.date { visibility: hidden }
+h2.author, h3.date { display: none }
+
+
+hr {
+  height: 10px;
+}
+
+
+/* margin */
+
+div.indent, pre, table {
+  margin-left: 5%;
+  width: 95%;
+}
+
+div.indent, pre {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+pre.normal {
+  margin: 0;
+  width: auto;
+}
+
+
+div.indent input {
+  margin-bottom: 0.5em;
+}
+
+input, textarea {
+  margin: 0;
+}
+
+
+/* border */
+
+h1, h2, h3 {
+  border-bottom: 1px dotted black;
+}
+
+h1.title, h2.author, h3.date, input, textarea, hr {
+  border-style: none;
+}
+
+
+/* font sizes */
+
+h1              { font-size: 130%; }
+h1.title        { font-size: 200%; }
+h2              { font-size: 110%; }
+input, textarea { font-size: 100%; } /* monospace correction */
+
+
+/* font family, style, weight, text decoration */
+
+h1, h2, h3 {
+  font-weight: bold;
+}
+
+pre code, textarea, div.string {
+  font-family: monospace;
+  font-size: 130%;
+}
+
+pre.Agda {
+  font-family: monospace;
+  line-height: 120%;
+  font-size: 150%;
+}
+
+pre.normal, pre.normal code, code, .error, input {
+  font-family: sans-serif;
+  font-size: 100%;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+div.serious {font-weight: bold;}
+div.info {color: gray;}
+
+
+/* colors other than highlighting */
+
+input           { background-color: #eeeeee; }
+textarea        { background-color: #ffffba; }
+hr              { background-color: #f5f0ee; }
+div.string span { background-color: yellow; }
+
+a               { color: #2a207a; }
+h1 a, h2 a, h3 a { color: black; }
+code            { color: red; }
+.type           { color: #0080ff; }
+.error          { color: #a030a0; }
+.comment        { color: gray; float: right; }
+
+
+/* misc */
+
+p.caption {
+  display: none;
+}
+
+div#lang {
+  position:fixed;
+  z-index:1000;
+  right: 1%;
+  top: 1%;
+}
+
+div#info {
+  display: none;
+  position:fixed;
+  z-index:1000;
+  left: 40%;
+  width: 20%;
+  top: 40%;
+  height: 20%;
+}
+
+.wait {
+  padding: 10px;
+  width: 8em;
+  border: 1px solid grey;
+}
+
+/*  highlighting css  */
+
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+pre.sourceCode span.kw { color: #007020; /* font-weight: bold; */ }
+pre.sourceCode span.dt { color: #902000; }
+pre.sourceCode span.dv { color: #40a070; }
+pre.sourceCode span.bn { color: #40a070; }
+pre.sourceCode span.fl { color: #40a070; }
+pre.sourceCode span.ch { color: #4070a0; }
+pre.sourceCode span.st { color: #4070a0; }
+pre.sourceCode span.co { color: #60a0b0; /* font-style: italic; */ }
+pre.sourceCode span.ot { color: #007020; }
+pre.sourceCode span.al { color: red; /* font-weight: bold; */ }
+pre.sourceCode span.fu { color: #06287e; }
+pre.sourceCode span.re { }
+pre.sourceCode span.er { color: red; /* font-weight: bold; */ }
