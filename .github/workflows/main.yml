@@ -15,7 +15,7 @@ jobs:
         source-dir: FormalTopology
     - run: pwd
     - run: ls
-    - run: cp -f resources/Agda.css FormalTopology/html/Agda.css
+    - run: cp -f resources/Agda.css html/Agda.css
     - name: Upload HTML
       id: html-upload
       uses: actions/upload-artifact@v1
