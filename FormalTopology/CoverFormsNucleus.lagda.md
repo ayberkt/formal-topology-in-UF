@@ -3,8 +3,6 @@
 
 module CoverFormsNucleus where
 
-open import Function       using  (_∘_)
-
 open import Basis          hiding (A) renaming (squash to squash′)
 open import Poset
 open import Frame

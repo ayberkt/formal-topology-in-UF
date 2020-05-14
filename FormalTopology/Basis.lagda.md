@@ -3,8 +3,8 @@
 
 module Basis where
 
-open import Function using (_∘_; id)
 open import Level    public
+
 
 import Cubical.Core.Everything                as CE
 import Cubical.Data.Sigma                     as DS
@@ -15,6 +15,7 @@ import Cubical.Foundations.HLevels            as FH
 import Cubical.Foundations.Isomorphism        as FI
 import Cubical.Foundations.Equiv.HalfAdjoint  as HAE
 import Cubical.Functions.FunExtEquiv          as FEE
+import Cubical.Foundations.Function           as FF
 
 open import Cubical.Foundations.Univalence public using (ua)
 
@@ -30,6 +31,7 @@ open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
 open FH  public using     (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
 open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
+open FF  public using     (_∘_) renaming (idfun to id)
 open FEE public using     (funExtEquiv; funExt₂; funExt₂Equiv; funExt₂Path)
 open HAE public using     (isHAEquiv; equiv→HAEquiv)
 ```

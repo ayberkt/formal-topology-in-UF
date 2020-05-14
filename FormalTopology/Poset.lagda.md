@@ -6,7 +6,6 @@ module Poset where
 open import Basis
 open import Cubical.Foundations.SIP renaming (SNS-≡ to SNS)
 open import Cubical.Foundations.Equiv using (_≃⟨_⟩_) renaming (_■ to _𝔔𝔈𝔇)
-open import Function using (_∘_; id)
 ```
 
 ## Definition of poset
@@ -188,7 +187,7 @@ The identity monotonic map and composition of monotonic maps.
 
 ```agda
 𝟏m : (P : Poset ℓ₀ ℓ₁) → P ─m→ P
-𝟏m P = id , (λ x y x⊑y → x⊑y)
+𝟏m P = id ∣ P ∣ₚ , (λ x y x⊑y → x⊑y)
 
 _∘m_ : {P : Poset ℓ₀ ℓ₁} {Q : Poset ℓ₀′ ℓ₁′} {R : Poset ℓ₀′′ ℓ₁′′}
      → (Q ─m→ R) → (P ─m→ Q) → (P ─m→ R)
@@ -295,18 +294,18 @@ Order-is-SNS {ℓ = ℓ} {ℓ₁ = ℓ₁} {X = X}  _⊑₀_ _⊑₁_ = f , reco
     ret-f-g : retract f g
     ret-f-g (φ , ψ) =
       isPropΣ
-        (isOrderPreserving-prop (X , _⊑₀_) (X , _⊑₁_) id)
-        (λ _ → isOrderPreserving-prop (X , _⊑₁_) (X , _⊑₀_) id)
+        (isOrderPreserving-prop (X , _⊑₀_) (X , _⊑₁_) (id X))
+        (λ _ → isOrderPreserving-prop (X , _⊑₁_) (X , _⊑₀_) (id X))
         (g (f (φ , ψ))) (φ , ψ)
 
     f-equiv : (p : _⊑₀_ ≡ _⊑₁_) → isContr (fiber f p)
     f-equiv p = ((to , from) , eq) , NTS
       where
-        to : isOrderPreserving (X , _⊑₀_) (X , _⊑₁_) id
-        to x y = subst (λ _⊑_ → [ x ⊑₀ y ] → [ x ⊑ y ]) p id
+        to : isOrderPreserving (X , _⊑₀_) (X , _⊑₁_) (id _)
+        to x y = subst (λ _⊑_ → [ x ⊑₀ y ] → [ x ⊑ y ]) p (id _)
 
-        from : isOrderPreserving (X , _⊑₁_) (X , _⊑₀_) id
-        from x y = subst (λ _⊑_ → [ x ⊑ y ] → [ x ⊑₀ y ]) p id
+        from : isOrderPreserving (X , _⊑₁_) (X , _⊑₀_) (id _)
+        from x y = subst (λ _⊑_ → [ x ⊑ y ] → [ x ⊑₀ y ]) p (id _)
 
         eq : f (to , from) ≡ p
         eq = Order-set ℓ₁ X _⊑₀_ _⊑₁_ (f (to , from)) p
@@ -316,8 +315,8 @@ Order-is-SNS {ℓ = ℓ} {ℓ₁ = ℓ₁} {X = X}  _⊑₀_ _⊑₁_ = f , reco
           ΣProp≡
             (λ i′ → isOfHLevelSuc 2 (Order-set ℓ₁ X) _⊑₀_ _⊑₁_ (f i′) p)
             (ΣProp≡
-               (λ _ → isOrderPreserving-prop (X , _⊑₁_) (X , _⊑₀_) id)
-               (isOrderPreserving-prop (X , _⊑₀_) (X , _⊑₁_) id to φ))
+               (λ _ → isOrderPreserving-prop (X , _⊑₁_) (X , _⊑₀_) (id _))
+               (isOrderPreserving-prop (X , _⊑₀_) (X , _⊑₁_) (id _) to φ))
 ```
 
 This is the substantial part of the work required to establish univalence for posets.

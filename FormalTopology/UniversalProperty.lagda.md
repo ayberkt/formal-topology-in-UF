@@ -3,8 +3,6 @@
 
 module UniversalProperty where
 
-open import Function      using (_∘_)
-
 open import Basis
 open import Frame
 open import Poset

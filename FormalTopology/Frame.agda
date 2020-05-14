@@ -3,7 +3,6 @@
 module Frame where
 
 open import Basis
-open import Function                  using (_∘_; id)
 open import Data.Product              using (uncurry)
 open import Cubical.Foundations.SIP                   renaming (SNS-≡ to SNS)
 open import Cubical.Foundations.Equiv using (_≃⟨_⟩_)  renaming (_■ to _𝔔𝔈𝔇)
@@ -471,7 +470,7 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
 
         NTS₁ : π₀ (g (f (mono-eqv , p , q , r))) ≡ mono-eqv
         NTS₁ = ΣProp≡
-                 (λ _ → isOrderPreserving-prop (A , _⊑₁_) (A , _⊑₀_) id)
+                 (λ _ → isOrderPreserving-prop (A , _⊑₁_) (A , _⊑₀_) (id _))
                  (funExt₂ (λ x y → funExt λ φ → is-true-prop (x ⊑₁ y) _ _))
 
 -- A predicate expressing that an equivalence between the underlying types of two frames

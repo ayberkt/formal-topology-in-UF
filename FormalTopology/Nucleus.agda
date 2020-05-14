@@ -2,8 +2,6 @@
 
 module Nucleus where
 
-open import Function using (_∘_; id)
-
 open import Basis
 open import Poset
 open import Frame
