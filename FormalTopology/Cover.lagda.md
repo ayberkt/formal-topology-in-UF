@@ -71,22 +71,22 @@ We now prove four crucial lemmas about the cover.
 ### Lemma 2
 
 ```agda
-  lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
-       → ((u : ∣ P ∣ₚ) → [ u ∈ U ] → u ◀ V) → (a : ∣ P ∣ₚ) → a ◀ U → a ◀ V
-  lem₄ U V h a (squash p₀ p₁ i) = squash (lem₄ U V h a p₀) (lem₄ U V h a p₁) i
-  lem₄ U V h a (dir p)          = h a p
-  lem₄ U V h a (branch b f)     = branch b (λ c → lem₄  U V h (next ℱ c) (f c))
-
   module _ (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ) (V-dc : [ isDownwardsClosed P V ]) where
+
+    lem₂ : {a : ∣ P ∣ₚ} → a ◀ U → [ a ∈ V ] → a ◀ (U ∩ V)
+    lem₂ (squash p₀ p₁ i) h = squash (lem₂ p₀ h) (lem₂ p₁ h) i
+    lem₂ (dir q)          h = dir (q , h)
+    lem₂ (branch b f)     h = branch b λ c → lem₂ (f c) (V-dc _ _ h (mono ℱ _ b c))
 ```
 
 ### Lemma 3
 
 ```agda
-    lem₂ : {a : ∣ P ∣ₚ} → a ◀ U → [ a ∈ V ] → a ◀ (U ∩ V)
-    lem₂ (squash p₀ p₁ i) h = squash (lem₂ p₀ h) (lem₂ p₁ h) i
-    lem₂ (dir q)          h = dir (q , h)
-    lem₂ (branch b f)     h = branch b (λ c → lem₂ (f c) (V-dc _ _ h (mono ℱ _ b c)))
+  lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
+       → ((u : ∣ P ∣ₚ) → [ u ∈ U ] → u ◀ V) → (a : ∣ P ∣ₚ) → a ◀ U → a ◀ V
+  lem₄ U V h a (squash p₀ p₁ i) = squash (lem₄ U V h a p₀) (lem₄ U V h a p₁) i
+  lem₄ U V h a (dir p)          = h a p
+  lem₄ U V h a (branch b f)     = branch b λ c → lem₄  U V h (next ℱ c) (f c)
 ```
 
 ### Lemma 4
