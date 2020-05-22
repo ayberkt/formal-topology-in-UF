@@ -56,6 +56,15 @@ Unit-prop : {ℓ : Level} → isProp (Unit ℓ)
 Unit-prop tt tt = refl
 ```
 
+## Bottom
+
+```
+data 𝟘 (ℓ : Level) : Type ℓ where
+
+bot : (ℓ : Level) → hProp ℓ
+bot ℓ = 𝟘 ℓ , λ ()
+```
+
 ## Propositions
 
 ```

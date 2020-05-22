@@ -17,11 +17,6 @@ We open the `SnocList` module with the type `𝔹` of booleans.
 
 ```
 open import SnocList 𝔹  _≟_  renaming (SnocList to ℂ; SnocList-set to ℂ-set)
-
-data 𝟘 (ℓ : Level) : Type ℓ where
-
-bot : (ℓ : Level) → hProp ℓ
-bot ℓ = 𝟘 ℓ , λ ()
 ```
 
 The empty list and the snoc operator are called `[]` and `⌢` respectively. Concatenation
