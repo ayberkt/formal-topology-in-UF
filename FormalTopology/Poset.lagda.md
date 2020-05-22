@@ -15,7 +15,7 @@ Order : (ℓ₁ : Level) → Type ℓ → Type (ℓ ⊔ suc ℓ₁)
 Order ℓ₁ A = A → A → hProp ℓ₁
 
 Order-set : (ℓ₁ : Level) (A : Type ℓ₀) → isSet (Order ℓ₁ A)
-Order-set ℓ₁ A = isSetΠ λ _ → isSetΠ λ _ → isSetHProp
+Order-set ℓ₁ A = isSetΠ2 λ _ _ → isSetHProp
 
 isReflexive : {A : Type ℓ₀} → Order ℓ₁ A → hProp (ℓ₀ ⊔ ℓ₁)
 isReflexive {A = X} _⊑_ =
