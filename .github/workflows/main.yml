@@ -24,7 +24,7 @@ jobs:
         path: html
     - name: Deploy to GitHub Pages
       id: deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@9913f79fa1eda103201056c00c8e1897ac4f921e
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-pages
