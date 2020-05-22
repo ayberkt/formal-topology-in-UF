@@ -624,6 +624,5 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 -- Now that we have this result, we can move on to show that given two frames F and G,
 -- (pos F) ≅ₚ (pos G) is equivalent to F ≡ G.
 
-≅ₚ≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) (eqv : ∣ F ∣F ≃ ∣ G ∣F)
-           → (pos F ≅ₚ pos G) ≃ (F ≡ G)
-≅ₚ≃≡ F G eqv = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≡ F G ⟩ F ≡ G 𝔔𝔈𝔇
+≅ₚ≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≡ G)
+≅ₚ≃≡ F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≡ F G ⟩ F ≡ G 𝔔𝔈𝔇
