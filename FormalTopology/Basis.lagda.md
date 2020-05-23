@@ -7,7 +7,8 @@ open import Level    public
 
 
 import Cubical.Core.Everything                as CE
-import Cubical.Data.Sigma                     as DS
+import Cubical.Data.Sigma                     as DΣ
+import Cubical.Data.Sum                       as DS
 import Cubical.Foundations.Prelude            as FP
 import Cubical.Foundations.Equiv              as FE
 import Cubical.Foundations.Logic              as FL
@@ -20,8 +21,9 @@ import Cubical.Foundations.Function           as FF
 open import Cubical.Foundations.Univalence public using (ua)
 
 open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv)
-open DS  public using     (ΣProp≡; sigmaPath→pathSigma; pathSigma→sigmaPath; _×_; _,_)
+open DΣ  public using     (ΣProp≡; sigmaPath→pathSigma; pathSigma→sigmaPath; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
+open DS  public using     (inl; inr; _⊎_)
 open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
                            isProp→isSet; cong; refl; sym; _≡⟨_⟩_; _∎; transport;
                            transportRefl; J; JRefl)

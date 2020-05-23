@@ -7,9 +7,9 @@ open import Basis          hiding (A) renaming (squash to squash′)
 open import Poset
 open import Frame
 open import Cover
-open import Nucleus        using    (isNuclear; Nucleus; 𝔣𝔦𝔵; idem)
-open import Data.Bool      using    (Bool; true; false)
-open import FormalTopology renaming (pos to pos′)
+open import Nucleus           using    (isNuclear; Nucleus; 𝔣𝔦𝔵; idem)
+open import Cubical.Data.Bool using    (Bool; true; false)
+open import FormalTopology    renaming (pos to pos′)
 ```
 
 We use an anonymous module that takes some formal topology `F` as a parameter to reduce
