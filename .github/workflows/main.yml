@@ -18,7 +18,6 @@ jobs:
     - run: sudo cp -f resources/Agda.css html/Agda.css
     - name: Upload HTML
       id: html-upload
-      needs: typecheck
       if: github.ref == 'refs/heads/master'
       uses: actions/upload-artifact@v1
       with:
@@ -26,7 +25,6 @@ jobs:
         path: html
     - name: Deploy to GitHub Pages
       id: deploy
-      needs: typecheck
       if: github.ref == 'refs/heads/master'
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
