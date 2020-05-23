@@ -1,9 +1,9 @@
 {-# OPTIONS --cubical --safe #-}
 
-open import Data.Nat using (ℕ)
 open import Cubical.Core.Everything
+open import Cubical.Data.Nat            using (ℕ)
 open import Cubical.Foundations.Prelude using (isProp)
-open import Data.Product using (_×_; _,_)
+open import Cubical.Data.Sigma          using (_×_; _,_)
 
 data 𝔻  : Type₀ where
   []    : 𝔻
