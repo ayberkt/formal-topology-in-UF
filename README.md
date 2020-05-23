@@ -40,6 +40,7 @@ suggest the following order:
    expected.
 9. `CantorSpace`. The definition of the formal Cantor topology along with a proof that it
    is compact.
+10. `Sierpinski`. The formal topology of the Sierpinski space.
    
 ## Clickable HTML
 
