@@ -34,7 +34,7 @@ open import FormalTopology
 𝕊-out tt = Unit zero
 
 𝕊-rev : {x : Bool} {y : 𝕊-exp x} → 𝕊-out {x} y → Bool
-𝕊-rev {x = x} {y = tt} tt = false
+𝕊-rev {x = x} {y = tt} tt = x
 
 𝕊-IS : InteractionStr Bool
 𝕊-IS = 𝕊-exp , (λ {x} → 𝕊-out {x}) , 𝕊-rev
