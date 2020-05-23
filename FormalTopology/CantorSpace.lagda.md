@@ -5,8 +5,8 @@ module CantorSpace where
 
 open import Basis                     hiding (A; B)
 open import Cubical.Data.Empty.Base   using (⊥; rec)
-open import Cubical.Data.Bool.Base    using (true; false; _≟_)   renaming (Bool to 𝔹)
-open import Data.List                 using (List; _∷_; [])      renaming (_++_ to _^_)
+open import Cubical.Data.Bool.Base    using (true; false; _≟_) renaming (Bool to 𝔹)
+open import Cubical.Data.List         using (List; _∷_; [])    renaming (_++_ to _^_)
 open import Cover
 open import Poset
 open import FormalTopology
