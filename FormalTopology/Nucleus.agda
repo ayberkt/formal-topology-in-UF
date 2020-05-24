@@ -131,9 +131,9 @@ nuclear-fixed-point-poset {ℓ₀ = ℓ₀} {ℓ₁} L (j , N₀ , N₁ , N₂) 
       x ⊓[ L ] y , NTS
       where
         NTS : j (x ⊓[ L ] y) ≡ x ⊓[ L ] y
-        NTS = j (x ⊓[ L ] y)    ≡⟨ N₀ x y                        ⟩
-              j x ⊓[ L ] j y    ≡⟨ cong (λ - → - ⊓[ L ] j y) x-f ⟩
-                x ⊓[ L ] j y    ≡⟨ cong (λ - → x ⊓[ L ] -)   y-f ⟩
+        NTS = j (x ⊓[ L ] y)    ≡⟨ N₀ x y                      ⟩
+              j x ⊓[ L ] j y    ≡⟨ cong (λ - → - ⊓[ L ] _) x-f ⟩
+                x ⊓[ L ] j y    ≡⟨ cong (λ - → _ ⊓[ L ] -) y-f ⟩
                 x ⊓[ L ] y      ∎
 
     ⋁_ : Fam ℓ₂ 𝒜 → 𝒜
