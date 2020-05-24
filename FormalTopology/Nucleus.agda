@@ -128,24 +128,13 @@ nuclear-fixed-point-poset {ℓ₀ = ℓ₀} {ℓ₁} L (j , N₀ , N₁ , N₂) 
 
     _∧_ : 𝒜 → 𝒜 → 𝒜
     _∧_ (x , x-f) (y , y-f) =
-      x ⊓[ L ] y , ⊑[ pos L ]-antisym _ _ φ (N₁ (x ⊓[ L ] y))
+      x ⊓[ L ] y , NTS
       where
-        ⊑jx : [ j (x ⊓[ L ] y) ⊑ j x ]
-        ⊑jx = j (x ⊓[ L ] y) ⊑⟨ ≡⇒⊑ (pos L) (N₀ x y)      ⟩
-              j x ⊓[ L ] j y ⊑⟨ ⊓[ L ]-lower₀ (j x) (j y) ⟩
-              j x ■
-        ⊑jy : [ j (x ⊓[ L ] y) ⊑ j y ]
-        ⊑jy = j (x ⊓[ L ] y) ⊑⟨ ≡⇒⊑ (pos L) (N₀ x y)      ⟩
-              j x ⊓[ L ] j y ⊑⟨ ⊓[ L ]-lower₁ (j x) (j y) ⟩
-              j y ■
-
-        ⊑x : [ j (x ⊓[ L ] y) ⊑ x ]
-        ⊑x = subst (λ z → [ j (x ⊓[ L ] y) ⊑ z ]) x-f ⊑jx
-        ⊑y : [ j (x ⊓[ L ] y) ⊑ y ]
-        ⊑y = subst (λ z → [ j (x ⊓[ L ] y) ⊑ z ]) y-f ⊑jy
-
-        φ : [ j (x ⊓[ L ] y) ⊑ (x ⊓[ L ] y) ]
-        φ = ⊓[ L ]-greatest x y (j (x ⊓[ L ] y)) ⊑x ⊑y
+        NTS : j (x ⊓[ L ] y) ≡ x ⊓[ L ] y
+        NTS = j (x ⊓[ L ] y)    ≡⟨ N₀ x y                        ⟩
+              j x ⊓[ L ] j y    ≡⟨ cong (λ - → - ⊓[ L ] j y) x-f ⟩
+                x ⊓[ L ] j y    ≡⟨ cong (λ - → x ⊓[ L ] -)   y-f ⟩
+                x ⊓[ L ] y      ∎
 
     ⋁_ : Fam ℓ₂ 𝒜 → 𝒜
     ⋁ (I , F) = j (⋁[ L ] 𝒢) , j⊔L-fixed
