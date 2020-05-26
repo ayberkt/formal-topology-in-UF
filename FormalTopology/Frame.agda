@@ -167,6 +167,22 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
       NTS : [ (⋁[ F ] U) ⊑ z ]
       NTS = ⋁[_]-least U z upper
 
+  x⊑y⇒x=x∧y : {x y : ∣ F ∣F}
+            → [ x ⊑ y ] → x ≡ x ⊓[ F ] y
+  x⊑y⇒x=x∧y {x} {y} x⊑y = ⊑[ pos F ]-antisym _ _ down up
+    where
+      down : [ x ⊑ (x ⊓[ F ] y) ]
+      down = ⊓[_]-greatest x y x (⊑[_]-refl P x) x⊑y
+
+      up : [ (x ⊓[ F ] y) ⊑ x ]
+      up = ⊓[_]-lower₀ x y
+
+  x=x∧y⇒x⊑y : {x y : ∣ F ∣F}
+            → x ≡ x ⊓[ F ] y → [ x ⊑ y ]
+  x=x∧y⇒x⊑y {x} {y} eq = x ⊑⟨ ≡⇒⊑ P eq ⟩ x ⊓[ F ] y ⊑⟨ ⊓[_]-lower₁ x y ⟩ y ■
+    where
+      open PosetReasoning (pos F)
+
   comm : (x y : ∣ F ∣F) → x ⊓[ F ] y ≡ y ⊓[ F ] x
   comm x y = ⊓-unique y x _ (⊓[_]-lower₁ x y) (⊓[_]-lower₀ x y) NTS
     where
@@ -626,3 +642,4 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
 ≅ₚ≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≡ G)
 ≅ₚ≃≡ F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≡ F G ⟩ F ≡ G 𝔔𝔈𝔇
+
