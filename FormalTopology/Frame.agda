@@ -2,7 +2,7 @@
 
 module Frame where
 
-open import Basis
+open import Basis                        hiding (A)
 open import Cubical.Foundations.Function using (uncurry)
 open import Cubical.Foundations.SIP                       renaming (SNS-≡ to SNS)
 open import Cubical.Foundations.Equiv    using (_≃⟨_⟩_)   renaming (_■ to _𝔔𝔈𝔇)
@@ -18,6 +18,9 @@ module JoinSyntax (A : Type ℓ₀) {ℓ₂ : Level} (join : Fam ℓ₂ A → A)
 
 RawFrameStr : (ℓ₁ ℓ₂ : Level) → Type ℓ₀ → Type (ℓ₀ ⊔ suc ℓ₁ ⊔ suc ℓ₂)
 RawFrameStr ℓ₁ ℓ₂ A = PosetStr ℓ₁ A × A × (A → A → A) × (Fam ℓ₂ A → A)
+
+pos-of-raw-frame : (Σ[ A ∈ Type ℓ₀ ] RawFrameStr ℓ₁ ℓ₂ A) → Poset ℓ₀ ℓ₁
+pos-of-raw-frame (A , ps , _) = A , ps
 
 RawFrameStr-set : (ℓ₁ ℓ₂ : Level) (A : Type ℓ₀)
                 → isSet (RawFrameStr ℓ₁ ℓ₂ A)
@@ -274,34 +277,81 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
               (λ - → x ε (_ , -))
               (funExt (λ { (j′ , i′) → comm (U $ i′) (V $ j′) })) ((j , i) , eq)
 
--- Frame homomorphisms.
-isFrameHomomorphism : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂)
-                    → (pos F ─m→ pos G)
-                    → Type (ℓ₀ ⊔ suc ℓ₂ ⊔ ℓ₀′)
-isFrameHomomorphism {ℓ₂ = ℓ₂} F G (f , _) = resp-⊤ × resp-⊓ × resp-⋁
+isRawFrameHomo : (M : Σ[ A ∈ Type ℓ₀  ] RawFrameStr ℓ₁  ℓ₂ A)
+                 (N : Σ[ B ∈ Type ℓ₀′ ] RawFrameStr ℓ₁′ ℓ₂ B)
+               → let M-pos = pos-of-raw-frame M ; N-pos = pos-of-raw-frame N in
+                 (M-pos ─m→ N-pos) → Type (ℓ₀ ⊔ suc ℓ₂ ⊔ ℓ₀′)
+isRawFrameHomo M@(A , ps₀ , ⊤₀ , _∧₀_ , ⋁₀_) N@(B , ps₁ , ⊤₁ , _∧₁_ , ⋁₁_) (f , f-mono) =
+  resp-⊤ × resp-∧ × resp-⋁
   where
     resp-⊤ : Type _
-    resp-⊤ = f ⊤[ F ] ≡ ⊤[ G ]
+    resp-⊤ = f ⊤₀ ≡ ⊤₁
 
-    resp-⊓ : Type _
-    resp-⊓ = (x y : ∣ F ∣F) → f (x ⊓[ F ] y) ≡ (f x) ⊓[ G ] (f y)
+    resp-∧ : Type _
+    resp-∧ = (x y : A) → f (x ∧₀ y) ≡ (f x) ∧₁ (f y)
 
     resp-⋁ : Type _
-    resp-⋁ = (U : Fam ℓ₂ ∣ F ∣F) → f (⋁[ F ] U) ≡ ⋁[ G ] ⁅ f x ∣ x ε U ⁆
+    resp-⋁ = (U : Fam _ A) → f (⋁₀ U) ≡ ⋁₁ ⁅ f x ∣ x ε U ⁆
+
+isRawFrameHomo-prop : (M : Σ[ A ∈ Type ℓ₀  ] RawFrameStr ℓ₁  ℓ₂ A)
+                      (N : Σ[ B ∈ Type ℓ₀′ ] RawFrameStr ℓ₁′ ℓ₂ B)
+                    → let M-pos = pos-of-raw-frame M ; N-pos = pos-of-raw-frame N in
+                      (f : M-pos ─m→ N-pos) → isProp (isRawFrameHomo M N f)
+isRawFrameHomo-prop M N (f , f-mono) =
+  isPropΣ (B-set _ _) λ _ →
+  isPropΣ (λ x y → funExt₂ λ a b → B-set _ _ (x a b) (y a b) ) λ _ →
+          λ _ _ → funExt λ x → B-set _ _ _ _
+  where
+    M-pos = pos-of-raw-frame M
+    N-pos = pos-of-raw-frame N
+    A-set = carrier-is-set M-pos
+    B-set = carrier-is-set N-pos
+
+-- Frame homomorphisms.
+isFrameHomomorphism : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂)
+                    → (pos F ─m→ pos G) → Type (ℓ₀ ⊔ suc ℓ₂ ⊔ ℓ₀′)
+isFrameHomomorphism (A , rs , _) (B , rs′ , _) = isRawFrameHomo (A , rs) (B , rs′)
 
 isFrameHomomorphism-prop : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂)
-                         → (f : pos F ─m→ pos G)
-                         → isProp (isFrameHomomorphism F G f)
-isFrameHomomorphism-prop F G f =
-  isPropΣ (carrier-is-set (pos G) _ _) λ _ →
-  isPropΣ (isPropΠ2 λ x y → carrier-is-set (pos G) _ _) λ _ →
-  isPropΠ λ U → carrier-is-set (pos G) _ _
+                         → (f : pos F ─m→ pos G) → isProp (isFrameHomomorphism F G f)
+isFrameHomomorphism-prop (A , s , _) (B , s′ , _) = isRawFrameHomo-prop (A , s) (B , s′)
 
 _─f→_ : Frame ℓ₀ ℓ₁ ℓ₂ → Frame ℓ₀′ ℓ₁′ ℓ₂ → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
-_─f→_ {ℓ₂ = ℓ₂} F G = Σ (pos F ─m→ pos G) (isFrameHomomorphism F G)
+_─f→_ {ℓ₂ = ℓ₂} F G = Σ[ f ∈ (pos F ─m→ pos G) ] (isFrameHomomorphism F G f)
 
-_$f_ : {F G : Frame ℓ₀ ℓ₁ ℓ₂} → F ─f→ G → ∣ F ∣F → ∣ G ∣F
+_$f_ : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂} → F ─f→ G → ∣ F ∣F → ∣ G ∣F
 (f , _) $f x = f $ₘ x
+
+isFrameIso : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂}
+           → (F ─f→ G) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
+isFrameIso {F = F} {G} ((f , _) , _) =
+  Σ[ ((g , _) , _) ∈ (G ─f→ F) ] section f g × retract f g
+
+isFrameIso-prop : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂}
+                → (f : F ─f→ G) → isProp (isFrameIso {F = F} {G} f)
+isFrameIso-prop {F = F} {G} ((f , _) , _) (g₀h , sec₀ , ret₀) (g₁h , sec₁ , ret₁) =
+  ΣProp≡ NTS₀ NTS₁
+  where
+    g₀ = _$f_ {F = G} {F} g₀h
+    g₁ = _$f_ {F = G} {F} g₁h
+
+    NTS₀ : (((g , _) , _) : G ─f→ F) → isProp (section f g × retract f g)
+    NTS₀ ((g , _) , g-homo) =
+      isPropΣ (λ s s′ → funExt λ x → carrier-is-set (pos G) _ _ (s x) (s′ x)) λ _ r r′ →
+      funExt λ y → carrier-is-set (pos F) _ _ (r y) (r′ y)
+
+    g₀~g₁ : g₀ ~ g₁
+    g₀~g₁ x = g₀ x          ≡⟨ cong g₀ (sym (sec₁ x)) ⟩
+              g₀ (f (g₁ x)) ≡⟨ ret₀ (g₁ x)            ⟩
+              g₁ x          ∎
+
+    NTS₁ : g₀h ≡ g₁h
+    NTS₁ = ΣProp≡
+             (isFrameHomomorphism-prop G F)
+             (forget-mono (pos G) (pos F) (π₀ g₀h) (π₀ g₁h) (funExt g₀~g₁))
+
+_≅f_ : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
+F ≅f G = Σ[ f ∈ F ─f→ G ] isFrameIso {F = F} {G} f
 
 -- An element of the poset is like a finite observation whereas an element of the
 -- frame of downward closed posets is like a general observation.
@@ -410,19 +460,21 @@ DCFrame {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} (X , P) =
             φ : in-some-set-of ⁅ U ∧ (V $ i) ∣ i ∶ I ⁆ x → [ ∣ U ∣𝔻 x ] × [ ∣ ⋁ V ∣𝔻 x ]
             φ (i , x∈D , x∈Uᵢ) = x∈D , ∣ i , x∈Uᵢ ∣
 
-
 -- Frames form an SNS.
 
 -- Similar to the poset case, we start by expressing what it means for an equivalence to
 -- preserve the structure of a frame
 isARawHomoEqv : {ℓ₁ ℓ₂ : Level} (M N : Σ (Type ℓ₀) (RawFrameStr ℓ₁ ℓ₂))
-       → π₀ M ≃ π₀ N
-       → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
-isARawHomoEqv {ℓ₂ = ℓ₂} (A , s , ⊤₀ , _⊓₀_ , ⋁₀) (B , t , ⊤₁ , _⊓₁_ , ⋁₁) e@(f , _) =
-    (isAMonotonicEqv (A , s) (B , t) e)
-  × (f ⊤₀ ≡ ⊤₁)
-  × ((x y : A) → f (x ⊓₀ y) ≡ (f x) ⊓₁ (f y))
-  × ((U : Fam ℓ₂ A) → f (⋁₀ U) ≡ ⋁₁ (f ⟨$⟩ U))
+              → π₀ M ≃ π₀ N
+              → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+isARawHomoEqv {ℓ₂ = ℓ₂} M N e@(f , _) =
+  Σ[ f-mono ∈ isMonotonic M-pos N-pos f ]
+  Σ[ g-mono ∈ isMonotonic N-pos M-pos g ]
+   isRawFrameHomo M N (f , f-mono) × isRawFrameHomo N M (g , g-mono)
+  where
+    M-pos = pos-of-raw-frame M
+    N-pos = pos-of-raw-frame N
+    g     = equivFun (invEquiv e)
 
 pos-of : Σ (Type ℓ₀) (RawFrameStr ℓ₁ ℓ₂) → Σ (Type ℓ₀) (Order ℓ₁)
 pos-of (A , ((RPS , _) , _)) = (A , RPS)
@@ -445,49 +497,54 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
     PS-A = π₀ s
     PS-B = π₀ t
 
+    F-pos = pos-of-raw-frame (A , F)
+    G-pos = pos-of-raw-frame (A , G)
+
     f : isARawHomoEqv (A , F) (A , G) (idEquiv A) → F ≡ G
-    f (iₚ , eq-⊤ , ⊓-xeq , ⋁-xeq) =
-      s , ⊤₀ , _⊓₀_ , ⋁₀   ≡⟨ cong (λ - → (s , - , _⊓₀_ , ⋁₀))              eq-⊤ ⟩
-      s , ⊤₁ , _⊓₀_ , ⋁₀   ≡⟨ cong {B = λ _ → C} (λ - → s , ⊤₁ , - , ⋁₀)    ⊓-eq ⟩
-      s , ⊤₁ , _⊓₁_ , ⋁₀   ≡⟨ cong {B = λ _ → C} (λ - → s , ⊤₁ , _⊓₁_ , -)  ⋁-eq ⟩
-      s , ⊤₁ , _⊓₁_ , ⋁₁   ≡⟨ cong {B = λ _ → C} (λ - → - , ⊤₁ , _⊓₁_ , ⋁₁) eq   ⟩
+    f (mono , mono′ , (eq-⊤ , ⊓₀~⊓₁ , ⋁₀~⋁₁) , k , h) =
+      s , ⊤₀ , _⊓₀_ , ⋁₀   ≡⟨ cong (λ - → (s , - , _⊓₀_ , ⋁₀))           eq-⊤ ⟩
+      s , ⊤₁ , _⊓₀_ , ⋁₀   ≡⟨ cong {B = λ _ → C} (λ - → s , ⊤₁ , - , ⋁₀) ⊓-eq ⟩
+      s , ⊤₁ , _⊓₁_ , ⋁₀   ≡⟨ cong {B = λ _ → C} (λ - → s , _ , _ , -)   ⋁-eq ⟩
+      s , ⊤₁ , _⊓₁_ , ⋁₁   ≡⟨ cong {B = λ _ → C} (λ - → - , _ , _ , _)   eq   ⟩
       t , ⊤₁ , _⊓₁_ , ⋁₁   ∎
       where
         eq : s ≡ t
         eq = ΣProp≡
                (is-true-prop ∘ PosetAx A)
-               (funExt₂ λ x y → ⇔toPath (π₀ iₚ x y) (π₁ iₚ x y))
+               (funExt₂ λ x y → ⇔toPath (mono x y) (mono′ x y))
 
         ⊓-eq : _⊓₀_ ≡ _⊓₁_
-        ⊓-eq = funExt (λ x → funExt λ y → ⊓-xeq x y)
+        ⊓-eq = funExt₂ ⊓₀~⊓₁
 
         ⋁-eq : ⋁₀ ≡ ⋁₁
-        ⋁-eq = funExt λ U → ⋁-xeq U
+        ⋁-eq = funExt ⋁₀~⋁₁
 
     g : F ≡ G → isARawHomoEqv (A , F) (A , G) (idEquiv A)
     g p = subst (λ - → isARawHomoEqv (A , F) (A , -) (idEquiv A)) p id-iso
       where
         id-iso : isARawHomoEqv (A , F) (A , F) (idEquiv A)
-        id-iso =
-          ((λ _ _ x⊑₀y → x⊑₀y) , λ _ _ x⊑₀y → x⊑₀y) , refl , (λ _ _ → refl) , (λ _ → refl)
+        id-iso = (λ x y x⊑y → x⊑y)
+               , (λ x y p → p)
+               , (refl , ((λ _ _ → refl) , λ U → refl))
+               , refl , (λ _ _ → refl) , λ _ → refl
 
     sec-f-g : section f g
     sec-f-g p = RawFrameStr-set ℓ₁ ℓ₂ A F G (f (g p)) p
 
     ret-f-g : retract f g
-    ret-f-g (mono-eqv , p , q , r) = ΣProp≡ NTS₀ NTS₁
+    ret-f-g a@(mono , mono′ , q , r) = ΣProp≡ NTS₀ NTS₁
       where
-        NTS₀ : (mono-eqv′ : isAMonotonicEqv (A , s) (A , t) (idEquiv A))
-             → isProp (_ × _ × _)
-        NTS₀ mono-eqv′ =
-          isPropΣ (A-set₀ ⊤₀ ⊤₁) λ _ →
-          isPropΣ (isPropΠ2 λ x y → A-set₀ (x ⊓₀ y) (x ⊓₁ y)) λ _ →
-          isPropΠ (λ _ → A-set₀ _ _)
+        NTS₀ : _
+        NTS₀ _ = isPropΣ (isMonotonic-prop G-pos F-pos (id A)) λ _ →
+                 isPropΣ NTS₀′ λ _ → NTS₀′′
+          where
+            NTS₀′ : _
+            NTS₀′ = isRawFrameHomo-prop (A , F) (A , G) (id A , λ x y x⊑y → mono x y x⊑y)
+            NTS₀′′ : _
+            NTS₀′′ = isRawFrameHomo-prop (A , G) (A , F) (id A , mono′)
 
-        NTS₁ : π₀ (g (f (mono-eqv , p , q , r))) ≡ mono-eqv
-        NTS₁ = ΣProp≡
-                 (λ _ → isOrderPreserving-prop (A , _⊑₁_) (A , _⊑₀_) (id _))
-                 (funExt₂ (λ x y → funExt λ φ → is-true-prop (x ⊑₁ y) _ _))
+        NTS₁ : g (f (mono , mono′ , q , r)) .π₀ ≡ mono
+        NTS₁ = isMonotonic-prop F-pos G-pos (id A) _ _
 
 -- A predicate expressing that an equivalence between the underlying types of two frames
 -- is frame-homomorphic.
@@ -499,14 +556,47 @@ _≃f_ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc 
 F ≃f G = Σ[ e ∈ ∣ F ∣F ≃ ∣ G ∣F ] isHomoEqv F G e
 
 isHomoEqv-prop : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (e : ∣ F ∣F ≃ ∣ G ∣F) → isProp (isHomoEqv F G e)
-isHomoEqv-prop F G i =
-  isPropΣ (isAMonotonicEqv-prop (pos F) (pos G) i) λ _ →
-  isPropΣ (∣G∣-set _ _) λ _ →
-  isPropΣ (isPropΠ2 λ x y → ∣G∣-set _ _) λ _ →
-  isPropΠ λ _ → ∣G∣-set _ _
+isHomoEqv-prop F G e@(f , _) =
+  isPropΣ (isMonotonic-prop (pos F) (pos G) f) λ f-mono →
+  isPropΣ (isMonotonic-prop (pos G) (pos F) g) λ g-mono →
+  isPropΣ (isRawFrameHomo-prop (∣ F ∣F , F-rs) (∣ G ∣F , G-rs) (f , f-mono)) λ _ →
+  isPropΣ (carrier-is-set (pos F) _ _) λ _ →
+  isPropΣ (λ p q → funExt₂ λ x y → carrier-is-set (pos F) _ _ (p x y) (q x y)) λ _ →
+          λ p q → funExt λ U → carrier-is-set (pos F) _ _ (p U) (q U)
   where
-    ∣G∣-set : isSet ∣ G ∣F
-    ∣G∣-set = carrier-is-set (pos G)
+    F-rs : RawFrameStr _ _ ∣ F ∣F
+    F-rs = π₀ (π₁ F)
+    G-rs : RawFrameStr _ _ ∣ G ∣F
+    G-rs = π₀ (π₁ G)
+    g = equivFun (invEquiv e)
+
+-- Notice that ≃f is equivalent to ≅f.
+≃f≃≅f : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (F ≃f G) ≃ (F ≅f G)
+≃f≃≅f F G = isoToEquiv (iso to from sec ret)
+  where
+    to : F ≃f G → F ≅f G
+    to (e@(f , _) , (f-mono , g-mono , f-homo , g-homo)) = f₀ , f₀-frame-iso
+      where
+        g = equivFun (invEquiv e)
+
+        f₀ : F ─f→ G
+        f₀ = (f , f-mono) , f-homo
+
+        g₀ : G ─f→ F
+        g₀ = (g , g-mono) , g-homo
+
+        f₀-frame-iso : isFrameIso {F = F} {G} f₀
+        f₀-frame-iso = g₀ , Iso.rightInv (equivToIso e) , Iso.leftInv (equivToIso e)
+
+    from : F ≅f G → F ≃f G
+    from (((f , f-mono) , f-homo) , ((g , g-mono) , g-homo) , sec , ret) =
+      isoToEquiv (iso f g sec ret) , f-mono , g-mono , f-homo , g-homo
+
+    sec : section to from
+    sec (f , g , sec , ret) = ΣProp≡ (isFrameIso-prop {F = F} {G = G}) refl
+
+    ret : retract to from
+    ret (e , f-homo , g-homo) = ΣProp≡ (isHomoEqv-prop F G) (ΣProp≡ isPropIsEquiv refl)
 
 FrameAx-props : (A : Type ℓ₀) (str : RawFrameStr ℓ₁ ℓ₂ A)
                    → isProp [ FrameAx str ]
@@ -544,14 +634,15 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 ≃f≃≅ₚ F G = isoToEquiv (iso from to ret-to-from sec-to-from)
   where
     to : F ≃f G → pos F ≅ₚ pos G
-    to (e@(f , _) , (f-mono , g-mono) , _) =
+    to (e@(f , _) , f-mono , g-mono , _) =
       (f , f-mono) , (g , g-mono) , retEq e , secEq e
       where
         g = equivFun (invEquiv e)
 
     from : pos F ≅ₚ pos G → F ≃f G
     from ((f , f-mono) , (g , g-mono) , sec , ret) =
-      isoToEquiv (iso f g sec ret) , (f-mono , g-mono) , (resp-⊤ , resp-∧ , resp-⋁)
+        isoToEquiv (iso f g sec ret)
+      , f-mono , g-mono , (resp-⊤ , resp-∧ , resp-⋁) , (g-resp-⊤ , g-resp-∧ , g-resp-⋁)
       where
         open PosetReasoning (pos G)
 
@@ -562,6 +653,9 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
             NTS x = x        ⊑⟨ ≡⇒⊑ (pos G) (sym (sec x))              ⟩
                     f (g x)  ⊑⟨ f-mono (g x) ⊤[ F ] (⊤[ F ]-top (g x)) ⟩
                     f ⊤[ F ] ■
+
+        g-resp-⊤ : g ⊤[ G ] ≡ ⊤[ F ]
+        g-resp-⊤ = g ⊤[ G ] ≡⟨ cong g (sym resp-⊤) ⟩ g (f ⊤[ F ]) ≡⟨ ret ⊤[ F ] ⟩ ⊤[ F ] ∎
 
         resp-∧ : (x y : ∣ F ∣F) → f (x ⊓[ F ] y) ≡ (f x) ⊓[ G ] (f y)
         resp-∧ x y = ⊓-unique G (f x) (f y) (f (x ⊓[ F ] y)) NTS₀ NTS₁ NTS₂
@@ -588,6 +682,14 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
                 gw⊑x∧y : [ g w ⊑[ pos F ] (x ⊓[ F ] y) ]
                 gw⊑x∧y = ⊓[ F ]-greatest x y (g w) gw⊑x gw⊑y
+
+        g-resp-∧ : (x y : ∣ G ∣F) → g (x ⊓[ G ] y) ≡ (g x) ⊓[ F ] (g y)
+        g-resp-∧ x y =
+          g (x ⊓[ G ] y)             ≡⟨ cong (λ - → g (- ⊓[ G ] y)) (sym (sec x)) ⟩
+          g (f (g x) ⊓[ G ] y)       ≡⟨ cong (λ - → g (_ ⊓[ G ] -)) (sym (sec y)) ⟩
+          g (f (g x) ⊓[ G ] f (g y)) ≡⟨ cong g (sym (resp-∧ (g x) (g y)))         ⟩
+          g (f (g x ⊓[ F ] g y))     ≡⟨ ret (g x ⊓[ F ] g y)                      ⟩
+          g x ⊓[ F ] g y             ∎
 
         resp-⋁ : (U : Fam _ ∣ F ∣F) → f (⋁[ F ] U) ≡ (⋁[ G ] ⁅ f x ∣ x ε U ⁆)
         resp-⋁ U = ⋁-unique G ⁅ f x ∣ x ε U ⁆ (f (⋁[ F ] U)) NTS₀ NTS₁
@@ -627,6 +729,16 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
                 f⋁U⊑fgw : [ f (⋁[ F ] U) ⊑[ pos G ] f (g w) ]
                 f⋁U⊑fgw = f-mono _ _ (subst (λ - → [ - ⊑[ pos F ] g w ]) (ret _) gf⋁U⊑gw)
 
+        g-resp-⋁ : (U : Fam _ ∣ G ∣F) → g (⋁[ G ] U) ≡ ⋁[ F ] ⁅ g x ∣ x ε U ⁆
+        g-resp-⋁ U =
+          g (⋁[ G ] U)                   ≡⟨ cong (λ - → g (⋁[ G ] (π₀ U , -))) NTS ⟩
+          g (⋁[ G ] ⁅ f (g x) ∣ x ε U ⁆) ≡⟨ cong g (sym (resp-⋁ ⁅ g x ∣ x ε U ⁆))  ⟩
+          g (f (⋁[ F ] ⁅ g x ∣ x ε U ⁆)) ≡⟨ ret (⋁[ F ] ⁅ g x ∣ x ε U ⁆)           ⟩
+          ⋁[ F ] ⁅ g x ∣ x ε U ⁆         ∎
+          where
+            NTS : π₁ U ≡ f ∘ g ∘ π₁ U
+            NTS = funExt λ x → sym (sec (π₁ U x))
+
     sec-to-from : section to from
     sec-to-from is@((f , f-mono) , ((g , g-mono) , sec , ret)) =
       ΣProp≡
@@ -642,4 +754,3 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
 ≅ₚ≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≡ G)
 ≅ₚ≃≡ F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≡ F G ⟩ F ≡ G 𝔔𝔈𝔇
-
