@@ -535,10 +535,13 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
     ret-f-g a@(mono , mono′ , q , r) = ΣProp≡ NTS₀ NTS₁
       where
         NTS₀ : _
-        NTS₀ x =
-          isPropΣ (isMonotonic-prop G-pos F-pos (id A)) λ _ →
-          isPropΣ (isRawFrameHomo-prop (A , F) (A , G) (id A , λ k y x₁⊑y → x k y x₁⊑y)) λ k →
-          isRawFrameHomo-prop (A , G) (A , F) (id A , mono′)
+        NTS₀ _ = isPropΣ (isMonotonic-prop G-pos F-pos (id A)) λ _ →
+                 isPropΣ NTS₀′ λ _ → NTS₀′′
+          where
+            NTS₀′ : _
+            NTS₀′ = isRawFrameHomo-prop (A , F) (A , G) (id A , λ x y x⊑y → mono x y x⊑y)
+            NTS₀′′ : _
+            NTS₀′′ = isRawFrameHomo-prop (A , G) (A , F) (id A , mono′)
 
         NTS₁ : g (f (mono , mono′ , q , r)) .π₀ ≡ mono
         NTS₁ = isMonotonic-prop F-pos G-pos (id A) _ _
@@ -728,10 +731,13 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
         g-resp-⋁ : (U : Fam _ ∣ G ∣F) → g (⋁[ G ] U) ≡ ⋁[ F ] ⁅ g x ∣ x ε U ⁆
         g-resp-⋁ U =
-          g (⋁[ G ] U)                   ≡⟨ cong (λ - → g (⋁[ G ] (π₀ U , -))) (funExt λ x → sym (sec (π₁ U x))) ⟩
-          g (⋁[ G ] ⁅ f (g x) ∣ x ε U ⁆) ≡⟨ cong g (sym (resp-⋁ ⁅ g x ∣ x ε U ⁆)) ⟩
-          g (f (⋁[ F ] ⁅ g x ∣ x ε U ⁆)) ≡⟨ ret (⋁[ F ] ⁅ g x ∣ x ε U ⁆) ⟩
+          g (⋁[ G ] U)                   ≡⟨ cong (λ - → g (⋁[ G ] (π₀ U , -))) NTS ⟩
+          g (⋁[ G ] ⁅ f (g x) ∣ x ε U ⁆) ≡⟨ cong g (sym (resp-⋁ ⁅ g x ∣ x ε U ⁆))  ⟩
+          g (f (⋁[ F ] ⁅ g x ∣ x ε U ⁆)) ≡⟨ ret (⋁[ F ] ⁅ g x ∣ x ε U ⁆)           ⟩
           ⋁[ F ] ⁅ g x ∣ x ε U ⁆         ∎
+          where
+            NTS : π₁ U ≡ f ∘ g ∘ π₁ U
+            NTS = funExt λ x → sym (sec (π₁ U x))
 
     sec-to-from : section to from
     sec-to-from is@((f , f-mono) , ((g , g-mono) , sec , ret)) =
