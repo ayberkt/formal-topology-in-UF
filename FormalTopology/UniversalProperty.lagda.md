@@ -205,8 +205,10 @@ Proof.
     g-resp-⊔ U@(I , h) =
       ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
         ≡⟨ ⊑[ pos R ]-antisym _ _ down up ⟩
-      ⋁[ R ] ((Σ[ i ∈ I ] ∃ ⦅ h i ⦆) , λ { (_ , y) → f (π₀ y) })
-        ≡⟨ flatten R I (λ - → ∃ ⦅ h - ⦆) (λ _ j → f (π₀ j))   ⟩
+      ⋁[ R ] ⁅ f a ∣ (_ , (a , _)) ∶ Σ[ i ∈ I ] Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ] ⁆
+        ≡⟨ flatten R I (λ i → Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ]) (λ { _ (a , _) → f a }) ⟩
+      ⋁[ R ] ⁅ ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ U $ i ⦆ ⁆ ∣ i ∶ I ⁆
+        ≡⟨ refl ⟩
       ⋁[ R ] ⁅ g (U $ i) ∣ i ∶ I ⁆
         ∎
       where
