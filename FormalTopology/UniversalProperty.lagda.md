@@ -176,7 +176,7 @@ Proof.
                 isUB o ((i , (a , b)) , eq) =
                   ⋁[ R ]-upper _ _ (((i , a) , (i , b)) , subst (λ o′ → _ ≡ o′) eq φ)
                   where
-                    down′ : [ (⋁[ R ] (f ⟨$⟩ ⟪ i ↓ i ↓ ⟫)) ⊑[ pos R ] f i ]
+                    down′ : [ ⋁[ R ] (f ⟨$⟩ ⟪ i ↓ i ↓ ⟫) ⊑[ pos R ] f i ]
                     down′ =
                       ⋁[ R ]-least _ _ λ { z ((_ , (k , _)) , eq′) →
                         subst (λ - → [ - ⊑[ pos R ] _ ]) eq′ (f-mono _ _ k) }
