@@ -222,49 +222,51 @@ Proof.
 ```
     open PosetReasoning (pos R)
 
-    resp-⋁-lem : (x : ∣ P ∣ₚ) (U@(I , _) : Fam ℓ₀ ∣ L ∣F)
-               → [ x ∈ ⦅ ⋁[ L ] U ⦆ ]
-               → [ f x ⊑R ⋁[ R ] ((Σ[ i ∈ I ] ∃ ⦅ U $ i ⦆) , λ { (_ , a , _) → f a }) ]
-    resp-⋁-lem x U (squash p q i) =
-      is-true-prop (f x ⊑R _) (resp-⋁-lem x U p) (resp-⋁-lem x U q) i  
-    resp-⋁-lem x U (dir    xε⋁U)  = ∥∥-rec (is-true-prop (f x ⊑R _)) NTS xε⋁U
-                                    where
-                                      NTS : _
-                                      NTS (j , cov) =
-                                        ⋁[ R ]-upper _ _ ((j , x , cov) , refl)
-    resp-⋁-lem x U (branch b h)   =
-      f x                      ⊑⟨ rep x b              ⟩
-      ⋁[ R ] (_ , f ∘ next F)  ⊑⟨ ⋁[ R ]-least _ _ NTS ⟩
-      _                        ■
+    resp-⋁-lem : (U@(I , _) : Fam ℓ₀ ∣ L ∣F)
+               → ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
+               ≡ (⋁[ R ] ⁅ f a ∣ (_ , a , _) ∶ (Σ[ i ∈ I ] ∃ ⦅ U $ i ⦆) ⁆)
+    resp-⋁-lem U@(I , _) = ⊑[ pos R ]-antisym _ _ down up
       where
-        NTS : (r : ∣ R ∣F) → r ε (_ , f ∘ next F) → [ r ⊑R _ ]
-        NTS r (c , p) = subst (λ - → [ - ⊑R _ ]) p (resp-⋁-lem (next F c) U (h c))
+        LHS = ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
+        RHS = ⋁[ R ] ⁅ f a ∣ (_ , a , _) ∶ (Σ[ i ∈ I ] ∃ ⦅ U $ i ⦆) ⁆
+
+        ϑ : (x : ∣ P ∣ₚ) → [ x ∈ ⦅ ⋁[ L ] U ⦆ ] → [ f x ⊑R RHS ]
+        ϑ x (squash p q i) = is-true-prop (f x ⊑R _) (ϑ x p) (ϑ x q) i
+        ϑ x (dir    xε⋁U)  = ∥∥-rec (is-true-prop (f x ⊑R _)) NTS xε⋁U
+                                        where
+                                          NTS : _
+                                          NTS (j , cov) =
+                                            ⋁[ R ]-upper _ _ ((j , x , cov) , refl)
+        ϑ x (branch b h)   =
+          f x                      ⊑⟨ rep x b              ⟩
+          ⋁[ R ] (_ , f ∘ next F)  ⊑⟨ ⋁[ R ]-least _ _ NTS ⟩
+          _                        ■
+          where
+            NTS : (r : ∣ R ∣F) → r ε (_ , f ∘ next F) → [ r ⊑R _ ]
+            NTS r (c , p) = subst (λ - → [ - ⊑R _ ]) p (ϑ (next F c) (h c))
+
+        down : [ LHS ⊑R RHS ]
+        down =
+          ⋁[ R ]-least _ _ λ r ((x , cov) , p) → subst (λ - → [ - ⊑R _ ]) p (ϑ x cov)
+
+        up : [ RHS ⊑R LHS ]
+        up = ⋁[ R ]-least _ _ NTS
+          where
+            NTS : _
+            NTS r ((i , (x , xεU)) , p) = ⋁[ R ]-upper _ _ ((x , dir ∣ i , xεU ∣) , p)
 ```
 
 ```
     g-resp-⊔ : (U : Fam ℓ₀ ∣ L ∣F) → g (⋁[ L ] U) ≡ ⋁[ R ] (g ⟨$⟩ U)
     g-resp-⊔ U@(I , h) =
       ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
-        ≡⟨ ⊑[ pos R ]-antisym _ _ down up ⟩
+        ≡⟨ resp-⋁-lem U  ⟩
       ⋁[ R ] ⁅ f a ∣ (_ , (a , _)) ∶ Σ[ i ∈ I ] Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ] ⁆
         ≡⟨ flatten R I (λ i → Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ]) (λ { _ (a , _) → f a }) ⟩
       ⋁[ R ] ⁅ ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ U $ i ⦆ ⁆ ∣ i ∶ I ⁆
         ≡⟨ refl ⟩
       ⋁[ R ] ⁅ g (U $ i) ∣ i ∶ I ⁆
         ∎
-      where
-        LHS = ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
-        RHS = ⋁[ R ] ⁅ f a ∣ (_ , a , _) ∶ Σ[ i ∈ I ] Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ] ⁆
-
-        down : [ LHS ⊑R RHS ]
-        down = ⋁[ R ]-least _ _ NTS
-          where
-            NTS : (o : ∣ R ∣F) → o ε ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆ → [ o ⊑R RHS ]
-            NTS o ((x , x∈⋁U) , p) = subst (λ - → [ - ⊑R _ ]) p (resp-⋁-lem x U x∈⋁U)
-
-        up : [ RHS ⊑R LHS ]
-        up = ⋁[ R ]-least _ _ λ { r ((i , (x , xεU)) , eq) →
-               ⋁[ R ]-upper _ _ ((x , dir ∣ i , xεU ∣) , eq) }
 ```
 
 ### `g` is a frame homomorphism
