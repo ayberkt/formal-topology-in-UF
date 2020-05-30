@@ -233,14 +233,13 @@ Proof.
         ϑ : (x : ∣ P ∣ₚ) → [ x ∈ ⦅ ⋁[ L ] U ⦆ ] → [ f x ⊑R RHS ]
         ϑ x (squash p q i) = is-true-prop (f x ⊑R _) (ϑ x p) (ϑ x q) i
         ϑ x (dir    xε⋁U)  = ∥∥-rec (is-true-prop (f x ⊑R _)) NTS xε⋁U
-                                        where
-                                          NTS : _
-                                          NTS (j , cov) =
-                                            ⋁[ R ]-upper _ _ ((j , x , cov) , refl)
+                             where
+                               NTS : _
+                               NTS (j , cov) = ⋁[ R ]-upper _ _ ((j , x , cov) , refl)
         ϑ x (branch b h)   =
           f x                      ⊑⟨ rep x b              ⟩
           ⋁[ R ] (_ , f ∘ next F)  ⊑⟨ ⋁[ R ]-least _ _ NTS ⟩
-          _                        ■
+          RHS                      ■
           where
             NTS : (r : ∣ R ∣F) → r ε (_ , f ∘ next F) → [ r ⊑R _ ]
             NTS r (c , p) = subst (λ - → [ - ⊑R _ ]) p (ϑ (next F c) (h c))
@@ -249,7 +248,7 @@ Proof.
         down =
           ⋁[ R ]-least _ _ λ r ((x , cov) , p) → subst (λ - → [ - ⊑R _ ]) p (ϑ x cov)
 
-        up : [ RHS ⊑R LHS ]
+        up : [ LHS ⊒[ pos R ] RHS ]
         up = ⋁[ R ]-least _ _ NTS
           where
             NTS : _
