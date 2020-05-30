@@ -91,6 +91,10 @@ infix 9 rel
 
 syntax rel P x y = x ⊑[ P ] y
 
+relᵒᵖ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp ℓ₁
+relᵒᵖ (_ , _⊑_ , _) x y = y ⊑ x
+
+syntax relᵒᵖ P x y = x ⊒[ P ] y
 ```
 
 Similarly, we define projections for the poset properties.

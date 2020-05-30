@@ -111,6 +111,11 @@ Proof.
                    (rep    : represents R fm) where
     f      = _$ₘ_ fm
     f-mono = π₁ fm
+
+    _⊑R_ : ∣ R ∣F → ∣ R ∣F → hProp ℓ₀
+    x ⊑R y = x ⊑[ pos R ] y
+
+    infix 9 _⊑R_
 ```
 
 ```
@@ -169,25 +174,39 @@ Proof.
         I  : _
         I  = ⊑[ pos R ]-antisym _ _ down up
           where
-            down : _
+            LHS = ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ 𝔘 ⊓[ L ] 𝔙 ⦆ ⁆
+            RHS = ⋁[ R ] (∃ ⦅ 𝔘 ⦆ × ∃ ⦅ 𝔙 ⦆ , λ { ((u , _) , v , _) → ⋁[ R ] (f ⟨$⟩ ⟪ u ↓ v ↓ ⟫) })
+
+            down : [ LHS ⊑[ pos R ] RHS ]
             down = ⋁[ R ]-least _ _ isUB
               where
                 isUB : _
-                isUB o ((i , (a , b)) , eq) =
-                  ⋁[ R ]-upper _ _ (((i , a) , (i , b)) , subst (λ o′ → _ ≡ o′) eq φ)
+                isUB o ((a , (a∈U , a∈V)) , eq) =
+                  ⋁[ R ]-upper _ _ NTS
                   where
-                    down′ : [ (⋁[ R ] (f ⟨$⟩ ⟪ i ↓ i ↓ ⟫)) ⊑[ pos R ] f i ]
-                    down′ =
-                      ⋁[ R ]-least _ _ λ { z ((_ , (k , _)) , eq′) →
-                        subst (λ - → [ - ⊑[ pos R ] _ ]) eq′ (f-mono _ _ k) }
-                    up′ : [ f i ⊑[ pos R ] (⋁[ R ] (f ⟨$⟩ ⟪ i ↓ i ↓ ⟫)) ]
-                    up′ = ⋁[ R ]-upper _ _ ((i , (⊑[ P ]-refl i , ⊑[ P ]-refl i)) , refl)
-                    φ : ⋁[ R ] (f ⟨$⟩ ⟪ i ↓ i ↓ ⟫) ≡ f i
-                    φ = ⊑[ pos R ]-antisym _ _ down′ up′
-            up : _
+                    u : ∃ ⦅ 𝔘 ⦆
+                    u = a , a∈U
+
+                    v : ∃ ⦅ 𝔙 ⦆
+                    v = a , a∈V
+
+                    NTS : o ε (∃ ⦅ 𝔘 ⦆ × ∃ ⦅ 𝔙 ⦆ , (λ { ((u , _) , v , _) → ⋁[ R ] (f ⟨$⟩ ⟪ u ↓ v ↓ ⟫) }))
+                    NTS = (u , v) , subst (λ o′ → _ ≡ o′) eq NTS′
+                      where
+                        down′ : [ ⋁[ R ] (f ⟨$⟩ ⟪ a ↓ a ↓ ⟫) ⊑[ pos R ] f a ]
+                        down′ =
+                          ⋁[ R ]-least _ _ λ { z ((_ , (k , _)) , eq′) →
+                            subst (λ - → [ - ⊑[ pos R ] _ ]) eq′ (f-mono _ _ k) }
+                        up′ : [ f a ⊑[ pos R ] ⋁[ R ] (f ⟨$⟩ ⟪ a ↓ a ↓ ⟫) ]
+                        up′ = ⋁[ R ]-upper _ _ ((a , (⊑[ P ]-refl a , ⊑[ P ]-refl a)) , refl)
+
+                        NTS′ : ⋁[ R ] (f ⟨$⟩ ⟪ a ↓ a ↓ ⟫) ≡ f a
+                        NTS′ = ⊑[ pos R ]-antisym _ _ down′ up′
+
+            up : [ LHS ⊒[ pos R ] RHS ]
             up = ⋁[ R ]-least _ _ isUB
               where
-                isUB :  _
+                isUB : _
                 isUB o (i@((x , xε𝔙) , (y , yε𝔘)) , eq) =
                   subst (λ o′ → [ o′ ⊑[ pos R ] _ ]) eq (⋁[ R ]-least _ _ NTS)
                   where
@@ -201,45 +220,52 @@ Proof.
 ### `g` respects the joins
 
 ```
+    open PosetReasoning (pos R)
+
+    resp-⋁-lem : (U@(I , _) : Fam ℓ₀ ∣ L ∣F)
+               → ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
+               ≡ (⋁[ R ] ⁅ f a ∣ (_ , a , _) ∶ (Σ[ i ∈ I ] ∃ ⦅ U $ i ⦆) ⁆)
+    resp-⋁-lem U@(I , _) = ⊑[ pos R ]-antisym _ _ down up
+      where
+        LHS = ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
+        RHS = ⋁[ R ] ⁅ f a ∣ (_ , a , _) ∶ (Σ[ i ∈ I ] ∃ ⦅ U $ i ⦆) ⁆
+
+        ϑ : (x : ∣ P ∣ₚ) → [ x ∈ ⦅ ⋁[ L ] U ⦆ ] → [ f x ⊑R RHS ]
+        ϑ x (squash p q i) = is-true-prop (f x ⊑R _) (ϑ x p) (ϑ x q) i
+        ϑ x (dir    xε⋁U)  = ∥∥-rec (is-true-prop (f x ⊑R _)) NTS xε⋁U
+                             where
+                               NTS : _
+                               NTS (j , cov) = ⋁[ R ]-upper _ _ ((j , x , cov) , refl)
+        ϑ x (branch b h)   =
+          f x                      ⊑⟨ rep x b              ⟩
+          ⋁[ R ] (_ , f ∘ next F)  ⊑⟨ ⋁[ R ]-least _ _ NTS ⟩
+          RHS                      ■
+          where
+            NTS : (r : ∣ R ∣F) → r ε (_ , f ∘ next F) → [ r ⊑R _ ]
+            NTS r (c , p) = subst (λ - → [ - ⊑R _ ]) p (ϑ (next F c) (h c))
+
+        down : [ LHS ⊑R RHS ]
+        down =
+          ⋁[ R ]-least _ _ λ r ((x , cov) , p) → subst (λ - → [ - ⊑R _ ]) p (ϑ x cov)
+
+        up : [ LHS ⊒[ pos R ] RHS ]
+        up = ⋁[ R ]-least _ _ NTS
+          where
+            NTS : _
+            NTS r ((i , (x , xεU)) , p) = ⋁[ R ]-upper _ _ ((x , dir ∣ i , xεU ∣) , p)
+```
+
+```
     g-resp-⊔ : (U : Fam ℓ₀ ∣ L ∣F) → g (⋁[ L ] U) ≡ ⋁[ R ] (g ⟨$⟩ U)
     g-resp-⊔ U@(I , h) =
       ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
-        ≡⟨ ⊑[ pos R ]-antisym _ _ down up ⟩
-      ⋁[ R ] ((Σ[ i ∈ I ] ∃ ⦅ h i ⦆) , λ { (_ , y) → f (π₀ y) })
-        ≡⟨ flatten R I (λ - → ∃ ⦅ h - ⦆) (λ _ j → f (π₀ j))   ⟩
+        ≡⟨ resp-⋁-lem U  ⟩
+      ⋁[ R ] ⁅ f a ∣ (_ , (a , _)) ∶ Σ[ i ∈ I ] Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ] ⁆
+        ≡⟨ flatten R I (λ i → Σ[ x ∈ ∣ P ∣ₚ ] [ x ∈ ⦅ U $ i ⦆ ]) (λ { _ (a , _) → f a }) ⟩
+      ⋁[ R ] ⁅ ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ U $ i ⦆ ⁆ ∣ i ∶ I ⁆
+        ≡⟨ refl ⟩
       ⋁[ R ] ⁅ g (U $ i) ∣ i ∶ I ⁆
         ∎
-      where
-        LHS = ⋁[ R ] ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆
-        RHS = ⋁[ R ] (Σ I (λ - → ∃ ⦅ h - ⦆) , λ { (x , y) → f (π₀ y) })
-
-        down : [ LHS ⊑[ pos R ] RHS ]
-        down = ⋁[ R ]-least _ _ ψ
-          where
-            ψ : (o : ∣ R ∣F) → o ε ⁅ f a ∣ a ∈ ⦅ ⋁[ L ] U ⦆ ⁆ → [ o ⊑[ pos R ] RHS ]
-            ψ o ((x , foo) , eq) = subst (λ - → [ - ⊑[ pos R ] RHS ]) eq (ϑ x foo)
-              where
-                open PosetReasoning (pos R)
-                ϑ : (y : ∣ P ∣ₚ) → [ y ∈ ⦅ ⋁[ L ] U ⦆ ] → [ f y ⊑[ pos R ] RHS ]
-                ϑ y (dir mem) = ∥∥-rec
-                                  (is-true-prop (f y ⊑[ pos R ] RHS))
-                                  (λ { (j , cov) →
-                                         ⋁[ R ]-upper _ _ ((j , y , cov) , refl) }) mem
-                ϑ y (branch b h) =
-                  f y                               ⊑⟨ rep y b            ⟩
-                  ⋁[ R ] (outcome F b , f ∘ next F) ⊑⟨ ⋁[ R ]-least _ _ ζ ⟩
-                  RHS                               ■
-                  where
-                    ζ : (r : ∣ R ∣F)
-                      → r ε (outcome F b , f ∘ next F)
-                      → [ r ⊑[ pos R ] RHS ]
-                    ζ r (c , eq-r) =
-                      subst (λ - → [ - ⊑[ pos R ] RHS ]) eq-r (ϑ (next F c) (h c))
-                ϑ y (squash φ ψ i) = is-true-prop (f y ⊑[ pos R ] RHS) (ϑ y φ) (ϑ y ψ) i
-
-        up : [ RHS ⊑[ pos R ] LHS ]
-        up = ⋁[ R ]-least _ _ λ { r ((i , (x , xεU)) , eq) →
-               ⋁[ R ]-upper _ _ ((x , dir ∣ i , xεU ∣) , eq) }
 ```
 
 ### `g` is a frame homomorphism
@@ -260,7 +286,6 @@ Proof.
       ⋁[ R ] (outcome F b , f ∘ next F) ⊑⟨ ⋁[ R ]-least _ _ isUB ⟩
       f a                               ■
       where
-        open PosetReasoning (pos R)
         isUB : ∀ a₀ → a₀ ε (outcome F b , f ∘ next F) → [ a₀ ⊑[ pos R ] f a ]
         isUB a₀ (c , p) = a₀           ⊑⟨ ≡⇒⊑ (pos R) (sym p)    ⟩
                           f (next F c) ⊑⟨ lem a (next F c) (h c) ⟩
@@ -275,7 +300,7 @@ Proof.
         down = ⋁[ R ]-least _ _ λ { o ((y , φ) , eq) → subst (λ _ → _) eq (lem x y φ) }
 
     g∘η=f : gm∘ηm ≡ fm
-    g∘η=f = ΣProp≡ (isMonotonic-prop P (pos R)) (funExt gm∘ηm~f)
+    g∘η=f = forget-mono P (pos R) gm∘ηm fm (funExt gm∘ηm~f)
 
     g∘η=f′ : g ∘ η ≡ f
     g∘η=f′ = subst (λ { (h , _) → h ≡ f }) (sym g∘η=f) refl
