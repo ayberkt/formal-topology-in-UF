@@ -1,12 +1,47 @@
 ```agda
+{-# OPTIONS --cubical --safe #-}
+
 module Index where
+
+open import Basis
+open import Poset
 ```
 
 ## Chapter 2: Foundations
 
 ### 2.3: Equivalence and univalence
 
-TODO
+**Definition 2.1**.
+
+```agda
+_ = isContr
+```
+
+**Definition 2.2**.
+
+```agda
+_ = fiber
+```
+
+**Definition 2.3**.
+
+```agda
+_ = isEquiv
+```
+
+**Definition 2.4**.
+
+```agda
+_ = _≃_
+```
+
+**Definition 2.5**.
+
+```agda
+_ = idEquiv
+```
+
+**Definition 2.6**.
 
 ### 2.4: Homotopy levels
 
