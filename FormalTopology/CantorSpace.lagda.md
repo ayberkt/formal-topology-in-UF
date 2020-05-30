@@ -155,7 +155,7 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
 
   down : List A → 𝒫 A
   down []       = λ _ → bot ℓ₀
-  down (x ∷ xs) = λ y → ∥ [ y ⊑[ pos F ] x ] ⊎ [ down xs y ] ∥ , ∥∥-prop _
+  down (x ∷ xs) = λ y → ∥ [ y ⊑[ pos F ] x ] ⊎ [ y ∈ down xs ] ∥ , ∥∥-prop _
 
   isCompact : Type (suc ℓ₀)
   isCompact = (a : A) (U : 𝒫 A) (U-dc : [ isDownwardsClosed (pos F) U ]) →
