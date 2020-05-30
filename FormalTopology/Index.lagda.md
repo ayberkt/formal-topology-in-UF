@@ -67,7 +67,20 @@ TODO
 
 ### 3.1: Partially ordered sets
 
-TODO
+**Definition 3.1**.
+
+```agda
+_ = Poset
+_ = PosetStr
+_ = PosetAx
+```
+
+**Definition 3.2**.
+
+```agda
+_ = isDownwardsClosed
+_ = DCSubset
+```
 
 ### 3.2: Definition of a frame
 
