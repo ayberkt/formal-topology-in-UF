@@ -3,6 +3,7 @@
 
 module Main where
 
+open import Index
 open import Basis
 open import Poset
 open import Frame
