@@ -3,7 +3,7 @@
 
 module Index where
 
-open import Basis
+import Basis
 open import FormalTopology
 open import Cover
 
@@ -14,6 +14,8 @@ import Nucleus
 import CoverFormsNucleus
 import UniversalProperty
 
+import Cubical.Relation.Nullary.DecidableEq
+import Cubical.Foundations.Univalence
 import Cubical.Foundations.SIP
 
 open import Cubical.Data.Bool using (Bool; _≟_)
@@ -29,49 +31,49 @@ import CantorSpace
 **Definition 2.1**.
 
 ```agda
-_ = isContr
+_ = Basis.isContr
 ```
 
 **Definition 2.2**.
 
 ```agda
-_ = fiber
+_ = Basis.fiber
 ```
 
 **Definition 2.3**.
 
 ```agda
-_ = isEquiv
+_ = Basis.isEquiv
 ```
 
 **Definition 2.4**.
 
 ```agda
-_ = _≃_
+_ = Basis._≃_
 ```
 
 **Definition 2.5**.
 
 ```agda
-_ = idEquiv
+_ = Basis.idEquiv
 ```
 
 **Definition 2.6**.
 
 ```agda
--- TODO
+_ = Cubical.Foundations.Univalence.pathToEquiv
 ```
 
 **Definition 2.7**.
 
 ```agda
-_ = _~_
+_ = Basis._~_
 ```
 
 **Proposition 2.8**.
 
 ```agda
-_ = funExt
+_ = Basis.funExt
 ```
 
 ### 2.4: Homotopy levels
@@ -79,31 +81,31 @@ _ = funExt
 **Definition 2.9**.
 
 ```agda
-_ = isOfHLevel
+_ = Basis.isOfHLevel
 ```
 
 **Proposition 2.10**.
 
 ```agda
-_ = isOfHLevelSuc
+_ = Basis.isOfHLevelSuc
 ```
 
 **Proposition 2.11**.
 
 ```agda
-_ = isOfHLevelΠ
+_ = Basis.isOfHLevelΠ
 ```
 
 **Proposition 2.12**.
 
 ```agda
-_ = isOfHLevelΣ
+_ = Basis.isOfHLevelΣ
 ```
 
 **Definition 2.13**.
 
 ```agda
-_ = isProp
+_ = Basis.isProp
 ```
 
 **Definition 2.14**.
@@ -121,48 +123,106 @@ _ = isProp
 **Definition 2.16**.
 
 ```agda
-_ = hProp
+_ = Basis.hProp
 ```
 
 **Proposition 2.17**.
 
 ```agda
-_ = isPropΠ
+_ = Basis.isPropΠ
 ```
 
 **Proposition 2.18**.
 
 ```agda
-_ = isPropΣ
+_ = Basis.isPropΣ
 ```
 
 **Proposition 2.19**.
 
 ```agda
-_ = isPropIsProp
+_ = Basis.isPropIsProp
 ```
 
 **Proposition 2.20**.
 
 ```agda
-_ = ΣProp≡
+_ = Basis.ΣProp≡
+```
+
+**Theorem 2.33**.
+
+```agda
+_ = Cubical.Relation.Nullary.DecidableEq.Discrete→isSet
 ```
 
 ### 2.5: Powersets
 
-TODO
+**Definition 2.34**.
 
-### 2.6: Powersets
+```agda
+_ = Basis.𝒫
+```
 
-TODO
+**Proposition 2.35**.
 
-### 2.7: Higher inductive types
+```agda
+_ = Basis.𝒫-set
+```
 
-TODO
+**Definition 2.36**.
+
+```agda
+_ = Basis._⊆_
+```
+
+**Definition 2.37**.
+
+```agda
+_ = Basis.entire
+```
+
+**Definition 2.38**.
+
+```agda
+_ = Basis._∩_
+```
+
+### 2.6: Families
+
+**Definition 2.39**.
+
+```agda
+_ = Basis.Fam
+```
+
+**Definition 2.41**.
+
+```agda
+_ = Basis._ε_
+```
+
+**Definition 2.42**.
+
+```agda
+_ = Basis._⟨$⟩_
+```
+
+**Definition 2.43**.
+
+```agda
+_ = Basis.⟪_⟫
+```
 
 ### 2.8: Truncation
 
-TODO
+**Definition 2.44**.
+
+```agda
+_ = Basis.∥_∥
+_ = Basis.∥∥-prop
+_ = Basis.∥∥-rec
+```
 
 ## Chapter 3: Frames
 

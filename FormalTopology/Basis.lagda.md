@@ -117,6 +117,9 @@ _⊆_ {A = A} U V = ((λ - → [ U - ]) ⊆⊆ (λ - → [ V - ])) , prop
 ⊆-antisym : [ U ⊆ V ] → [ V ⊆ U ] → U ≡ V
 ⊆-antisym {U = U} {V} U⊆V V⊆V = funExt (λ x → ⇔toPath (U⊆V x) (V⊆V x))
 
+entire : {A : Type ℓ} → 𝒫 A
+entire {ℓ = ℓ} _ = Unit ℓ , Unit-prop
+
 _∩_ : 𝒫 A → 𝒫 A → 𝒫 A
 _∩_ {A = A} U V = λ x → ([ U x ] × [ V x ]) , prop x
   where
@@ -152,10 +155,10 @@ fmap = _⟨$⟩_
 
 syntax fmap (λ x → e) ℱ = ⁅ e ∣ x ε ℱ ⁆
 
-fmap′ : {X : Type ℓ₀} → (I : Type ℓ₂) → (I → X) → Fam ℓ₂ X
-fmap′ I f = (I , f)
+compr-∶-syntax : {X : Type ℓ₀} → (I : Type ℓ₂) → (I → X) → Fam ℓ₂ X
+compr-∶-syntax I f = (I , f)
 
-syntax fmap′ I (λ i → e) = ⁅ e ∣ i ∶ I ⁆
+syntax compr-∶-syntax I (λ i → e) = ⁅ e ∣ i ∶ I ⁆
 
 -- Forall quantification for families.
 fam-forall : {X : Type ℓ₀} (ℱ : Fam ℓ₂ X) → (X → hProp ℓ₁) → hProp (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₂)
