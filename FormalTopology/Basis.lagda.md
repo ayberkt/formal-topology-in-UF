@@ -47,6 +47,15 @@ variable
   A    : Type ℓ₀
   B    : A → Type ℓ₀
   A₀   : Type ℓ₁
+
+_↔_ : (A : Type ℓ) (B : Type ℓ′) → Type (ℓ ⊔ ℓ′)
+A ↔ B = (A → B) × (B → A)
+
+↔-to : {A : Type ℓ} {B : Type ℓ′} → A ↔ B → A → B
+↔-to (to , _) = to
+
+↔-from : {A : Type ℓ} {B : Type ℓ′} → A ↔ B → B → A
+↔-from (_ , from) = from
 ```
 
 ## The unit type
