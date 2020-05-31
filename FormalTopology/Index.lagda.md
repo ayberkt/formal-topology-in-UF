@@ -11,6 +11,11 @@ open import Cover
 import Nucleus
 import CoverFormsNucleus
 import UniversalProperty
+
+open import Cubical.Data.Bool using (Bool; _≟_)
+
+open import SnocList Bool _≟_
+import CantorSpace
 ```
 
 ## Chapter 2: Foundations
@@ -316,8 +321,78 @@ _ = UniversalProperty.MainProof.resp-⋁-lem
 
 ### 5.1: The Cantor interaction system
 
-TODO
+**Definition 5.1**.
+
+```agda
+_ = SnocList._⌢_
+_ = SnocList.[]
+```
+
+**Definition 5.2**.
+
+```agda
+_ = _++_
+```
+
+**Proposition 5.3**.
+
+```agda
+_ = SnocList-discrete
+```
+
+**Definition 5.4**.
+
+```agda
+_ = CantorSpace.ℂ-pos
+```
+
+**Definition 5.5**.
+
+```agda
+_ = CantorSpace.ℂ-IS
+```
+
+**Theorem 5.6**.
+
+```agda
+_ = CantorSpace.cantor
+```
 
 ### 5.2: The Cantor space is compact
 
-TODO
+**Definition 5.7**.
+
+```agda
+_ = CantorSpace.down
+```
+
+**Definition 5.8**.
+
+```agda
+_ = CantorSpace.isCompact
+```
+
+**Lemma 5.9**.
+
+```agda
+_ = CantorSpace.U⊆V⇒◀U⊆◀V
+```
+
+**Lemma 5.10**. In the Agda formalisation, this is broken up into two functions.
+
+```agda
+_ = CantorSpace.↓-++-left
+_ = CantorSpace.↓-++-right
+```
+
+**Lemma 5.11**.
+
+```agda
+_ = CantorSpace.◀^-decide
+```
+
+**Theorem 5.12**.
+
+```agda
+_ = CantorSpace.compact
+```
