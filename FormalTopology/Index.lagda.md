@@ -14,6 +14,7 @@ import Nucleus
 import CoverFormsNucleus
 import UniversalProperty
 
+import Cubical.Relation.Nullary
 import Cubical.Relation.Nullary.DecidableEq
 import Cubical.Foundations.Univalence
 import Cubical.Foundations.SIP
@@ -102,23 +103,15 @@ _ = Basis.isOfHLevelΠ
 _ = Basis.isOfHLevelΣ
 ```
 
-**Definition 2.13**.
+Definition 2.13 is omitted.
+
+**Definition 2.14**.
 
 ```agda
 _ = Basis.isProp
 ```
 
-**Definition 2.14**.
-
-```agda
--- TODO
-```
-
-**Definition 2.15**.
-
-```agda
--- TODO
-```
+Proposition 2.15 is omitted.
 
 **Definition 2.16**.
 
@@ -148,6 +141,80 @@ _ = Basis.isPropIsProp
 
 ```agda
 _ = Basis.ΣProp≡
+```
+
+**Definition 2.21**. This is defined directly for h-propositions in the
+`cubical` library.
+
+```agda
+_ = Basis._⇔_
+```
+
+**Proposition 2.22**.
+
+```agda
+_ = Basis.⇔toPath
+```
+
+**Definition 2.23**.
+
+```agda
+_ = Basis.Iso
+```
+
+**Proposition 2.24**.
+
+```agda
+_ = Basis.isoToEquiv
+_ = Basis.equivToIso
+```
+
+**Definition 2.25**.
+
+```agda
+_ = Basis.isSet
+```
+
+**Proposition 2.26**.
+
+```agda
+_ = Basis.isProp→isSet
+```
+
+**Proposition 2.27**.
+
+```agda
+_ = Basis.isSetHProp
+```
+
+**Proposition 2.28**.
+
+```agda
+_ = Basis.isSetΠ
+```
+
+**Proposition 2.29**.
+
+```agda
+_ = Basis.isSetΣ
+```
+
+**Proposition 2.30**.
+
+```agda
+_ = Basis.isPropIsSet
+```
+
+**Definition 2.31**.
+
+```agda
+_ = Cubical.Relation.Nullary.Dec
+```
+
+**Definition 2.32**.
+
+```agda
+_ = Cubical.Relation.Nullary.Discrete
 ```
 
 **Theorem 2.33**.
