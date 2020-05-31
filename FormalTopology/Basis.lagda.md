@@ -30,7 +30,8 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
 open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
-open FH  public using     (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevelSuc; isSetΣ;
+open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
+                           isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
 open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
 open FF  public using     (_∘_) renaming (idfun to id)

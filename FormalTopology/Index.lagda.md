@@ -43,9 +43,95 @@ _ = idEquiv
 
 **Definition 2.6**.
 
+```agda
+-- TODO
+```
+
+**Definition 2.7**.
+
+```agda
+_ = _~_
+```
+
+**Proposition 2.8**.
+
+```agda
+_ = funExt
+```
+
 ### 2.4: Homotopy levels
 
-TODO
+**Definition 2.9**.
+
+```agda
+_ = isOfHLevel
+```
+
+**Proposition 2.10**.
+
+```agda
+_ = isOfHLevelSuc
+```
+
+**Proposition 2.11**.
+
+```agda
+_ = isOfHLevelΠ
+```
+
+**Proposition 2.12**.
+
+```agda
+_ = isOfHLevelΣ
+```
+
+**Definition 2.13**.
+
+```agda
+_ = isProp
+```
+
+**Definition 2.14**.
+
+```agda
+-- TODO
+```
+
+**Definition 2.15**.
+
+```agda
+-- TODO
+```
+
+**Definition 2.16**.
+
+```agda
+_ = hProp
+```
+
+**Proposition 2.17**.
+
+```agda
+_ = isPropΠ
+```
+
+**Proposition 2.18**.
+
+```agda
+_ = isPropΣ
+```
+
+**Proposition 2.19**.
+
+```agda
+_ = isPropIsProp
+```
+
+**Proposition 2.20**.
+
+```agda
+_ = ΣProp≡
+```
 
 ### 2.5: Powersets
 
