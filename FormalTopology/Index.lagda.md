@@ -5,6 +5,12 @@ module Index where
 
 open import Basis
 open import Poset
+open import FormalTopology
+open import Cover
+
+import Nucleus
+import CoverFormsNucleus
+import UniversalProperty
 ```
 
 ## Chapter 2: Foundations
@@ -192,23 +198,119 @@ TODO
 
 ### 4.1: Interaction systems
 
-TODO
+**Definition 4.1**.
 
+```agda
+_ = InteractionStr
+_ = InteractionSys
+```
+
+**Definition 4.2**.
+
+```agda
+_ = hasMono
+```
+
+**Definition 4.3**.
+
+```agda
+_ = hasSimulation
+```
+
+**Definition 4.4**.
+
+```agda
+_ = FormalTopology
+```
 ### 4.2: Cover relation
 
-TODO
+Note that **Definition 4.5** is not formalised.
+
+**Definition 4.7**.
+
+```agda
+_ = CoverFromFormalTopology._◀_
+```
+
+**Proposition 4.8**.
+
+```agda
+_ = CoverFromFormalTopology.◀-lem₁
+```
+
+**Proposition 4.9**.
+
+```agda
+_ = CoverFromFormalTopology.lem₂
+```
+
+**Proposition 4.10**.
+
+```agda
+_ = CoverFromFormalTopology.lem₃
+```
+
+**Proposition 4.11**.
+
+```agda
+_ = CoverFromFormalTopology.lem₄
+```
 
 ### 4.3: Covers are nuclei
 
-TODO
+**Theorem 4.12**.
+
+```agda
+_ = CoverFormsNucleus.NucleusFrom.𝕛-nuclear
+```
 
 ### 4.4: Lifting into the generated frame
 
-TODO
+**Definition 4.13**.
+
+```agda
+_ = CoverFormsNucleus.NucleusFrom.η
+```
 
 ### 4.5: Formal topologies present
 
-TODO
+**Definition 4.14**.
+
+```agda
+_ = UniversalProperty.represents
+```
+
+**Definition 4.15**.
+
+```agda
+_ = UniversalProperty.isFlat
+```
+
+**Theorem 4.16**.
+
+The theorem statement is given in:
+
+```agda
+_ = UniversalProperty.universal-prop
+```
+
+The proof is given in:
+
+```agda
+_ = UniversalProperty.main
+```
+
+**Lemma 4.17**.
+
+```agda
+_ = UniversalProperty.main-lemma
+```
+
+**Lemma 4.18**.
+
+```agda
+_ = UniversalProperty.MainProof.resp-⋁-lem
+```
 
 ## Chapter 5: The Cantor space
 
