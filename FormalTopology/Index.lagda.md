@@ -4,13 +4,17 @@
 module Index where
 
 open import Basis
-open import Poset
 open import FormalTopology
 open import Cover
+
+import Poset
+import Frame
 
 import Nucleus
 import CoverFormsNucleus
 import UniversalProperty
+
+import Cubical.Foundations.SIP
 
 open import Cubical.Data.Bool using (Bool; _≟_)
 
@@ -167,37 +171,194 @@ TODO
 **Definition 3.1**.
 
 ```agda
-_ = Poset
-_ = PosetStr
-_ = PosetAx
+_ = Poset.Poset
+_ = Poset.PosetStr
+_ = Poset.PosetAx
 ```
 
 **Definition 3.2**.
 
 ```agda
-_ = isDownwardsClosed
-_ = DCSubset
+_ = Poset.isDownwardsClosed
+_ = Poset.DCSubset
+```
+
+**Proposition 3.3**.
+
+```agda
+_ = Poset.DCSubset-set
+```
+
+**Proposition 3.4**.
+
+```agda
+_ = Frame.DCPoset
+```
+
+**Definition 3.5**.
+
+```agda
+_ = Poset.isMonotonic
+```
+
+**Definition 3.6**.
+
+```agda
+_ = Poset.isPosetIso
 ```
 
 ### 3.2: Definition of a frame
 
-TODO
+**Definition 3.7**.
+
+```agda
+_ = Frame.RawFrameStr
+_ = Frame.FrameAx
+_ = Frame.FrameStr
+```
+
+**Proposition 3.8**.
+
+```agda
+_ = Frame.FrameAx-props
+```
+
+**Definition 3.9**.
+
+```agda
+_ = Frame.isFrameHomomorphism
+_ = Frame._─f→_
+_ = Frame._≅f_
+```
+
+**Definition 3.10**.
+
+```agda
+_ = Frame.isFrameIso
+```
+
+**Definition 3.11** is not explicitly defined. We refer to it in an ad hoc way
+by referring to `_≅ₚ_` on the underlying posets.
+
+The equivalence of Defn. 3.10 and Defn. 3.11 is stated only in passing in the
+thesis, not as an explicit proposition but is witnessed in the Agda code
+by the following function:
+
+```agda
+_ = Frame.≅ₚ≃≅f
+```
 
 ### 3.3: Some properties of frames
 
-TODO
+**Proposition 3.12**.
+
+```agda
+_ = Frame.comm
+```
+
+**Lemma 3.13**.
+
+```agda
+_ = Frame.flatten
+```
+
+**Proposition 3.14**.
+
+```agda
+_ = Frame.family-iff
+```
+
+**Proposition 3.15**.
+
+```agda
+_ = Frame.sym-distr
+```
 
 ### 3.4: Univalence for frames
 
-TODO
+**Definition 3.16**.
 
-### 3.5: Frame of downwards-closed subsets
+```agda
+_ = Poset.isAMonotonicEqv
+```
 
-TODO
+**Definition 3.17**.
+
+```agda
+_ = Cubical.Foundations.SIP.SIP
+```
+
+**Definition 3.18**.
+
+```agda
+_ = Frame.isHomoEqv
+```
+
+Equation 3.19.
+
+```agda
+_ = Frame.≃f≃≡
+```
+
+Equation 3.20.
+
+```agda
+_ = Frame.≃f≃≅ₚ
+```
+
+Equation 3.21.
+
+```agda
+_ = Frame.≅ₚ≃≡
+```
+
+### 3.5: Frames of downwards-closed subsets
+
+**Theorem 3.22**.
+
+```agda
+_ = Frame.DCFrame
+```
 
 ### 3.6: Nuclei and their fixed points
 
-TODO
+**Definition 3.23**.
+
+```agda
+_ = Nucleus.isNuclear
+_ = Nucleus.Nucleus
+```
+
+**Proposition 3.24**.
+
+```agda
+_ = Nucleus.nuclei-resp-⊤
+```
+
+**Lemma 3.25**. This is broken up into two functions in the Agda formalisatoin.
+
+```agda
+_ = Frame.x⊑y⇒x=x∧y
+_ = Frame.x=x∧y⇒x⊑y
+```
+
+**Proposition 3.26**.
+
+```agda
+_ = Nucleus.mono
+```
+
+**Proposition 3.27**.
+
+```agda
+_ = Nucleus.𝔣𝔦𝔵-pos
+```
+
+**Theorem 3.28**.
+
+```agda
+_ = Nucleus.𝔣𝔦𝔵
+```
 
 ## Chapter 4: Formal Topology
 
