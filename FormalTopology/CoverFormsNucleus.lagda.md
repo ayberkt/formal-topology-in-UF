@@ -16,7 +16,7 @@ We use a module that takes some formal topology `F` as a parameter to reduce
 parameter-passing.
 
 ```
-module NucleusFrom (F : FormalTopology ℓ₀ ℓ₀) where
+module NucleusFrom (ℱ : FormalTopology ℓ₀ ℓ₀) where
 ```
 
 We refer to the underlying poset of `F` as `P` and the frame of downwards-closed subsets
@@ -24,11 +24,11 @@ of `P` as `P↓`.
 
 ```
   private
-    P       = pos′ F
+    P       = pos′ ℱ
     P↓      = DCFrame P
-    _⊑_     = λ (x y : stage F) → x ⊑[ P ] y
+    _⊑_     = λ (x y : stage ℱ) → x ⊑[ P ] y
 
-  open CoverFromFormalTopology F public
+  open CoverFromFormalTopology ℱ public
 ```
 
 Now, we define the *covering nucleus* which we denote by `𝕛`. At its heart, this is
@@ -58,8 +58,8 @@ nothing but the map `U ↦ - ◀ U`.
           down a (dir (a∈U , a∈V)) = dir a∈U , dir a∈V
           down a (branch b f)      = branch b (π₀ ∘ IH) , branch b (π₁ ∘ IH)
             where
-              IH : (c : outcome F b) → [ π₀ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) (next F c) ]
-              IH c = down (next F c) (f c)
+              IH : (c : outcome ℱ b) → [ π₀ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) (next ℱ c) ]
+              IH c = down (next ℱ c) (f c)
           down a (squash p q i) = squash (π₀ IH₀) (π₀ IH₁) i , squash (π₁ IH₀) (π₁ IH₁) i
             where
               _ : a ◀ π₀ (glb-of P↓ (U , U-down) (V , V-down))
@@ -96,14 +96,14 @@ for `𝕛`.
 Given some `x` in `F`, we define a map taking `x` to its *downwards-closure*.
 
 ```
-  ↓-clos : stage F → ∣ P↓ ∣F
+  ↓-clos : stage ℱ → ∣ P↓ ∣F
   ↓-clos x = x↓ , down-DC
     where
       x↓ = λ y → y ⊑[ P ] x
       down-DC : [ isDownwardsClosed P x↓ ]
       down-DC z y z⊑x y⊑z = ⊑[ P ]-trans y z x y⊑z z⊑x
 
-  x◀x↓ : (x : stage F) → x ◀ (λ - → - ⊑[ P ] x)
+  x◀x↓ : (x : stage ℱ) → x ◀ (λ - → - ⊑[ P ] x)
   x◀x↓ x = dir (⊑[ P ]-refl x)
 ```
 
@@ -130,7 +130,7 @@ x) = e x` for every `x`. We call the version `e` with the refined codomain `η`.
       up : [ e x ⊑[ pos P↓ ] 𝕛 (e x) ]
       up = π₀ (π₁ 𝕛-nuclear) (e x)
 
-  η : stage F → ∣ L ∣F
+  η : stage ℱ → ∣ L ∣F
   η x = (e x) , (fixing x)
 ```
 
