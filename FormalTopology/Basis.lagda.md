@@ -30,7 +30,8 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
 open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
-open FH  public using     (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevelSuc; isSetΣ;
+open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
+                           isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
 open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
 open FF  public using     (_∘_) renaming (idfun to id)
@@ -46,6 +47,15 @@ variable
   A    : Type ℓ₀
   B    : A → Type ℓ₀
   A₀   : Type ℓ₁
+
+_↔_ : (A : Type ℓ) (B : Type ℓ′) → Type (ℓ ⊔ ℓ′)
+A ↔ B = (A → B) × (B → A)
+
+↔-to : {A : Type ℓ} {B : Type ℓ′} → A ↔ B → A → B
+↔-to (to , _) = to
+
+↔-from : {A : Type ℓ} {B : Type ℓ′} → A ↔ B → B → A
+↔-from (_ , from) = from
 ```
 
 ## The unit type
@@ -116,6 +126,9 @@ _⊆_ {A = A} U V = ((λ - → [ U - ]) ⊆⊆ (λ - → [ V - ])) , prop
 ⊆-antisym : [ U ⊆ V ] → [ V ⊆ U ] → U ≡ V
 ⊆-antisym {U = U} {V} U⊆V V⊆V = funExt (λ x → ⇔toPath (U⊆V x) (V⊆V x))
 
+entire : {A : Type ℓ} → 𝒫 A
+entire {ℓ = ℓ} _ = Unit ℓ , Unit-prop
+
 _∩_ : 𝒫 A → 𝒫 A → 𝒫 A
 _∩_ {A = A} U V = λ x → ([ U x ] × [ V x ]) , prop x
   where
@@ -151,10 +164,10 @@ fmap = _⟨$⟩_
 
 syntax fmap (λ x → e) ℱ = ⁅ e ∣ x ε ℱ ⁆
 
-fmap′ : {X : Type ℓ₀} → (I : Type ℓ₂) → (I → X) → Fam ℓ₂ X
-fmap′ I f = (I , f)
+compr-∶-syntax : {X : Type ℓ₀} → (I : Type ℓ₂) → (I → X) → Fam ℓ₂ X
+compr-∶-syntax I f = (I , f)
 
-syntax fmap′ I (λ i → e) = ⁅ e ∣ i ∶ I ⁆
+syntax compr-∶-syntax I (λ i → e) = ⁅ e ∣ i ∶ I ⁆
 
 -- Forall quantification for families.
 fam-forall : {X : Type ℓ₀} (ℱ : Fam ℓ₂ X) → (X → hProp ℓ₁) → hProp (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₂)

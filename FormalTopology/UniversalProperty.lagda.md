@@ -49,7 +49,7 @@ By the way, note that the converse is always true.
       NTS : [ ∀[ a′ ε ⁅ f (next F c) ∣ c ∶ outcome F b ⁆ ] (a′ ⊑[ pos R ] f a) ]
       NTS a′ (i , eq) = subst (λ - → [ rel (pos R) - (f a) ]) eq NTS′
         where
-          NTS′ : [ (π₁ (fmap′ (outcome F b) (λ c → f (next F c))) i) ⊑[ pos R ] (f a) ]
+          NTS′ : [ f (next F i) ⊑[ pos R ] f a ]
           NTS′ = f-mono (next F i) a (mono F a b i)
 ```
 
