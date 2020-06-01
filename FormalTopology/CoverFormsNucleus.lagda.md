@@ -12,7 +12,7 @@ open import Cubical.Data.Bool using    (Bool; true; false)
 open import FormalTopology    renaming (pos to pos′)
 ```
 
-We use an anonymous module that takes some formal topology `F` as a parameter to reduce
+We use a module that takes some formal topology `F` as a parameter to reduce
 parameter-passing.
 
 ```
