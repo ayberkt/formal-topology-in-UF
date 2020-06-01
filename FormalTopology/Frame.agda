@@ -754,3 +754,6 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
 ≅ₚ≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≡ G)
 ≅ₚ≃≡ F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≡ F G ⟩ F ≡ G 𝔔𝔈𝔇
+
+≅ₚ≃≅f : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≅f G)
+≅ₚ≃≅f F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≅f F G ⟩ F ≅f G 𝔔𝔈𝔇
