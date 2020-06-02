@@ -96,16 +96,16 @@ We now prove four crucial lemmas about the cover.
            (U-dc : [ isDownwardsClosed P U ])
            (V-dc : [ isDownwardsClosed P V ]) where
 
-    lem₃ : {a a′ : ∣ P ∣ₚ} → [ a′ ⊑[ P ] a ] → a ◁ U → a′ ◁ V → a′ ◁ (V ∩ U)
-    lem₃ {a} {a′} a′⊑a (squash p₀ p₁ i) q = squash (lem₃ a′⊑a p₀ q) (lem₃ a′⊑a p₁ q) i
-    lem₃ {a} {a′} a′⊑a (dir a∈U)        q = ◁-lem₂ V U U-dc q (U-dc a a′ a∈U a′⊑a)
-    lem₃ {a} {a′} a′⊑a (branch b f)     q = branch b′ g
+    ◁-lem₃ : {a a′ : ∣ P ∣ₚ} → [ a′ ⊑[ P ] a ] → a ◁ U → a′ ◁ V → a′ ◁ (V ∩ U)
+    ◁-lem₃ {a} {a′} a′⊑a (squash p q i) r = squash (◁-lem₃ a′⊑a p r) (◁-lem₃ a′⊑a q r) i
+    ◁-lem₃ {a} {a′} a′⊑a (dir a∈U)      r = ◁-lem₂ V U U-dc r (U-dc a a′ a∈U a′⊑a)
+    ◁-lem₃ {a} {a′} a′⊑a (branch b f)   r = branch b′ g
       where
         b′ : exp ℱ a′
         b′ = π₀ (sim ℱ a′ a a′⊑a b)
 
         g : (c′ : out ℱ b′) → next ℱ c′ ◁ (V ∩ U)
-        g c′ = lem₃ NTS (f c) (◁-lem₁ V-dc (mono ℱ a′ b′ c′) q)
+        g c′ = ◁-lem₃ NTS (f c) (◁-lem₁ V-dc (mono ℱ a′ b′ c′) r)
           where
             c : out ℱ b
             c = π₀ (π₁ (sim ℱ a′ a a′⊑a b) c′)

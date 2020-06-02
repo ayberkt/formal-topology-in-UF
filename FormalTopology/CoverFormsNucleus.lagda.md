@@ -68,7 +68,7 @@ nothing but the map `U ↦ - ◁ U`.
               IH₁ = down a q
 
           up : [ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ⊑[ pos P↓ ] 𝕛 (𝕌 ⊓[ P↓ ] 𝕍) ]
-          up a (a◁U , a◁V) = lem₃ V U V-down U-down (⊑[ P ]-refl a) a◁V a◁U
+          up a (a◁U , a◁V) = ◁-lem₃ V U V-down U-down (⊑[ P ]-refl a) a◁V a◁U
 
       N₁ : (𝔘 : ∣ P↓ ∣F) → [ 𝔘 ⊑[ pos P↓ ] (𝕛 𝔘) ]
       N₁ _ a₀ a∈U = dir a∈U
