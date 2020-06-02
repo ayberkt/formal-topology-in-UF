@@ -81,16 +81,6 @@ We now prove four crucial lemmas about the cover.
 
 ### Lemma 3
 
-```agda
-  ◁-lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
-       → ((u : ∣ P ∣ₚ) → [ u ∈ U ] → u ◁ V) → (a : ∣ P ∣ₚ) → a ◁ U → a ◁ V
-  ◁-lem₄ U V h a (squash p₀ p₁ i) = squash (◁-lem₄ U V h a p₀) (◁-lem₄ U V h a p₁) i
-  ◁-lem₄ U V h a (dir p)          = h a p
-  ◁-lem₄ U V h a (branch b f)     = branch b λ c → ◁-lem₄  U V h (next ℱ c) (f c)
-```
-
-### Lemma 4
-
 ```
   module _ (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
            (U-dc : [ isDownwardsClosed P U ])
@@ -112,4 +102,14 @@ We now prove four crucial lemmas about the cover.
 
             NTS : [ next ℱ c′ ⊑[ P ] next ℱ c ]
             NTS = π₁ (π₁ (sim ℱ a′ a a′⊑a b) c′)
+```
+
+### Lemma 4
+
+```agda
+  ◁-lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
+       → ((u : ∣ P ∣ₚ) → [ u ∈ U ] → u ◁ V) → (a : ∣ P ∣ₚ) → a ◁ U → a ◁ V
+  ◁-lem₄ U V h a (squash p₀ p₁ i) = squash (◁-lem₄ U V h a p₀) (◁-lem₄ U V h a p₁) i
+  ◁-lem₄ U V h a (dir p)          = h a p
+  ◁-lem₄ U V h a (branch b f)     = branch b λ c → ◁-lem₄  U V h (next ℱ c) (f c)
 ```
