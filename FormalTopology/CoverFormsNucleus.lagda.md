@@ -74,7 +74,7 @@ nothing but the map `U ↦ - ◁ U`.
       N₁ _ a₀ a∈U = dir a∈U
 
       N₂ : (𝔘 : ∣ P↓ ∣F) → [ π₀ (𝕛 (𝕛 𝔘)) ⊆ π₀ (𝕛 𝔘) ]
-      N₂ 𝔘@(U , _) = lem₄ (π₀ (𝕛 𝔘)) U (λ _ q → q)
+      N₂ 𝔘@(U , _) = ◁-lem₄ (π₀ (𝕛 𝔘)) U (λ _ q → q)
 ```
 
 We denote by `L` the frame of fixed points for `𝕛`.
@@ -125,7 +125,7 @@ x) = e x` for every `x`. We call the version `e` with the refined codomain `η`.
   fixing x = ⊑[ pos P↓ ]-antisym (𝕛 (e x)) (e x) down up
     where
       down : ∀ y → [ π₀ (𝕛 (e x)) y ] → [ π₀ (e x) y ]
-      down = lem₄ (π₀ (e x)) (π₀ (↓-clos x)) (λ _ q → q)
+      down = ◁-lem₄ (π₀ (e x)) (π₀ (↓-clos x)) (λ _ q → q)
 
       up : [ e x ⊑[ pos P↓ ] 𝕛 (e x) ]
       up = π₀ (π₁ 𝕛-nuclear) (e x)
@@ -141,7 +141,7 @@ Furthermore, `η` is a monotonic map.
   ηm = η , η-mono
     where
       η-mono : isMonotonic P (pos L) η
-      η-mono x y x⊑y = lem₄ (π₀ (↓-clos x)) (π₀ (↓-clos y)) NTS
+      η-mono x y x⊑y = ◁-lem₄ (π₀ (↓-clos x)) (π₀ (↓-clos y)) NTS
         where
           NTS : (u : ∣ P ∣ₚ) → [ u ∈ π₀ (↓-clos x) ] → u ◁ π₀ (↓-clos y)
           NTS _ p = ◁-lem₁ (π₁ (↓-clos y)) p (dir x⊑y)

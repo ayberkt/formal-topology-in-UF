@@ -79,7 +79,7 @@ Before the proof we will need some lemmas.
 
 ```
   cover+ : {x y : ∣ P ∣ₚ} ((U , _) : ∣ F↓ ∣F) → [ x ∈ ⦅ η y ⦆ ] → [ y ∈ U ] → x ◁ U
-  cover+ {y = y} (_ , U-dc) x∈ηy y∈U = lem₄ _ _ (λ z z⊑y → dir (U-dc y z y∈U z⊑y)) _ x∈ηy
+  cover+ (_ , U-dc) x∈ηy y∈U = ◁-lem₄ _ _ (λ z z⊑y → dir (U-dc _ z y∈U z⊑y)) _ x∈ηy
 ```
 
 ```

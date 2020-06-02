@@ -546,7 +546,7 @@ _ = CoverFromFormalTopology.◁-lem₃
 **Proposition 4.11**.
 
 ```agda
-_ = CoverFromFormalTopology.lem₄
+_ = CoverFromFormalTopology.◁-lem₄
 ```
 
 ### 4.3: Covers are nuclei

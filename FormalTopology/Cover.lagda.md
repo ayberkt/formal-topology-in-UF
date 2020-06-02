@@ -82,11 +82,11 @@ We now prove four crucial lemmas about the cover.
 ### Lemma 3
 
 ```agda
-  lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
+  ◁-lem₄ : (U : 𝒫 ∣ P ∣ₚ) (V : 𝒫 ∣ P ∣ₚ)
        → ((u : ∣ P ∣ₚ) → [ u ∈ U ] → u ◁ V) → (a : ∣ P ∣ₚ) → a ◁ U → a ◁ V
-  lem₄ U V h a (squash p₀ p₁ i) = squash (lem₄ U V h a p₀) (lem₄ U V h a p₁) i
-  lem₄ U V h a (dir p)          = h a p
-  lem₄ U V h a (branch b f)     = branch b λ c → lem₄  U V h (next ℱ c) (f c)
+  ◁-lem₄ U V h a (squash p₀ p₁ i) = squash (◁-lem₄ U V h a p₀) (◁-lem₄ U V h a p₁) i
+  ◁-lem₄ U V h a (dir p)          = h a p
+  ◁-lem₄ U V h a (branch b f)     = branch b λ c → ◁-lem₄  U V h (next ℱ c) (f c)
 ```
 
 ### Lemma 4
