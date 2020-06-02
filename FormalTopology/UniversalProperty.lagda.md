@@ -78,7 +78,7 @@ Statement.
 Before the proof we will need some lemmas.
 
 ```
-  cover+ : {x y : ∣ P ∣ₚ} ((U , _) : ∣ F↓ ∣F) → [ x ∈ ⦅ η y ⦆ ] → [ y ∈ U ] → x ◀ U
+  cover+ : {x y : ∣ P ∣ₚ} ((U , _) : ∣ F↓ ∣F) → [ x ∈ ⦅ η y ⦆ ] → [ y ∈ U ] → x ◁ U
   cover+ {y = y} (_ , U-dc) x∈ηy y∈U = lem₄ _ _ (λ z z⊑y → dir (U-dc y z y∈U z⊑y)) _ x∈ηy
 ```
 
@@ -93,13 +93,13 @@ Before the proof we will need some lemmas.
       up x (dir xε⋁) = ∥∥-rec (is-true-prop (U x)) NTS xε⋁
         where
           NTS : Σ[ y ∈ _ ] [ x ∈ ⦅ η (π₀ y) ⦆ ] → [ x ∈ U ]
-          NTS ((y , yεU) , x◀y↓) =
-            subst (λ V → [ π₀ V x ]) U-fix  (cover+ (U , U-dc) x◀y↓ yεU)
+          NTS ((y , yεU) , x◁y↓) =
+            subst (λ V → [ π₀ V x ]) U-fix  (cover+ (U , U-dc) x◁y↓ yεU)
       up x (branch b f) = subst (λ V → [ π₀ V x ]) U-fix (branch b (dir ∘ IH))
         where
           IH : (c : outcome F b) → [ next F c ∈ U ]
           IH c = up (next F c) (f c)
-      up x (squash x◀⋁₀ x◀⋁₁ i) = is-true-prop (U x) (up x x◀⋁₀) (up x x◀⋁₁) i
+      up x (squash x◁⋁₀ x◁⋁₁ i) = is-true-prop (U x) (up x x◁⋁₀) (up x x◁⋁₁) i
 ```
 
 Proof.
@@ -278,7 +278,7 @@ Proof.
 ### `g` makes the diagram commute
 
 ```
-    lem : (a a′ : ∣ P ∣ₚ) → a′ ◀ π₀ (↓-clos a) → [ f a′ ⊑[ pos R ] f a ]
+    lem : (a a′ : ∣ P ∣ₚ) → a′ ◁ π₀ (↓-clos a) → [ f a′ ⊑[ pos R ] f a ]
     lem a a′ (squash p q i) = is-true-prop (f a′ ⊑[ pos R ] f a) (lem _ _ p) (lem _ _ q) i
     lem a a′ (dir    a′⊑a)  = f-mono a′ a a′⊑a
     lem a a′ (branch b h)   =
@@ -294,7 +294,7 @@ Proof.
     gm∘ηm = _∘m_ {P = P} {Q = pos L} {R = pos R} gm ηm
 
     gm∘ηm~f : (x : ∣ P ∣ₚ) → gm $ₘ (ηm $ₘ x) ≡ fm $ₘ x
-    gm∘ηm~f x = ⊑[ pos R ]-antisym _ _ down (⋁[ R ]-upper _ _ ((x , x◀x↓ x) , refl))
+    gm∘ηm~f x = ⊑[ pos R ]-antisym _ _ down (⋁[ R ]-upper _ _ ((x , x◁x↓ x) , refl))
       where
         down : [ (⋁[ R ] (∃ π₀ (e x) , f ∘ π₀)) ⊑[ pos R ] f x ]
         down = ⋁[ R ]-least _ _ λ { o ((y , φ) , eq) → subst (λ _ → _) eq (lem x y φ) }

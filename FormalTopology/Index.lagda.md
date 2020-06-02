@@ -522,13 +522,13 @@ Note that **Definition 4.5** is not formalised.
 **Definition 4.7**.
 
 ```agda
-_ = CoverFromFormalTopology._◀_
+_ = CoverFromFormalTopology._◁_
 ```
 
 **Proposition 4.8**.
 
 ```agda
-_ = CoverFromFormalTopology.◀-lem₁
+_ = CoverFromFormalTopology.◁-lem₁
 ```
 
 **Proposition 4.9**.
@@ -663,7 +663,7 @@ _ = CantorSpace.isCompact
 **Lemma 5.9**.
 
 ```agda
-_ = CantorSpace.U⊆V⇒◀U⊆◀V
+_ = CantorSpace.U⊆V⇒◁U⊆◁V
 ```
 
 **Lemma 5.10**. In the Agda formalisation, this is broken up into two functions.
@@ -676,7 +676,7 @@ _ = CantorSpace.↓-++-right
 **Lemma 5.11**.
 
 ```agda
-_ = CantorSpace.◀^-decide
+_ = CantorSpace.◁^-decide
 ```
 
 **Theorem 5.12**.

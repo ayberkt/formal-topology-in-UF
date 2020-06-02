@@ -32,7 +32,7 @@ of `P` as `P↓`.
 ```
 
 Now, we define the *covering nucleus* which we denote by `𝕛`. At its heart, this is
-nothing but the map `U ↦ - ◀ U`.
+nothing but the map `U ↦ - ◁ U`.
 
 ```
   𝕛 : ∣ P↓ ∣F → ∣ P↓ ∣F
@@ -40,10 +40,10 @@ nothing but the map `U ↦ - ◀ U`.
     where
       -- This is not propositional unless we force it to be using the HIT definition!
       _▶_ : 𝒫 ∣ P ∣ₚ → 𝒫 ∣ P ∣ₚ
-      U ▶ a = a ◀ U , squash
+      U ▶ a = a ◁ U , squash
 
-      U▶-dc : [ isDownwardsClosed P (λ - → (- ◀ U) , squash) ]
-      U▶-dc a a₀ aεU₁ a₀⊑a = ◀-lem₁ U-down a₀⊑a aεU₁
+      U▶-dc : [ isDownwardsClosed P (λ - → (- ◁ U) , squash) ]
+      U▶-dc a a₀ aεU₁ a₀⊑a = ◁-lem₁ U-down a₀⊑a aεU₁
 
   𝕛-nuclear : isNuclear P↓ 𝕛
   𝕛-nuclear = N₀ , N₁ , N₂
@@ -62,13 +62,13 @@ nothing but the map `U ↦ - ◀ U`.
               IH c = down (next ℱ c) (f c)
           down a (squash p q i) = squash (π₀ IH₀) (π₀ IH₁) i , squash (π₁ IH₀) (π₁ IH₁) i
             where
-              _ : a ◀ π₀ (glb-of P↓ (U , U-down) (V , V-down))
+              _ : a ◁ π₀ (glb-of P↓ (U , U-down) (V , V-down))
               _ = p
               IH₀ = down a p
               IH₁ = down a q
 
           up : [ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ⊑[ pos P↓ ] 𝕛 (𝕌 ⊓[ P↓ ] 𝕍) ]
-          up a (a◀U , a◀V) = lem₃ V U V-down U-down (⊑[ P ]-refl a) a◀V a◀U
+          up a (a◁U , a◁V) = lem₃ V U V-down U-down (⊑[ P ]-refl a) a◁V a◁U
 
       N₁ : (𝔘 : ∣ P↓ ∣F) → [ 𝔘 ⊑[ pos P↓ ] (𝕛 𝔘) ]
       N₁ _ a₀ a∈U = dir a∈U
@@ -103,18 +103,18 @@ Given some `x` in `F`, we define a map taking `x` to its *downwards-closure*.
       down-DC : [ isDownwardsClosed P x↓ ]
       down-DC z y z⊑x y⊑z = ⊑[ P ]-trans y z x y⊑z z⊑x
 
-  x◀x↓ : (x : stage ℱ) → x ◀ (λ - → - ⊑[ P ] x)
-  x◀x↓ x = dir (⊑[ P ]-refl x)
+  x◁x↓ : (x : stage ℱ) → x ◁ (λ - → - ⊑[ P ] x)
+  x◁x↓ x = dir (⊑[ P ]-refl x)
 ```
 
 By composing this with the covering nucleus, we define a map `e` from `F` to `P↓`.
 
 ```
   e : ∣ P ∣ₚ → ∣ P↓ ∣F
-  e z = (λ a → (a ◀ (π₀ (↓-clos z))) , squash) , NTS
+  e z = (λ a → (a ◁ (π₀ (↓-clos z))) , squash) , NTS
     where
-      NTS : [ isDownwardsClosed P (λ a → (a ◀ (λ - → - ⊑[ P ] z)) , squash) ]
-      NTS _ _ x y = ◀-lem₁ (λ _ _ x⊑y y⊑z → ⊑[ P ]-trans _ _ z y⊑z x⊑y) y x
+      NTS : [ isDownwardsClosed P (λ a → (a ◁ (λ - → - ⊑[ P ] z)) , squash) ]
+      NTS _ _ x y = ◁-lem₁ (λ _ _ x⊑y y⊑z → ⊑[ P ]-trans _ _ z y⊑z x⊑y) y x
 ```
 
 We can further refine the codomain of `e` to `L`. In other words, we can prove that `j (e
@@ -143,6 +143,6 @@ Furthermore, `η` is a monotonic map.
       η-mono : isMonotonic P (pos L) η
       η-mono x y x⊑y = lem₄ (π₀ (↓-clos x)) (π₀ (↓-clos y)) NTS
         where
-          NTS : (u : ∣ P ∣ₚ) → [ u ∈ π₀ (↓-clos x) ] → u ◀ π₀ (↓-clos y)
-          NTS _ p = ◀-lem₁ (π₁ (↓-clos y)) p (dir x⊑y)
+          NTS : (u : ∣ P ∣ₚ) → [ u ∈ π₀ (↓-clos x) ] → u ◁ π₀ (↓-clos y)
+          NTS _ p = ◁-lem₁ (π₁ (↓-clos y)) p (dir x⊑y)
 ```
