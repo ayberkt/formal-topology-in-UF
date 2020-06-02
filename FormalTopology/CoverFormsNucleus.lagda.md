@@ -36,14 +36,14 @@ nothing but the map `U ↦ - ◁ U`.
 
 ```
   𝕛 : ∣ P↓ ∣F → ∣ P↓ ∣F
-  𝕛 (U , U-down) = (λ - → U ▶ -) , U▶-dc
+  𝕛 (U , U-down) = (λ - → U ▷ -) , U▷-dc
     where
       -- This is not propositional unless we force it to be using the HIT definition!
-      _▶_ : 𝒫 ∣ P ∣ₚ → 𝒫 ∣ P ∣ₚ
-      U ▶ a = a ◁ U , squash
+      _▷_ : 𝒫 ∣ P ∣ₚ → 𝒫 ∣ P ∣ₚ
+      U ▷ a = a ◁ U , squash
 
-      U▶-dc : [ isDownwardsClosed P (λ - → (- ◁ U) , squash) ]
-      U▶-dc a a₀ aεU₁ a₀⊑a = ◁-lem₁ U-down a₀⊑a aεU₁
+      U▷-dc : [ isDownwardsClosed P (λ - → (- ◁ U) , squash) ]
+      U▷-dc a a₀ aεU₁ a₀⊑a = ◁-lem₁ U-down a₀⊑a aεU₁
 
   𝕛-nuclear : isNuclear P↓ 𝕛
   𝕛-nuclear = N₀ , N₁ , N₂
