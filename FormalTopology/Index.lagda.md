@@ -534,7 +534,7 @@ _ = CoverFromFormalTopology.◁-lem₁
 **Proposition 4.9**.
 
 ```agda
-_ = CoverFromFormalTopology.lem₂
+_ = CoverFromFormalTopology.◁-lem₂
 ```
 
 **Proposition 4.10**.
