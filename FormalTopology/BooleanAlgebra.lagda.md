@@ -45,3 +45,8 @@ record BooleanAlgebraStr (A : Type ℓ) : Type ℓ where
     ∧-inv : (x : A) → x ∧ (¬ x) ≡ ⊥
     ∨-inv : (x : A) → x ∨ (¬ x) ≡ ⊤
 ```
+
+```agda
+BooleanAlgebra : (ℓ : Level) → Type (ℓ-suc ℓ)
+BooleanAlgebra ℓ = Σ[ A ∈ Type ℓ ] BooleanAlgebraStr A
+```
