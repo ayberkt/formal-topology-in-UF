@@ -9,7 +9,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Typecheck
       id: typecheck
-      uses: ayberkt/agda-github-action@v1.1
+      uses: ayberkt/agda-github-action@v1.4
       with:
         main-file: Main.lagda.md
         source-dir: FormalTopology
