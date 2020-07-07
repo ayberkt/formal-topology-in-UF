@@ -1,5 +1,7 @@
 # Formal Topology in Univalent Foundations
 
+[**Link to thesis**](https://hdl.handle.net/20.500.12380/301098).
+
 This is the Agda development accompanying my (upcoming) master's thesis at Chalmers
 University of Technology to be titled _Formal Topology in Univalent Foundations_.
 
