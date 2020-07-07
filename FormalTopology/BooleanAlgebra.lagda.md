@@ -9,7 +9,8 @@ title: Boolean Algebra
 
 module BooleanAlgebra where
 
-open import Cubical.Core.Everything hiding (_∧_; _∨_)
+open import Cubical.Core.Everything     hiding (_∧_; _∨_)
+open import Cubical.Foundations.Prelude hiding (_∧_; _∨_)
 
 private
   variable
@@ -44,9 +45,28 @@ record BooleanAlgebraStr (A : Type ℓ) : Type ℓ where
 
     ∧-inv : (x : A) → x ∧ (¬ x) ≡ ⊥
     ∨-inv : (x : A) → x ∨ (¬ x) ≡ ⊤
+
+    A-set : isSet A
 ```
 
 ```agda
 BooleanAlgebra : (ℓ : Level) → Type (ℓ-suc ℓ)
 BooleanAlgebra ℓ = Σ[ A ∈ Type ℓ ] BooleanAlgebraStr A
+```
+
+## Some laws
+
+```agda
+module _ (B : BooleanAlgebra ℓ) where
+
+  open BooleanAlgebraStr (snd B)
+
+  private
+    ∣B∣ = fst B
+
+  idem : (x : ∣B∣) → x ∧ x ≡ x
+  idem x = x ∧ x        ≡⟨ cong (λ - → x ∧ -) (sym (⊥-id x)) ⟩
+           x ∧ (x ∨ ⊥)  ≡⟨ cong (λ - → x ∧ -) (∨-comm x ⊥)   ⟩
+           x ∧ (⊥ ∨ x)  ≡⟨ ∧-absorb x ⊥                      ⟩
+           x            ∎
 ```

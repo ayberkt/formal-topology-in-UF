@@ -4,8 +4,9 @@
 ```agda
 {-# OPTIONS --cubical --safe #-}
 
-open import Cubical.Core.Everything
-open import Cubical.Foundations.Prelude
+open import Cubical.Core.Everything     hiding (_∨_; _∧_)
+open import Cubical.Foundations.Prelude hiding (_∨_; _∧_)
+open import BooleanAlgebra
 
 module Ring where
 
@@ -33,7 +34,7 @@ record RingStr (A : Type ℓ) : Type ℓ where
     +-comm   : (x y   : A) → x + y ≡ y + x
 
     -- (A , *, 𝟏) forms a monoid.
-    *-assoc  : (x y z : A) → (x * y) * z ≡ x * (y * z)
+    *-assoc  : (x y z : A) → x * (y * z) ≡ (x * y) * z
     𝟏-unit-l : (x     : A) → 𝟏 * x ≡ x
     𝟏-unit-r : (x     : A) → x * 𝟏 ≡ x
 
@@ -61,4 +62,39 @@ isBoolean {A = A} rs = (x y : A) → x * x ≡ x
 ```agda
 BoolRing : (ℓ : Level) → Type (ℓ-suc ℓ)
 BoolRing ℓ = Σ[ A ∈ Type ℓ ] Σ[ rs ∈ RingStr A ] isBoolean rs
+```
+
+## Equivalence with Boolean algebras
+
+```agda
+module _ (B : BooleanAlgebra ℓ) where
+
+  ∣B∣ = fst B
+
+  algebra→ring : BoolRing ℓ
+  algebra→ring = ∣B∣ , rs , {!!}
+    where
+      open BooleanAlgebraStr (snd B)
+        renaming (A-set to ∣B∣-set)
+
+      rs : RingStr ∣B∣
+      RingStr._+_ rs x y = (x ∧ (¬ y)) ∨ ((¬ x) ∧ y)
+      RingStr.𝟎 rs = ⊥
+      RingStr.- rs = ¬_
+      RingStr._*_ rs = _∧_
+      RingStr.𝟏 rs = ⊤
+      RingStr.+-assoc rs x y z = {!!}
+      RingStr.𝟎-unit-l rs = {!!}
+      RingStr.+-inv rs x = ((x ∧ (¬ (¬ x))) ∨ ((¬ x) ∧ (¬ x)))  ≡⟨  cong (λ - → (x ∧ (¬ (¬ x))) ∨ -) (idem B (¬ x))  ⟩
+                           ((x ∧ (¬ (¬ x))) ∨ (¬ x))            ≡⟨ ∨-comm (x ∧ (¬ (¬ x))) (¬ x) ⟩
+                           ((¬ x) ∨ (x ∧ (¬ (¬ x))))            ≡⟨ {!!} ⟩
+                           x ∧ (¬ x)                            ≡⟨ ∧-inv x ⟩
+                           ⊥                                    ∎
+      RingStr.+-comm rs = {!!}
+      RingStr.*-assoc rs = ∧-assoc
+      RingStr.𝟏-unit-l rs x = subst (λ - → - ≡ x) (∧-comm x ⊤) (⊤-id x)
+      RingStr.𝟏-unit-r rs = ⊤-id
+      RingStr.distr-left rs = {!!}
+      RingStr.distr-right rs = {!!}
+      RingStr.A-set rs = ∣B∣-set
 ```
