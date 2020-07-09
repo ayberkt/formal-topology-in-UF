@@ -15,7 +15,7 @@ jobs:
         source-dir: FormalTopology
     - run: pwd
     - run: ls
-    - run: sudo cp -f resources/Agda.css html/Agda.css
+    - run: sudo cp -f resources/Agda.css FormalTopology/html/Agda.css
     - name: Upload HTML
       id: html-upload
       if: github.ref == 'refs/heads/master'
