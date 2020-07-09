@@ -31,7 +31,7 @@ _≤_ : ℂ → ℂ → hProp zero
 xs ≤ ys = (Σ[ zs ∈ ℂ ] xs ≡ ys ++ zs) , prop
   where
     prop : isProp (Σ[ zs ∈ ℂ ] xs ≡ ys ++ zs)
-    prop (_ , p) (_ , q) = ΣProp≡ (λ ws → ℂ-set xs (ys ++ ws)) (++-lemma p q)
+    prop (_ , p) (_ , q) = Σ≡Prop (λ ws → ℂ-set xs (ys ++ ws)) (++-lemma p q)
 ```
 
 As `_≤_` is a partial order, we package it up as a poset.

@@ -312,7 +312,7 @@ Proof.
     g-unique : (y : Σ[ g′ ∈ (L ─f→ R) ]
                      (_∘m_ {P = P} {Q = pos L} {R = pos R} (π₀ g′) ηm ≡ fm))
             → ((gm , g-frame-homo) , g∘η=f) ≡ y
-    g-unique ((g′m , g′-frame-homo) , φ) = ΣProp≡ I II
+    g-unique ((g′m , g′-frame-homo) , φ) = Σ≡Prop I II
       where
         g′ = _$ₘ_ g′m
 
@@ -346,9 +346,9 @@ Proof.
             eq₁ = sym (π₁ (π₁ g′-frame-homo) (η ⟨$⟩ ⟪ ⦅ 𝔘 ⦆ ⟫))
 
         II : (gm , g-frame-homo) ≡ (g′m , g′-frame-homo)
-        II = ΣProp≡
+        II = Σ≡Prop
                (isFrameHomomorphism-prop L R)
-               (ΣProp≡ (isMonotonic-prop (pos L) (pos R)) (funExt g~g′))
+               (Σ≡Prop (isMonotonic-prop (pos L) (pos R)) (funExt g~g′))
 ```
 
 ### The final proof
