@@ -4,7 +4,8 @@
 module Poset where
 
 open import Basis
-open import Cubical.Foundations.SIP renaming (SNS-≡ to SNS)
+open import Cubical.Foundations.SIP
+open import Cubical.Structures.Axioms
 open import Cubical.Foundations.Equiv using (_≃⟨_⟩_) renaming (_■ to _𝔔𝔈𝔇)
 ```
 
@@ -209,7 +210,7 @@ forget-mono : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) ((f , f-
             → f ≡ g
             → (f , f-mono) ≡ (g , g-mono)
 forget-mono P Q (f , f-mono) (g , g-mono) =
-  ΣProp≡ (λ f → isPropΠ3 λ x y x⊑y → is-true-prop (f x ⊑[ Q ] f y))
+  Σ≡Prop (λ f → isPropΠ3 λ x y x⊑y → is-true-prop (f x ⊑[ Q ] f y))
 ```
 
 ## Downward-closure
@@ -258,7 +259,7 @@ P ×ₚ Q = (∣ P ∣ₚ × ∣ Q ∣ₚ) , _⊑_ , carrier-set , (⊑-refl , �
 
     ⊑-antisym : (p q : ∣ P ∣ₚ × ∣ Q ∣ₚ) → [ p ⊑ q ] → [ q ⊑ p ] → p ≡ q
     ⊑-antisym (x₀ , y₀) (x₁ , y₁) (x₀⊑x₁ , y₀⊑y₁) (x₁⊑x₀ , y₁⊑y₀) =
-      sigmaPath→pathSigma (x₀ , y₀) (x₁ , y₁) (⊑[ P ]-antisym _ _ x₀⊑x₁ x₁⊑x₀ , sym NTS)
+      ΣPathTransport→PathΣ (x₀ , y₀) (x₁ , y₁) (⊑[ P ]-antisym _ _ x₀⊑x₁ x₁⊑x₀ , sym NTS)
       where
         NTS : y₁ ≡ transport refl y₀
         NTS = subst (_≡_ y₁) (sym (transportRefl y₀)) (⊑[ Q ]-antisym _ _ y₁⊑y₀ y₀⊑y₁)
@@ -316,9 +317,9 @@ Order-is-SNS {ℓ = ℓ} {ℓ₁ = ℓ₁} {X = X}  _⊑₀_ _⊑₁_ = f , reco
 
         NTS : (fib : fiber f p) → ((to , from) , eq) ≡ fib
         NTS ((φ , ψ) , eq) =
-          ΣProp≡
+          Σ≡Prop
             (λ i′ → isOfHLevelSuc 2 (Order-set ℓ₁ X) _⊑₀_ _⊑₁_ (f i′) p)
-            (ΣProp≡
+            (Σ≡Prop
                (λ _ → isOrderPreserving-prop (X , _⊑₁_) (X , _⊑₀_) (id _))
                (isOrderPreserving-prop (X , _⊑₀_) (X , _⊑₁_) (id _) to φ))
 ```
@@ -354,16 +355,17 @@ of posets is univalent.
 ```agda
 poset-is-SNS : SNS {ℓ} (PosetStr ℓ₁) isAMonotonicEqv
 poset-is-SNS {ℓ₁ = ℓ₁} =
-  SNS-PathP→SNS-≡
-    (PosetStr ℓ₁)
-    isAMonotonicEqv
-    (add-axioms-SNS _ NTS (SNS-≡→SNS-PathP isAnOrderPreservingEqv Order-is-SNS))
+  UnivalentStr→SNS (PosetStr ℓ₁) isAMonotonicEqv poset-forms-univalent-str
   where
     NTS : (A : Type ℓ) (_⊑_ : Order ℓ₁ A) → isProp [ PosetAx A _⊑_ ]
-    NTS A _⊑_ = is-true-prop (PosetAx A _⊑_)
+    NTS A _⊑_ = isProp[] (PosetAx A _⊑_)
+
+    poset-forms-univalent-str : UnivalentStr (PosetStr ℓ₁) isAMonotonicEqv
+    poset-forms-univalent-str =
+      axiomsUnivalentStr _ NTS (SNS→UnivalentStr isAnOrderPreservingEqv Order-is-SNS)
 
 poset-univ₀ : (P Q : Poset ℓ₀ ℓ₁) → (P ≃ₚ Q) ≃ (P ≡ Q)
-poset-univ₀ = SIP (SNS-≡→SNS-PathP isAMonotonicEqv poset-is-SNS)
+poset-univ₀ = SIP (SNS→UnivalentStr isAMonotonicEqv poset-is-SNS)
 ```
 
 This result is almost what we want but it is better talk directly about poset
@@ -380,7 +382,7 @@ isPosetIso P Q (f , _) = Σ[ (g , _) ∈ (Q ─m→ P) ] section f g × retract 
 isPosetIso-prop : (P Q : Poset ℓ₀ ℓ₁) (f : P ─m→ Q)
                 → isProp (isPosetIso P Q f)
 isPosetIso-prop P Q (f , f-mono) (g₀ , sec₀ , ret₀) (g₁ , sec₁ , ret₁) =
-  ΣProp≡ NTS g₀=g₁
+  Σ≡Prop NTS g₀=g₁
   where
     NTS : ((g , _) : Q ─m→ P) → isProp (section f g × retract f g)
     NTS (g , g-mono) = isPropΣ
@@ -427,10 +429,10 @@ As we have mentioned before, `P ≅ₚ Q` is equivalent to `P ≃ₚ Q`.
         is = iso f g sec ret
 
     sec : section to from
-    sec (f , _) = ΣProp≡ (isPosetIso-prop P Q) refl
+    sec (f , _) = Σ≡Prop (isPosetIso-prop P Q) refl
 
     ret : retract to from
-    ret (e , _) = ΣProp≡ (isAMonotonicEqv-prop P Q) (ΣProp≡ isPropIsEquiv refl)
+    ret (e , _) = Σ≡Prop (isAMonotonicEqv-prop P Q) (Σ≡Prop isPropIsEquiv refl)
 ```
 
 Once this equivalence has been established, the main result follows easily: *the category

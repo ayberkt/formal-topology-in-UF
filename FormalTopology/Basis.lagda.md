@@ -21,7 +21,7 @@ import Cubical.Foundations.Function           as FF
 open import Cubical.Foundations.Univalence public using (ua)
 
 open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv)
-open DΣ  public using     (ΣProp≡; sigmaPath→pathSigma; pathSigma→sigmaPath; _×_; _,_)
+open DΣ  public using     (Σ≡Prop; ΣPathTransport→PathΣ; PathΣ→ΣPathTransport; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
 open DS  public using     (inl; inr; _⊎_)
 open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
@@ -29,7 +29,7 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
-open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
+open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[])
 open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
                            isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
