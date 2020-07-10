@@ -140,7 +140,7 @@ _ = Basis.isPropIsProp
 **Proposition 2.20**.
 
 ```agda
-_ = Basis.ΣProp≡
+_ = Basis.Σ≡Prop
 ```
 
 **Definition 2.21**. This is defined directly for h-propositions in the
