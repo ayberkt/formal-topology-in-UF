@@ -22,7 +22,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: html
-        path: html
+        path: FormalTopology/html
     - name: Deploy to GitHub Pages
       id: deploy
       if: github.ref == 'refs/heads/master'
