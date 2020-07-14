@@ -8,7 +8,7 @@ open import Cubical.Data.List hiding ([_])
 open import Poset
 open import FormalTopology
 open import Cover
-
+open import Frame             hiding (pos)
 ```
 
 # Compactness for formal topologies
@@ -35,4 +35,9 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
 
 # Compactness for frames
 
-TODO
+We start by stating the notion of a *cover* for a frame.
+
+```agda
+Cover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ suc ℓ₂)
+Cover {ℓ₂ = ℓ₂} F = Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] ⋁[ F ] U ≡ ⊤[ F ]
+```
