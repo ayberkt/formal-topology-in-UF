@@ -38,6 +38,25 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
 We start by stating the notion of a *cover* for a frame.
 
 ```agda
+cover-syntax : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Fam ℓ₂ ∣ F ∣F → Type ℓ₀
+cover-syntax F U = ⋁[ F ] U ≡ ⊤[ F ]
+
+syntax cover-syntax F U = U covers F
+
 Cover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ suc ℓ₂)
-Cover {ℓ₂ = ℓ₂} F = Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] ⋁[ F ] U ≡ ⊤[ F ]
+Cover {ℓ₂ = ℓ₂} F = Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] U covers F
+```
+
+The type of *subcovers* of a given cover.
+
+```agda
+Subcover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → (C : Cover F) → Type (ℓ₀ ⊔ suc ℓ₂)
+Subcover F (U , _) = Σ[ (V , _) ∈ Cover F ] V ⊆fam U
+```
+
+Statement of compactness.
+
+```agda
+isACompactFrame : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ suc ℓ₂)
+isACompactFrame F = (C : Cover F) → Subcover F C
 ```
