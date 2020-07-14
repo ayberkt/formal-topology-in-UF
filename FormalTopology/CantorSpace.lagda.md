@@ -10,6 +10,7 @@ open import Cubical.Data.List         using (List; _∷_; [])    renaming (_++_ 
 open import Cover
 open import Poset
 open import FormalTopology
+open import Compactness
 ```
 
 We open the `SnocList` module with the type `𝔹` of booleans.
@@ -136,30 +137,6 @@ open CoverFromFormalTopology cantor renaming (_◁_ to _<ℂ|_)
 
 _ : ℂ → (ℂ → hProp zero) → Type zero
 _ = _<ℂ|_
-```
-
-## Statement of compactness
-
-The statement of compactness then is as follows.
-
-```
-module _ (F : FormalTopology ℓ₀ ℓ₀) where
-
-  open CoverFromFormalTopology F using (_◁_)
-
-  private
-    A = stage   F
-    B = exp     F
-    C = outcome F
-    d = next    F
-
-  down : List A → 𝒫 A
-  down []       = λ _ → bot ℓ₀
-  down (x ∷ xs) = λ y → ∥ [ y ⊑[ pos F ] x ] ⊎ [ y ∈ down xs ] ∥ , ∥∥-prop _
-
-  isCompact : Type (suc ℓ₀)
-  isCompact = (a : A) (U : 𝒫 A) (U-dc : [ isDownwardsClosed (pos F) U ]) →
-                a ◁ U → ∥ Σ[ as ∈ List A ] (a ◁ down as) × [ down as ⊆ U ] ∥
 ```
 
 ## The Cantor formal topology is compact

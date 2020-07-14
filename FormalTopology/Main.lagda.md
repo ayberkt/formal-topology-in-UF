@@ -13,6 +13,7 @@ open import CoverFormsNucleus
 open import BaireSpace
 open import UniversalProperty
 open import ProductTopology
+open import Compactness
 open import CantorSpace
 open import Sierpinski
 ```

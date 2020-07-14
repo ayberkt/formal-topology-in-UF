@@ -155,6 +155,9 @@ infixr 7 _$_
 _ε_ : A → Fam ℓ₁ A → Type _
 x ε (_ , f) = fiber f x
 
+_⊆fam_ : {A : Type ℓ} → Fam ℓ₁ A → Fam ℓ₁ A → Type (ℓ ⊔ ℓ₁)
+_⊆fam_ {A = A} U V = (x : A) → x ε U → x ε V
+
 -- Composition of a family with a function.
 _⟨$⟩_ : {X : Type ℓ₀} {Y : Type ℓ₁} → (g : X → Y) → (ℱ : Fam ℓ₂ X) → Fam ℓ₂ Y
 g ⟨$⟩ ℱ = (index ℱ) , g ∘ (_$_ ℱ)
