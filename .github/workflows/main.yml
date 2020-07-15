@@ -16,6 +16,8 @@ jobs:
     - run: pwd
     - run: ls
     - run: sudo cp -f resources/Agda.css FormalTopology/html/Agda.css
+    - name: Generate HTML from Markdown
+      run: cd FormalTopology/html && for file in `ls *.md`; do pandoc --css Agda.css -o $(basename -s .md $file).html $file; done && cd ../..
     - name: Upload HTML
       id: html-upload
       if: github.ref == 'refs/heads/master'
