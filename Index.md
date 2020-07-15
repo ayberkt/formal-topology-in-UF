@@ -54,7 +54,7 @@
 </pre>
 **Definition 2.7**.
 
-<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3058" class="Function Operator">Basis._~_</a>
+<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3069" class="Function Operator">Basis._~_</a>
 </pre>
 **Proposition 2.8**.
 
@@ -164,49 +164,49 @@ Proposition 2.15 is omitted.
 
 **Definition 2.34**.
 
-<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3155" class="Function">Basis.𝒫</a>
+<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3166" class="Function">Basis.𝒫</a>
 </pre>
 **Proposition 2.35**.
 
-<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#3343" class="Function">Basis.𝒫-set</a>
+<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#3348" class="Function">Basis.𝒫-set</a>
 </pre>
 **Definition 2.36**.
 
-<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#3549" class="Function Operator">Basis._⊆_</a>
+<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#3542" class="Function Operator">Basis._⊆_</a>
 </pre>
 **Definition 2.37**.
 
-<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#3881" class="Function">Basis.entire</a>
+<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#3874" class="Function">Basis.entire</a>
 </pre>
 **Definition 2.38**.
 
-<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#3948" class="Function Operator">Basis._∩_</a>
+<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#3941" class="Function Operator">Basis._∩_</a>
 </pre>
 ### 2.6: Families
 
 **Definition 2.39**.
 
-<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#4168" class="Function">Basis.Fam</a>
+<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#4161" class="Function">Basis.Fam</a>
 </pre>
 **Definition 2.41**.
 
-<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#4442" class="Function Operator">Basis._ε_</a>
+<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#4423" class="Function Operator">Basis._ε_</a>
 </pre>
 **Definition 2.42**.
 
-<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#4645" class="Function Operator">Basis._⟨$⟩_</a>
+<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#4630" class="Function Operator">Basis._⟨$⟩_</a>
 </pre>
 **Definition 2.43**.
 
-<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#5418" class="Function Operator">Basis.⟪_⟫</a>
+<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#5390" class="Function Operator">Basis.⟪_⟫</a>
 </pre>
 ### 2.8: Truncation
 
 **Definition 2.44**.
 
-<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#5922" class="Datatype Operator">Basis.∥_∥</a>
-<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#6009" class="Function">Basis.∥∥-prop</a>
-<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#6067" class="Function">Basis.∥∥-rec</a>
+<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#5883" class="Datatype Operator">Basis.∥_∥</a>
+<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#5970" class="Function">Basis.∥∥-prop</a>
+<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#6028" class="Function">Basis.∥∥-rec</a>
 </pre>
 ## Chapter 3: Frames
 
@@ -214,52 +214,52 @@ Proposition 2.15 is omitted.
 
 **Definition 3.1**.
 
-<pre class="Agda"><a id="3156" href="Index.html#3156" class="Function">_</a> <a id="3158" class="Symbol">=</a> <a id="3160" href="Poset.html#2129" class="Function">Poset.Poset</a>
-<a id="3172" href="Index.html#3172" class="Function">_</a> <a id="3174" class="Symbol">=</a> <a id="3176" href="Poset.html#1673" class="Function">Poset.PosetStr</a>
-<a id="3191" href="Index.html#3191" class="Function">_</a> <a id="3193" class="Symbol">=</a> <a id="3195" href="Poset.html#1240" class="Function">Poset.PosetAx</a>
+<pre class="Agda"><a id="3156" href="Index.html#3156" class="Function">_</a> <a id="3158" class="Symbol">=</a> <a id="3160" href="Poset.html#2165" class="Function">Poset.Poset</a>
+<a id="3172" href="Index.html#3172" class="Function">_</a> <a id="3174" class="Symbol">=</a> <a id="3176" href="Poset.html#1701" class="Function">Poset.PosetStr</a>
+<a id="3191" href="Index.html#3191" class="Function">_</a> <a id="3193" class="Symbol">=</a> <a id="3195" href="Poset.html#1264" class="Function">Poset.PosetAx</a>
 </pre>
 **Definition 3.2**.
 
-<pre class="Agda"><a id="3243" href="Index.html#3243" class="Function">_</a> <a id="3245" class="Symbol">=</a> <a id="3247" href="Poset.html#6602" class="Function">Poset.isDownwardsClosed</a>
-<a id="3271" href="Index.html#3271" class="Function">_</a> <a id="3273" class="Symbol">=</a> <a id="3275" href="Poset.html#6929" class="Function">Poset.DCSubset</a>
+<pre class="Agda"><a id="3243" href="Index.html#3243" class="Function">_</a> <a id="3245" class="Symbol">=</a> <a id="3247" href="Poset.html#6594" class="Function">Poset.isDownwardsClosed</a>
+<a id="3271" href="Index.html#3271" class="Function">_</a> <a id="3273" class="Symbol">=</a> <a id="3275" href="Poset.html#6913" class="Function">Poset.DCSubset</a>
 </pre>
 **Proposition 3.3**.
 
-<pre class="Agda"><a id="3325" href="Index.html#3325" class="Function">_</a> <a id="3327" class="Symbol">=</a> <a id="3329" href="Poset.html#7037" class="Function">Poset.DCSubset-set</a>
+<pre class="Agda"><a id="3325" href="Index.html#3325" class="Function">_</a> <a id="3327" class="Symbol">=</a> <a id="3329" href="Poset.html#7009" class="Function">Poset.DCSubset-set</a>
 </pre>
 **Proposition 3.4**.
 
-<pre class="Agda"><a id="3383" href="Index.html#3383" class="Function">_</a> <a id="3385" class="Symbol">=</a> <a id="3387" href="Frame.html#13520" class="Function">Frame.DCPoset</a>
+<pre class="Agda"><a id="3383" href="Index.html#3383" class="Function">_</a> <a id="3385" class="Symbol">=</a> <a id="3387" href="Frame.html#13257" class="Function">Frame.DCPoset</a>
 </pre>
 **Definition 3.5**.
 
-<pre class="Agda"><a id="3435" href="Index.html#3435" class="Function">_</a> <a id="3437" class="Symbol">=</a> <a id="3439" href="Poset.html#4486" class="Function">Poset.isMonotonic</a>
+<pre class="Agda"><a id="3435" href="Index.html#3435" class="Function">_</a> <a id="3437" class="Symbol">=</a> <a id="3439" href="Poset.html#4520" class="Function">Poset.isMonotonic</a>
 </pre>
 **Definition 3.6**.
 
-<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#12366" class="Function">Poset.isPosetIso</a>
+<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#12297" class="Function">Poset.isPosetIso</a>
 </pre>
 ### 3.2: Definition of a frame
 
 **Definition 3.7**.
 
 <pre class="Agda"><a id="3578" href="Index.html#3578" class="Function">_</a> <a id="3580" class="Symbol">=</a> <a id="3582" href="Frame.html#539" class="Function">Frame.RawFrameStr</a>
-<a id="3600" href="Index.html#3600" class="Function">_</a> <a id="3602" class="Symbol">=</a> <a id="3604" href="Frame.html#2960" class="Function">Frame.FrameAx</a>
-<a id="3618" href="Index.html#3618" class="Function">_</a> <a id="3620" class="Symbol">=</a> <a id="3622" href="Frame.html#3200" class="Function">Frame.FrameStr</a>
+<a id="3600" href="Index.html#3600" class="Function">_</a> <a id="3602" class="Symbol">=</a> <a id="3604" href="Frame.html#2894" class="Function">Frame.FrameAx</a>
+<a id="3618" href="Index.html#3618" class="Function">_</a> <a id="3620" class="Symbol">=</a> <a id="3622" href="Frame.html#3117" class="Function">Frame.FrameStr</a>
 </pre>
 **Proposition 3.8**.
 
-<pre class="Agda"><a id="3672" href="Index.html#3672" class="Function">_</a> <a id="3674" class="Symbol">=</a> <a id="3676" href="Frame.html#22081" class="Function">Frame.FrameAx-props</a>
+<pre class="Agda"><a id="3672" href="Index.html#3672" class="Function">_</a> <a id="3674" class="Symbol">=</a> <a id="3676" href="Frame.html#21783" class="Function">Frame.FrameAx-props</a>
 </pre>
 **Definition 3.9**.
 
-<pre class="Agda"><a id="3730" href="Index.html#3730" class="Function">_</a> <a id="3732" class="Symbol">=</a> <a id="3734" href="Frame.html#11347" class="Function">Frame.isFrameHomomorphism</a>
-<a id="3760" href="Index.html#3760" class="Function">_</a> <a id="3762" class="Symbol">=</a> <a id="3764" href="Frame.html#11811" class="Function Operator">Frame._─f→_</a>
-<a id="3776" href="Index.html#3776" class="Function">_</a> <a id="3778" class="Symbol">=</a> <a id="3780" href="Frame.html#13166" class="Function Operator">Frame._≅f_</a>
+<pre class="Agda"><a id="3730" href="Index.html#3730" class="Function">_</a> <a id="3732" class="Symbol">=</a> <a id="3734" href="Frame.html#11200" class="Function">Frame.isFrameHomomorphism</a>
+<a id="3760" href="Index.html#3760" class="Function">_</a> <a id="3762" class="Symbol">=</a> <a id="3764" href="Frame.html#11646" class="Function Operator">Frame._─f→_</a>
+<a id="3776" href="Index.html#3776" class="Function">_</a> <a id="3778" class="Symbol">=</a> <a id="3780" href="Frame.html#12932" class="Function Operator">Frame._≅f_</a>
 </pre>
 **Definition 3.10**.
 
-<pre class="Agda"><a id="3826" href="Index.html#3826" class="Function">_</a> <a id="3828" class="Symbol">=</a> <a id="3830" href="Frame.html#12071" class="Function">Frame.isFrameIso</a>
+<pre class="Agda"><a id="3826" href="Index.html#3826" class="Function">_</a> <a id="3828" class="Symbol">=</a> <a id="3830" href="Frame.html#11877" class="Function">Frame.isFrameIso</a>
 </pre>
 **Definition 3.11** is not explicitly defined. We refer to it in an ad hoc way
 by referring to `_≅ₚ_` on the underlying posets.
@@ -268,31 +268,31 @@ The equivalence of Defn. 3.10 and Defn. 3.11 is stated only in passing in the
 thesis, not as an explicit proposition but is witnessed in the Agda code
 by the following function:
 
-<pre class="Agda"><a id="4168" href="Index.html#4168" class="Function">_</a> <a id="4170" class="Symbol">=</a> <a id="4172" href="Frame.html#29206" class="Function">Frame.≅ₚ≃≅f</a>
+<pre class="Agda"><a id="4168" href="Index.html#4168" class="Function">_</a> <a id="4170" class="Symbol">=</a> <a id="4172" href="Frame.html#28908" class="Function">Frame.≅ₚ≃≅f</a>
 </pre>
 ### 3.3: Some properties of frames
 
 **Proposition 3.12**.
 
-<pre class="Agda"><a id="4256" href="Index.html#4256" class="Function">_</a> <a id="4258" class="Symbol">=</a> <a id="4260" href="Frame.html#6627" class="Function">Frame.comm</a>
+<pre class="Agda"><a id="4256" href="Index.html#4256" class="Function">_</a> <a id="4258" class="Symbol">=</a> <a id="4260" href="Frame.html#6498" class="Function">Frame.comm</a>
 </pre>
 **Lemma 3.13**.
 
-<pre class="Agda"><a id="4301" href="Index.html#4301" class="Function">_</a> <a id="4303" class="Symbol">=</a> <a id="4305" href="Frame.html#7339" class="Function">Frame.flatten</a>
+<pre class="Agda"><a id="4301" href="Index.html#4301" class="Function">_</a> <a id="4303" class="Symbol">=</a> <a id="4305" href="Frame.html#7210" class="Function">Frame.flatten</a>
 </pre>
 **Proposition 3.14**.
 
-<pre class="Agda"><a id="4355" href="Index.html#4355" class="Function">_</a> <a id="4357" class="Symbol">=</a> <a id="4359" href="Frame.html#6810" class="Function">Frame.family-iff</a>
+<pre class="Agda"><a id="4355" href="Index.html#4355" class="Function">_</a> <a id="4357" class="Symbol">=</a> <a id="4359" href="Frame.html#6681" class="Function">Frame.family-iff</a>
 </pre>
 **Proposition 3.15**.
 
-<pre class="Agda"><a id="4412" href="Index.html#4412" class="Function">_</a> <a id="4414" class="Symbol">=</a> <a id="4416" href="Frame.html#8667" class="Function">Frame.sym-distr</a>
+<pre class="Agda"><a id="4412" href="Index.html#4412" class="Function">_</a> <a id="4414" class="Symbol">=</a> <a id="4416" href="Frame.html#8538" class="Function">Frame.sym-distr</a>
 </pre>
 ### 3.4: Univalence for frames
 
 **Definition 3.16**.
 
-<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#10696" class="Function">Poset.isAMonotonicEqv</a>
+<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#10643" class="Function">Poset.isAMonotonicEqv</a>
 </pre>
 **Definition 3.17**.
 
@@ -300,53 +300,53 @@ by the following function:
 </pre>
 **Definition 3.18**.
 
-<pre class="Agda"><a id="4627" href="Index.html#4627" class="Function">_</a> <a id="4629" class="Symbol">=</a> <a id="4631" href="Frame.html#20112" class="Function">Frame.isHomoEqv</a>
+<pre class="Agda"><a id="4627" href="Index.html#4627" class="Function">_</a> <a id="4629" class="Symbol">=</a> <a id="4631" href="Frame.html#19848" class="Function">Frame.isHomoEqv</a>
 </pre>
 Equation 3.19.
 
-<pre class="Agda"><a id="4676" href="Index.html#4676" class="Function">_</a> <a id="4678" class="Symbol">=</a> <a id="4680" href="Frame.html#22908" class="Function">Frame.≃f≃≡</a>
+<pre class="Agda"><a id="4676" href="Index.html#4676" class="Function">_</a> <a id="4678" class="Symbol">=</a> <a id="4680" href="Frame.html#22610" class="Function">Frame.≃f≃≡</a>
 </pre>
 Equation 3.20.
 
-<pre class="Agda"><a id="4720" href="Index.html#4720" class="Function">_</a> <a id="4722" class="Symbol">=</a> <a id="4724" href="Frame.html#23498" class="Function">Frame.≃f≃≅ₚ</a>
+<pre class="Agda"><a id="4720" href="Index.html#4720" class="Function">_</a> <a id="4722" class="Symbol">=</a> <a id="4724" href="Frame.html#23200" class="Function">Frame.≃f≃≅ₚ</a>
 </pre>
 Equation 3.21.
 
-<pre class="Agda"><a id="4765" href="Index.html#4765" class="Function">_</a> <a id="4767" class="Symbol">=</a> <a id="4769" href="Frame.html#29074" class="Function">Frame.≅ₚ≃≡</a>
+<pre class="Agda"><a id="4765" href="Index.html#4765" class="Function">_</a> <a id="4767" class="Symbol">=</a> <a id="4769" href="Frame.html#28776" class="Function">Frame.≅ₚ≃≡</a>
 </pre>
 ### 3.5: Frames of downwards-closed subsets
 
 **Theorem 3.22**.
 
-<pre class="Agda"><a id="4857" href="Index.html#4857" class="Function">_</a> <a id="4859" class="Symbol">=</a> <a id="4861" href="Frame.html#14173" class="Function">Frame.DCFrame</a>
+<pre class="Agda"><a id="4857" href="Index.html#4857" class="Function">_</a> <a id="4859" class="Symbol">=</a> <a id="4861" href="Frame.html#13918" class="Function">Frame.DCFrame</a>
 </pre>
 ### 3.6: Nuclei and their fixed points
 
 **Definition 3.23**.
 
 <pre class="Agda"><a id="4950" href="Index.html#4950" class="Function">_</a> <a id="4952" class="Symbol">=</a> <a id="4954" href="Nucleus.html#171" class="Function">Nucleus.isNuclear</a>
-<a id="4972" href="Index.html#4972" class="Function">_</a> <a id="4974" class="Symbol">=</a> <a id="4976" href="Nucleus.html#466" class="Function">Nucleus.Nucleus</a>
+<a id="4972" href="Index.html#4972" class="Function">_</a> <a id="4974" class="Symbol">=</a> <a id="4976" href="Nucleus.html#470" class="Function">Nucleus.Nucleus</a>
 </pre>
 **Proposition 3.24**.
 
-<pre class="Agda"><a id="5028" href="Index.html#5028" class="Function">_</a> <a id="5030" class="Symbol">=</a> <a id="5032" href="Nucleus.html#608" class="Function">Nucleus.nuclei-resp-⊤</a>
+<pre class="Agda"><a id="5028" href="Index.html#5028" class="Function">_</a> <a id="5030" class="Symbol">=</a> <a id="5032" href="Nucleus.html#616" class="Function">Nucleus.nuclei-resp-⊤</a>
 </pre>
 **Lemma 3.25**. This is broken up into two functions in the Agda formalisatoin.
 
-<pre class="Agda"><a id="5148" href="Index.html#5148" class="Function">_</a> <a id="5150" class="Symbol">=</a> <a id="5152" href="Frame.html#6150" class="Function">Frame.x⊑y⇒x=x∧y</a>
-<a id="5168" href="Index.html#5168" class="Function">_</a> <a id="5170" class="Symbol">=</a> <a id="5172" href="Frame.html#6435" class="Function">Frame.x=x∧y⇒x⊑y</a>
+<pre class="Agda"><a id="5148" href="Index.html#5148" class="Function">_</a> <a id="5150" class="Symbol">=</a> <a id="5152" href="Frame.html#6021" class="Function">Frame.x⊑y⇒x=x∧y</a>
+<a id="5168" href="Index.html#5168" class="Function">_</a> <a id="5170" class="Symbol">=</a> <a id="5172" href="Frame.html#6306" class="Function">Frame.x=x∧y⇒x⊑y</a>
 </pre>
 **Proposition 3.26**.
 
-<pre class="Agda"><a id="5224" href="Index.html#5224" class="Function">_</a> <a id="5226" class="Symbol">=</a> <a id="5228" href="Nucleus.html#988" class="Function">Nucleus.mono</a>
+<pre class="Agda"><a id="5224" href="Index.html#5224" class="Function">_</a> <a id="5226" class="Symbol">=</a> <a id="5228" href="Nucleus.html#996" class="Function">Nucleus.mono</a>
 </pre>
 **Proposition 3.27**.
 
-<pre class="Agda"><a id="5277" href="Index.html#5277" class="Function">_</a> <a id="5279" class="Symbol">=</a> <a id="5281" href="Nucleus.html#2578" class="Function">Nucleus.𝔣𝔦𝔵-pos</a>
+<pre class="Agda"><a id="5277" href="Index.html#5277" class="Function">_</a> <a id="5279" class="Symbol">=</a> <a id="5281" href="Nucleus.html#2586" class="Function">Nucleus.𝔣𝔦𝔵-pos</a>
 </pre>
 **Theorem 3.28**.
 
-<pre class="Agda"><a id="5329" href="Index.html#5329" class="Function">_</a> <a id="5331" class="Symbol">=</a> <a id="5333" href="Nucleus.html#3494" class="Function">Nucleus.𝔣𝔦𝔵</a>
+<pre class="Agda"><a id="5329" href="Index.html#5329" class="Function">_</a> <a id="5331" class="Symbol">=</a> <a id="5333" href="Nucleus.html#3502" class="Function">Nucleus.𝔣𝔦𝔵</a>
 </pre>
 ## Chapter 4: Formal Topology
 
@@ -355,19 +355,19 @@ Equation 3.21.
 **Definition 4.1**.
 
 <pre class="Agda"><a id="5440" href="Index.html#5440" class="Function">_</a> <a id="5442" class="Symbol">=</a> <a id="5444" href="FormalTopology.html#101" class="Function">InteractionStr</a>
-<a id="5459" href="Index.html#5459" class="Function">_</a> <a id="5461" class="Symbol">=</a> <a id="5463" href="FormalTopology.html#263" class="Function">InteractionSys</a>
+<a id="5459" href="Index.html#5459" class="Function">_</a> <a id="5461" class="Symbol">=</a> <a id="5463" href="FormalTopology.html#265" class="Function">InteractionSys</a>
 </pre>
 **Definition 4.2**.
 
-<pre class="Agda"><a id="5512" href="Index.html#5512" class="Function">_</a> <a id="5514" class="Symbol">=</a> <a id="5516" href="FormalTopology.html#747" class="Function">hasMono</a>
+<pre class="Agda"><a id="5512" href="Index.html#5512" class="Function">_</a> <a id="5514" class="Symbol">=</a> <a id="5516" href="FormalTopology.html#751" class="Function">hasMono</a>
 </pre>
 **Definition 4.3**.
 
-<pre class="Agda"><a id="5558" href="Index.html#5558" class="Function">_</a> <a id="5560" class="Symbol">=</a> <a id="5562" href="FormalTopology.html#1077" class="Function">hasSimulation</a>
+<pre class="Agda"><a id="5558" href="Index.html#5558" class="Function">_</a> <a id="5560" class="Symbol">=</a> <a id="5562" href="FormalTopology.html#1085" class="Function">hasSimulation</a>
 </pre>
 **Definition 4.4**.
 
-<pre class="Agda"><a id="5610" href="Index.html#5610" class="Function">_</a> <a id="5612" class="Symbol">=</a> <a id="5614" href="FormalTopology.html#1293" class="Function">FormalTopology</a>
+<pre class="Agda"><a id="5610" href="Index.html#5610" class="Function">_</a> <a id="5612" class="Symbol">=</a> <a id="5614" href="FormalTopology.html#1305" class="Function">FormalTopology</a>
 </pre>### 4.2: Cover relation
 
 Note that **Definition 4.5** is not formalised.
@@ -402,7 +402,7 @@ Note that **Definition 4.5** is not formalised.
 
 **Definition 4.13**.
 
-<pre class="Agda"><a id="6232" href="Index.html#6232" class="Function">_</a> <a id="6234" class="Symbol">=</a> <a id="6236" href="CoverFormsNucleus.html#4103" class="Function">CoverFormsNucleus.NucleusFrom.η</a>
+<pre class="Agda"><a id="6232" href="Index.html#6232" class="Function">_</a> <a id="6234" class="Symbol">=</a> <a id="6236" href="CoverFormsNucleus.html#4105" class="Function">CoverFormsNucleus.NucleusFrom.η</a>
 </pre>
 ### 4.5: Formal topologies present
 
@@ -412,25 +412,25 @@ Note that **Definition 4.5** is not formalised.
 </pre>
 **Definition 4.15**.
 
-<pre class="Agda"><a id="6407" href="Index.html#6407" class="Function">_</a> <a id="6409" class="Symbol">=</a> <a id="6411" href="UniversalProperty.html#1582" class="Function">UniversalProperty.isFlat</a>
+<pre class="Agda"><a id="6407" href="Index.html#6407" class="Function">_</a> <a id="6409" class="Symbol">=</a> <a id="6411" href="UniversalProperty.html#1588" class="Function">UniversalProperty.isFlat</a>
 </pre>
 **Theorem 4.16**.
 
 The theorem statement is given in:
 
-<pre class="Agda"><a id="6504" href="Index.html#6504" class="Function">_</a> <a id="6506" class="Symbol">=</a> <a id="6508" href="UniversalProperty.html#1848" class="Function">UniversalProperty.universal-prop</a>
+<pre class="Agda"><a id="6504" href="Index.html#6504" class="Function">_</a> <a id="6506" class="Symbol">=</a> <a id="6508" href="UniversalProperty.html#1858" class="Function">UniversalProperty.universal-prop</a>
 </pre>
 The proof is given in:
 
-<pre class="Agda"><a id="6578" href="Index.html#6578" class="Function">_</a> <a id="6580" class="Symbol">=</a> <a id="6582" href="UniversalProperty.html#12498" class="Function">UniversalProperty.main</a>
+<pre class="Agda"><a id="6578" href="Index.html#6578" class="Function">_</a> <a id="6580" class="Symbol">=</a> <a id="6582" href="UniversalProperty.html#12516" class="Function">UniversalProperty.main</a>
 </pre>
 **Lemma 4.17**.
 
-<pre class="Agda"><a id="6635" href="Index.html#6635" class="Function">_</a> <a id="6637" class="Symbol">=</a> <a id="6639" href="UniversalProperty.html#2305" class="Function">UniversalProperty.main-lemma</a>
+<pre class="Agda"><a id="6635" href="Index.html#6635" class="Function">_</a> <a id="6637" class="Symbol">=</a> <a id="6639" href="UniversalProperty.html#2321" class="Function">UniversalProperty.main-lemma</a>
 </pre>
 **Lemma 4.18**.
 
-<pre class="Agda"><a id="6698" href="Index.html#6698" class="Function">_</a> <a id="6700" class="Symbol">=</a> <a id="6702" href="UniversalProperty.html#7344" class="Function">UniversalProperty.MainProof.resp-⋁-lem</a>
+<pre class="Agda"><a id="6698" href="Index.html#6698" class="Function">_</a> <a id="6700" class="Symbol">=</a> <a id="6702" href="UniversalProperty.html#7362" class="Function">UniversalProperty.MainProof.resp-⋁-lem</a>
 </pre>
 ## Chapter 5: The Cantor space
 
@@ -438,28 +438,28 @@ The proof is given in:
 
 **Definition 5.1**.
 
-<pre class="Agda"><a id="6847" href="Index.html#6847" class="Function">_</a> <a id="6849" class="Symbol">=</a> <a id="6851" href="SnocList.html#358" class="InductiveConstructor Operator">SnocList._⌢_</a>
-<a id="6864" href="Index.html#6864" class="Function">_</a> <a id="6866" class="Symbol">=</a> <a id="6868" href="SnocList.html#341" class="InductiveConstructor">SnocList.[]</a>
+<pre class="Agda"><a id="6847" href="Index.html#6847" class="Function">_</a> <a id="6849" class="Symbol">=</a> <a id="6851" href="SnocList.html#362" class="InductiveConstructor Operator">SnocList._⌢_</a>
+<a id="6864" href="Index.html#6864" class="Function">_</a> <a id="6866" class="Symbol">=</a> <a id="6868" href="SnocList.html#345" class="InductiveConstructor">SnocList.[]</a>
 </pre>
 **Definition 5.2**.
 
-<pre class="Agda"><a id="6914" href="Index.html#6914" class="Function">_</a> <a id="6916" class="Symbol">=</a> <a id="6918" href="SnocList.html#1642" class="Function Operator">_++_</a>
+<pre class="Agda"><a id="6914" href="Index.html#6914" class="Function">_</a> <a id="6916" class="Symbol">=</a> <a id="6918" href="SnocList.html#1652" class="Function Operator">_++_</a>
 </pre>
 **Proposition 5.3**.
 
-<pre class="Agda"><a id="6958" href="Index.html#6958" class="Function">_</a> <a id="6960" class="Symbol">=</a> <a id="6962" href="SnocList.html#993" class="Function">SnocList-discrete</a>
+<pre class="Agda"><a id="6958" href="Index.html#6958" class="Function">_</a> <a id="6960" class="Symbol">=</a> <a id="6962" href="SnocList.html#1003" class="Function">SnocList-discrete</a>
 </pre>
 **Definition 5.4**.
 
-<pre class="Agda"><a id="7014" href="Index.html#7014" class="Function">_</a> <a id="7016" class="Symbol">=</a> <a id="7018" href="CantorSpace.html#1164" class="Function">CantorSpace.ℂ-pos</a>
+<pre class="Agda"><a id="7014" href="Index.html#7014" class="Function">_</a> <a id="7016" class="Symbol">=</a> <a id="7018" href="CantorSpace.html#1166" class="Function">CantorSpace.ℂ-pos</a>
 </pre>
 **Definition 5.5**.
 
-<pre class="Agda"><a id="7070" href="Index.html#7070" class="Function">_</a> <a id="7072" class="Symbol">=</a> <a id="7074" href="CantorSpace.html#3155" class="Function">CantorSpace.ℂ-IS</a>
+<pre class="Agda"><a id="7070" href="Index.html#7070" class="Function">_</a> <a id="7072" class="Symbol">=</a> <a id="7074" href="CantorSpace.html#3165" class="Function">CantorSpace.ℂ-IS</a>
 </pre>
 **Theorem 5.6**.
 
-<pre class="Agda"><a id="7122" href="Index.html#7122" class="Function">_</a> <a id="7124" class="Symbol">=</a> <a id="7126" href="CantorSpace.html#4253" class="Function">CantorSpace.cantor</a>
+<pre class="Agda"><a id="7122" href="Index.html#7122" class="Function">_</a> <a id="7124" class="Symbol">=</a> <a id="7126" href="CantorSpace.html#4263" class="Function">CantorSpace.cantor</a>
 </pre>
 ### 5.2: The Cantor space is compact
 
@@ -473,18 +473,18 @@ The proof is given in:
 </pre>
 **Lemma 5.9**.
 
-<pre class="Agda"><a id="7327" href="Index.html#7327" class="Function">_</a> <a id="7329" class="Symbol">=</a> <a id="7331" href="CantorSpace.html#5346" class="Function">CantorSpace.U⊆V⇒◁U⊆◁V</a>
+<pre class="Agda"><a id="7327" href="Index.html#7327" class="Function">_</a> <a id="7329" class="Symbol">=</a> <a id="7331" href="CantorSpace.html#5364" class="Function">CantorSpace.U⊆V⇒◁U⊆◁V</a>
 </pre>
 **Lemma 5.10**. In the Agda formalisation, this is broken up into two functions.
 
-<pre class="Agda"><a id="7448" href="Index.html#7448" class="Function">_</a> <a id="7450" class="Symbol">=</a> <a id="7452" href="CantorSpace.html#5543" class="Function">CantorSpace.↓-++-left</a>
-<a id="7474" href="Index.html#7474" class="Function">_</a> <a id="7476" class="Symbol">=</a> <a id="7478" href="CantorSpace.html#5953" class="Function">CantorSpace.↓-++-right</a>
+<pre class="Agda"><a id="7448" href="Index.html#7448" class="Function">_</a> <a id="7450" class="Symbol">=</a> <a id="7452" href="CantorSpace.html#5561" class="Function">CantorSpace.↓-++-left</a>
+<a id="7474" href="Index.html#7474" class="Function">_</a> <a id="7476" class="Symbol">=</a> <a id="7478" href="CantorSpace.html#5971" class="Function">CantorSpace.↓-++-right</a>
 </pre>
 **Lemma 5.11**.
 
-<pre class="Agda"><a id="7531" href="Index.html#7531" class="Function">_</a> <a id="7533" class="Symbol">=</a> <a id="7535" href="CantorSpace.html#6550" class="Function">CantorSpace.◁^-decide</a>
+<pre class="Agda"><a id="7531" href="Index.html#7531" class="Function">_</a> <a id="7533" class="Symbol">=</a> <a id="7535" href="CantorSpace.html#6568" class="Function">CantorSpace.◁^-decide</a>
 </pre>
 **Theorem 5.12**.
 
-<pre class="Agda"><a id="7589" href="Index.html#7589" class="Function">_</a> <a id="7591" class="Symbol">=</a> <a id="7593" href="CantorSpace.html#5287" class="Function">CantorSpace.compact</a>
+<pre class="Agda"><a id="7589" href="Index.html#7589" class="Function">_</a> <a id="7591" class="Symbol">=</a> <a id="7593" href="CantorSpace.html#5305" class="Function">CantorSpace.compact</a>
 </pre>
