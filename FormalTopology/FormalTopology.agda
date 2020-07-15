@@ -5,11 +5,11 @@ module FormalTopology where
 open import Basis
 open import Poset
 
-InteractionStr : (A : Type ℓ) → Type (suc ℓ)
+InteractionStr : (A : Type ℓ) → Type (ℓ-suc ℓ)
 InteractionStr {ℓ = ℓ} A =
   Σ[ B ∈ (A → Type ℓ) ] Σ[ C ∈ ({x : A} → B x → Type ℓ) ]({x : A} → {y : B x} → C y → A)
 
-InteractionSys : (ℓ : Level) → Type (suc ℓ)
+InteractionSys : (ℓ : Level) → Type (ℓ-suc ℓ)
 InteractionSys ℓ = Σ (Type ℓ) InteractionStr
 
 state       : InteractionSys ℓ → Type ℓ
@@ -23,7 +23,7 @@ action   (_ , B , _ , _) = B
 reaction (_ , _ , C , _) = C
 δ        (_ , _ , _ , d) = d
 
-hasMono : (P : Poset ℓ₀ ℓ₁) → InteractionStr ∣ P ∣ₚ → Type (ℓ₀ ⊔ ℓ₁)
+hasMono : (P : Poset ℓ₀ ℓ₁) → InteractionStr ∣ P ∣ₚ → Type (ℓ-max ℓ₀ ℓ₁)
 hasMono P i =
   (a : state IS) (b : action IS a) (c : reaction IS b) → [ δ IS c ⊑[ P ] a ]
   where
@@ -34,13 +34,13 @@ module _ (P : Poset ℓ₀ ℓ₁) (ℐ-str : InteractionStr ∣ P ∣ₚ) where
   ℐ : InteractionSys ℓ₀
   ℐ = (∣ P ∣ₚ , ℐ-str)
 
-  hasSimulation : Type (ℓ₀ ⊔ ℓ₁)
+  hasSimulation : Type (ℓ-max ℓ₀ ℓ₁)
   hasSimulation =
     (a′ a : ∣ P ∣ₚ) → [ a′ ⊑[ P ] a ] →
       (b : action ℐ a) → Σ[ b′ ∈ action ℐ a′ ]
         ((c′ : reaction ℐ b′) → Σ[ c ∈ reaction ℐ b ] [ δ ℐ c′ ⊑[ P ] δ ℐ c ])
 
-FormalTopology : (ℓ₀ ℓ₁ : Level) → Type (suc ℓ₀ ⊔ suc ℓ₁)
+FormalTopology : (ℓ₀ ℓ₁ : Level) → Type (ℓ-max (ℓ-suc ℓ₀) (ℓ-suc ℓ₁))
 FormalTopology ℓ₀ ℓ₁ =
   Σ[ P ∈ Poset ℓ₀ ℓ₁ ] Σ[ ℐ ∈ InteractionStr ∣ P ∣ₚ ] hasMono P ℐ × hasSimulation P ℐ
 
