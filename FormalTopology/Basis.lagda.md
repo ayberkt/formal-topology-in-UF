@@ -3,9 +3,6 @@
 
 module Basis where
 
-open import Level    public
-
-
 import Cubical.Core.Everything                as CE
 import Cubical.Data.Sigma                     as DΣ
 import Cubical.Data.Sum                       as DS
@@ -20,7 +17,8 @@ import Cubical.Foundations.Function           as FF
 
 open import Cubical.Foundations.Univalence public using (ua)
 
-open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv)
+open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv; Level;
+                           ℓ-max; ℓ-suc)
 open DΣ  public using     (Σ≡Prop; ΣPathTransport→PathΣ; PathΣ→ΣPathTransport; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
 open DS  public using     (inl; inr; _⊎_)
