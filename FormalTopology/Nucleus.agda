@@ -7,7 +7,7 @@ open import Poset
 open import Frame
 
 -- A predicate expressing whether a function is a nucleus.
-isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ₀ ⊔ ℓ₁)
+isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ-max ℓ₀ ℓ₁)
 isNuclear L j = N₀ × N₁ × N₂
   where
     N₀ = (x y : ∣ L ∣F) → j (x ⊓[ L ] y) ≡ (j x) ⊓[ L ] (j y)
@@ -15,7 +15,7 @@ isNuclear L j = N₀ × N₁ × N₂
     N₂ = (x   : ∣ L ∣F) → [ j (j x) ⊑[ pos L ] j x ]
 
 -- The type of nuclei.
-Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ₀ ⊔ ℓ₁)
+Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
 
 -- The top element is fixed point for every nucleus.

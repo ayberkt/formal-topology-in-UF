@@ -28,7 +28,7 @@ renamed to `_^_` to prevent conflict.
 `xs` is less than `ys` if there is some `zs` such that `xs = ys ++ zs`.
 
 ```
-_≤_ : ℂ → ℂ → hProp zero
+_≤_ : ℂ → ℂ → hProp ℓ-zero
 xs ≤ ys = (Σ[ zs ∈ ℂ ] xs ≡ ys ++ zs) , prop
   where
     prop : isProp (Σ[ zs ∈ ℂ ] xs ≡ ys ++ zs)
@@ -38,7 +38,7 @@ xs ≤ ys = (Σ[ zs ∈ ℂ ] xs ≡ ys ++ zs) , prop
 As `_≤_` is a partial order, we package it up as a poset.
 
 ```
-ℂ-pos : Poset zero zero
+ℂ-pos : Poset ℓ-zero ℓ-zero
 ℂ-pos = ℂ , _≤_ , ℂ-set , ≤-refl , ≤-trans , ≤-antisym
   where
     ≤-refl : (xs : ℂ) → [ xs ≤ xs ]
@@ -78,12 +78,12 @@ We give the formal topology of the Cantor space as an
 1. At each stage of information we can perform a trivial experiment: querying the next
    bit.
 ```
-ℂ-exp = λ (_ : ℂ) → Unit zero
+ℂ-exp = λ (_ : ℂ) → Unit ℓ-zero
 ```
 
 1. Outcome of the trivial experiment is the delivery of the new bit.
 ```
-ℂ-out = λ (_ : Unit zero) → 𝔹
+ℂ-out = λ (_ : Unit ℓ-zero) → 𝔹
 ```
 
 1. This takes us to a new stage information, obtained by snoc'ing in the new bit to the
@@ -126,7 +126,7 @@ and simulation properties (given in `ℂ-mono` and `ℂ-sim`).
 We finally package up all this as a formal topology
 
 ```
-cantor : FormalTopology zero zero
+cantor : FormalTopology ℓ-zero ℓ-zero
 cantor = ℂ-pos , ℂ-IS , ℂ-mono , ℂ-sim
 ```
 
@@ -135,7 +135,7 @@ from which we get a covering relation
 ```
 open CoverFromFormalTopology cantor renaming (_◁_ to _<ℂ|_)
 
-_ : ℂ → (ℂ → hProp zero) → Type zero
+_ : ℂ → (ℂ → hProp ℓ-zero) → Type ℓ-zero
 _ = _<ℂ|_
 ```
 
