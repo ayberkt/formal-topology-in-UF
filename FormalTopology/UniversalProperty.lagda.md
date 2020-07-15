@@ -27,7 +27,7 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
 ## Representation
 
 ```
-  represents : (R : Frame (suc ℓ₀) ℓ₀ ℓ₀) → (P ─m→ pos R) → Type ℓ₀
+  represents : (R : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀) → (P ─m→ pos R) → Type ℓ₀
   represents R (f , _) =
     (a : ∣ P ∣ₚ) (b : exp F a) →
       [ f a ⊑[ pos R ] ⋁[ R ] ⁅ f (next F c) ∣ c ∶ outcome F b ⁆ ]
@@ -36,13 +36,13 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
 By the way, note that the converse is always true.
 
 ```
-  represents⁻¹ : (R : Frame (suc ℓ₀) ℓ₀ ℓ₀) → (m : P ─m→ pos R)
+  represents⁻¹ : (R : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀) → (m : P ─m→ pos R)
                   → Type ℓ₀
   represents⁻¹ R (f , _) =
     (a : ∣ P ∣ₚ) (b : exp F a) →
       [ (⋁[ R ] ⁅ f (next F c) ∣ c ∶ outcome F b ⁆) ⊑[ pos R ] (f a) ]
 
-  conv : (R : Frame (suc ℓ₀) ℓ₀ ℓ₀) (f : P ─m→ pos R) → represents⁻¹ R f
+  conv : (R : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀) (f : P ─m→ pos R) → represents⁻¹ R f
   conv R (f , f-mono) a b =
     ⋁[ R ]-least (⁅ f (next F c) ∣ c ∶ outcome F b ⁆) (f a) NTS
     where
@@ -59,7 +59,7 @@ By the way, note that the converse is always true.
   _↓_↓ : ∣ P ∣ₚ → ∣ P ∣ₚ → 𝒫 ∣ P ∣ₚ
   _↓_↓ a b = λ - → - ⊑[ P ] a ⊓ - ⊑[ P ] b
 
-  isFlat : (F : Frame (suc ℓ₀) ℓ₀ ℓ₀) → (m : P ─m→ pos F) → Type (suc ℓ₀)
+  isFlat : (F : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀) → (m : P ─m→ pos F) → Type (ℓ-suc ℓ₀)
   isFlat F (f , _) = (⊤[ F ] ≡ ⋁[ F ] ⁅ f a ∣ a ∶ ∣ P ∣ₚ ⁆)
                    × ((a b : ∣ P ∣ₚ) → f a ⊓[ F ] f b ≡ ⋁[ F ] (f ⟨$⟩ ⟪ a ↓ b ↓ ⟫))
 ```
@@ -69,9 +69,9 @@ By the way, note that the converse is always true.
 Statement.
 
 ```
-  universal-prop : Type (suc (suc ℓ₀))
+  universal-prop : Type (ℓ-suc (ℓ-suc ℓ₀))
   universal-prop =
-    (R : Frame (suc ℓ₀) ℓ₀ ℓ₀) (f : P ─m→ pos R) → isFlat R f → represents R f →
+    (R : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀) (f : P ─m→ pos R) → isFlat R f → represents R f →
       isContr (Σ[ g ∈ (L ─f→ R) ] (_∘m_ {P = P} {Q = pos L} {R = pos R} (π₀ g) ηm) ≡ f)
 ```
 
@@ -105,7 +105,7 @@ Before the proof we will need some lemmas.
 Proof.
 
 ```
-  module MainProof (R      : Frame (suc ℓ₀) ℓ₀ ℓ₀)
+  module MainProof (R      : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀)
                    (fm     : P ─m→ pos R)
                    (f-flat : isFlat R fm)
                    (rep    : represents R fm) where
