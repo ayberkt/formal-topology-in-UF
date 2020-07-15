@@ -5,6 +5,7 @@ module Compactness where
 
 open import Basis             hiding (A; B)
 open import Cubical.Data.List hiding ([_])
+open import Cubical.Data.Nat  using  (ℕ)
 open import Poset
 open import FormalTopology
 open import Cover
@@ -47,16 +48,26 @@ Cover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ suc ℓ₂)
 Cover {ℓ₂ = ℓ₂} F = Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] U covers F
 ```
 
+Next, we define what it means for a cover to be finite.
+
+```agda
+FinCover : (F : Frame ℓ₀ ℓ₁ zero) → Type ℓ₀
+FinCover F = Σ[ xs ∈ List ∣ F ∣F ] (famFromList xs) covers F 
+```
+
 The type of *subcovers* of a given cover.
 
 ```agda
-Subcover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → (C : Cover F) → Type (ℓ₀ ⊔ suc ℓ₂)
-Subcover F (U , _) = Σ[ (V , _) ∈ Cover F ] V ⊆fam U
+isASubcover : (F : Frame ℓ₀ ℓ₁ zero) → FinCover F → Cover F → Type ℓ₀
+isASubcover F (xs , _) (U , _) = famFromList xs ⊆fam U
+
+hasFinSubcover : (F : Frame ℓ₀ ℓ₁ zero) → Cover F → Type ℓ₀
+hasFinSubcover F C₀ = Σ[ C₁ ∈ FinCover F ] isASubcover F C₁ C₀
 ```
 
 Statement of compactness.
 
 ```agda
-isACompactFrame : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ suc ℓ₂)
-isACompactFrame F = (C : Cover F) → Subcover F C
+isACompactFrame : (F : Frame ℓ₀ ℓ₁ zero) → Type (suc zero ⊔ ℓ₀)
+isACompactFrame F = (C : Cover F) → hasFinSubcover F C
 ```

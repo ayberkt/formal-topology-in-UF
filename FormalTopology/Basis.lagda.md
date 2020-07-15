@@ -37,6 +37,13 @@ open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
 open FF  public using     (_∘_) renaming (idfun to id)
 open FEE public using     (funExtEquiv; funExt₂; funExt₂Equiv; funExt₂Path)
 open HAE public using     (isHAEquiv; equiv→HAEquiv)
+
+open import Cubical.Data.Nat  using (ℕ; _+_) renaming (suc to sucℕ; zero to zeroℕ)
+open import Cubical.Data.Nat.Properties using (injSuc; snotz; +-comm)
+open import Cubical.Data.Nat.Order
+open import Cubical.Data.Empty using (rec)
+open import Cubical.Data.List using (List; length; _∷_; [])
+open import Cubical.Data.Fin  using (Fin)
 ```
 
 ```
@@ -184,8 +191,16 @@ syntax fam-forall ℱ (λ x → P) = ∀[ x ε ℱ ] P
 -- Familification of a given powerset.
 ⟪_⟫ : {A : Type ℓ₀} → (A → hProp ℓ₁) → Fam (ℓ₀ ⊔ ℓ₁) A
 ⟪_⟫ {A = A} U = (Σ[ x ∈ A ] [ U x ]) , π₀
-```
 
+lookup : {A : Type ℓ₀} → (xs : List A) → Fin (length xs) → A
+lookup []       (_      , zeroℕ  , p) = rec (snotz p)
+lookup []       (_      , sucℕ i , p) = rec (snotz p)
+lookup (x ∷ xs) (zeroℕ  , _)          = x
+lookup (x ∷ xs) (sucℕ i , p)          = lookup xs (i , pred-≤-pred p)
+
+famFromList : {A : Type ℓ₀} → List A → Fam zero A
+famFromList xs = Fin (length xs) , lookup xs
+```
 
 ## Truncation
 
