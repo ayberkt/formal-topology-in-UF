@@ -12,26 +12,26 @@ open import Cubical.Foundations.Equiv using (_≃⟨_⟩_) renaming (_■ to _�
 ## Definition of poset
 
 ```agda
-Order : (ℓ₁ : Level) → Type ℓ → Type (ℓ ⊔ suc ℓ₁)
+Order : (ℓ₁ : Level) → Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ₁))
 Order ℓ₁ A = A → A → hProp ℓ₁
 
 Order-set : (ℓ₁ : Level) (A : Type ℓ₀) → isSet (Order ℓ₁ A)
 Order-set ℓ₁ A = isSetΠ2 λ _ _ → isSetHProp
 
-isReflexive : {A : Type ℓ₀} → Order ℓ₁ A → hProp (ℓ₀ ⊔ ℓ₁)
+isReflexive : {A : Type ℓ₀} → Order ℓ₁ A → hProp (ℓ-max ℓ₀ ℓ₁)
 isReflexive {A = X} _⊑_ =
   ((x : X) → [ x ⊑ x ]) , isPropΠ (λ x → is-true-prop (x ⊑ x))
 
-isTransitive : {A : Type ℓ₀} → Order ℓ₁ A → hProp (ℓ₀ ⊔ ℓ₁)
+isTransitive : {A : Type ℓ₀} → Order ℓ₁ A → hProp (ℓ-max ℓ₀ ℓ₁)
 isTransitive {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} {A = X} _⊑_ = ⊑-trans , ⊑-trans-prop
   where
-    ⊑-trans : Type (ℓ₀ ⊔ ℓ₁)
+    ⊑-trans : Type (ℓ-max ℓ₀ ℓ₁)
     ⊑-trans = ((x y z : X) → [ x ⊑ y ⇒ y ⊑ z ⇒ x ⊑ z ])
 
     ⊑-trans-prop : isProp  ⊑-trans
     ⊑-trans-prop = isPropΠ3 λ x y z → is-true-prop (x ⊑ y ⇒ y ⊑ z ⇒ x ⊑ z)
 
-isAntisym : {A : Type ℓ₀} → isSet A → Order ℓ₁ A → hProp (ℓ₀ ⊔ ℓ₁)
+isAntisym : {A : Type ℓ₀} → isSet A → Order ℓ₁ A → hProp (ℓ-max ℓ₀ ℓ₁)
 isAntisym {A = A} A-set _⊑_ = ⊑-antisym , ⊑-antisym-prop
   where
     ⊑-antisym = (x y : A) → [ x ⊑ y ] → [ y ⊑ x ] → x ≡ y
@@ -39,7 +39,7 @@ isAntisym {A = A} A-set _⊑_ = ⊑-antisym , ⊑-antisym-prop
     ⊑-antisym-prop : isProp ⊑-antisym
     ⊑-antisym-prop = isPropΠ2 λ x y → isPropΠ2 λ _ _ → A-set x y
 
-PosetAx : (A : Type ℓ₀) → Order ℓ₁ A → hProp (ℓ₀ ⊔ ℓ₁)
+PosetAx : (A : Type ℓ₀) → Order ℓ₁ A → hProp (ℓ-max ℓ₀ ℓ₁)
 PosetAx {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} A _⊑_ = isAPartialSet , isAPartialSet-prop
   where
     isAPartialSet =
@@ -53,7 +53,7 @@ PosetAx {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} A _⊑_ = isAPartialSet , isAPartial
 A poset structure with level `ℓ₁`.
 
 ```agda
-PosetStr : (ℓ₁ : Level) → Type ℓ → Type (ℓ ⊔ suc ℓ₁)
+PosetStr : (ℓ₁ : Level) → Type ℓ → Type (ℓ-max ℓ (ℓ-suc ℓ₁))
 PosetStr ℓ₁ A = Σ[ ⊑ ∈ Order ℓ₁ A ] [ PosetAx A ⊑ ]
 
 PosetStr-set : (ℓ₁ : Level) (A : Type ℓ₀) → isSet (PosetStr ℓ₁ A)
@@ -66,7 +66,7 @@ PosetStr-set ℓ₁ A =
 A poset with carrier level `ℓ₀` and relation level `ℓ₁`.
 
 ```agda
-Poset : (ℓ₀ ℓ₁ : Level) → Type (suc ℓ₀ ⊔ suc ℓ₁)
+Poset : (ℓ₀ ℓ₁ : Level) → Type (ℓ-max (ℓ-suc ℓ₀) (ℓ-suc ℓ₁))
 Poset ℓ₀ ℓ₁ = Σ (Type ℓ₀) (PosetStr ℓ₁)
 ```
 
@@ -149,7 +149,7 @@ orders.
 
 ```agda
 isOrderPreserving : (M : Σ (Type ℓ₀) (Order ℓ₁)) (N : Σ (Type ℓ₀′) (Order ℓ₁′))
-                  → (π₀ M → π₀ N) → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₁′)
+                  → (π₀ M → π₀ N) → Type _
 isOrderPreserving (A , _⊑₀_) (B , _⊑₁_) f = (x y : A) → [ x ⊑₀ y ] → [ f x ⊑₁ f y ]
 ```
 
@@ -157,7 +157,7 @@ Technically, this is called "monotonic" as well but we will reserve that term fo
 
 ```agda
 isMonotonic : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′)
-            → (∣ P ∣ₚ → ∣ Q ∣ₚ) → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₁′)
+            → (∣ P ∣ₚ → ∣ Q ∣ₚ) → Type _
 isMonotonic (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) = isOrderPreserving (A , _⊑₀_) (B , _⊑₁_)
 ```
 
@@ -178,7 +178,7 @@ isMonotonic-prop (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) f =
 We then collect monotonic functions in the following type.
 
 ```agda
-_─m→_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀′ ℓ₁′ → Type (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₀′ ⊔ ℓ₁′)
+_─m→_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀′ ℓ₁′ → Type _
 _─m→_ P Q = Σ (∣ P ∣ₚ → ∣ Q ∣ₚ) (isMonotonic P Q)
 ```
 
@@ -218,19 +218,19 @@ forget-mono P Q (f , f-mono) (g , g-mono) =
 We denote by `↓[ P ] x` the type of everything in `P` that is below `x`.
 
 ```agda
-↓[_]_ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → Type (ℓ₀ ⊔ ℓ₁)
+↓[_]_ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → Type _
 ↓[ P ] a = Σ[ b ∈ ∣ P ∣ₚ ] [ b ⊑[ P ] a ]
 ```
 
 ```agda
-isDownwardsClosed : (P : Poset ℓ₀ ℓ₁) → 𝒫 ∣ P ∣ₚ → hProp (ℓ₀ ⊔ ℓ₁)
+isDownwardsClosed : (P : Poset ℓ₀ ℓ₁) → 𝒫 ∣ P ∣ₚ → hProp _
 isDownwardsClosed P U =
   ((x y : ∣ P ∣ₚ) → [ x ∈ U ] → [ y ⊑[ P ] x ] → [ y ∈ U ]) , prop
   where
     prop : isProp ((x y : ∣ P ∣ₚ) → [ U x ] → [ y ⊑[ P ] x ] → [ U y ])
     prop = isPropΠ λ _ → isPropΠ λ x → isPropΠ λ _ → isPropΠ λ _ → is-true-prop (x ∈ U)
 
-DCSubset : (P : Poset ℓ₀ ℓ₁) → Type (suc ℓ₀ ⊔ ℓ₁)
+DCSubset : (P : Poset ℓ₀ ℓ₁) → Type _
 DCSubset P = Σ[ U ∈ 𝒫 ∣ P ∣ₚ ] [ isDownwardsClosed P U ]
 
 DCSubset-set : (P : Poset ℓ₀ ℓ₁) → isSet (DCSubset P)
@@ -241,7 +241,7 @@ DCSubset-set P =
 ## Product of two posets
 
 ```agda
-_×ₚ_ : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) → Poset (ℓ₀ ⊔ ℓ₀′) (ℓ₁ ⊔ ℓ₁′)
+_×ₚ_ : (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) → Poset _ _
 P ×ₚ Q = (∣ P ∣ₚ × ∣ Q ∣ₚ) , _⊑_ , carrier-set , (⊑-refl , ⊑-trans , ⊑-antisym)
   where
     _⊑_ : ∣ P ∣ₚ × ∣ Q ∣ₚ → ∣ P ∣ₚ × ∣ Q ∣ₚ → hProp _
@@ -273,7 +273,7 @@ order-preserving, we can express what it means for a *type equivalence* to be or
 preserving.
 
 ```agda
-isAnOrderPreservingEqv : (M N : Σ (Type ℓ₀) (Order ℓ₁)) → π₀ M ≃ π₀ N → Type (ℓ₀ ⊔ ℓ₁)
+isAnOrderPreservingEqv : (M N : Σ (Type ℓ₀) (Order ℓ₁)) → π₀ M ≃ π₀ N → Type _ 
 isAnOrderPreservingEqv M N e@(f , _) =
   isOrderPreserving M N f × isOrderPreserving N M g
   where
@@ -330,7 +330,7 @@ Adding partial order axioms on top of this is not too hard.
 First, let us define what is means for a type equivalence to be monotonic.
 
 ```agda
-isAMonotonicEqv : (P Q : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ ≃ ∣ Q ∣ₚ → Type (ℓ₀ ⊔ ℓ₁)
+isAMonotonicEqv : (P Q : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ ≃ ∣ Q ∣ₚ → Type _
 isAMonotonicEqv (A , (_⊑₀_ , _)) (B , (_⊑₁_ , _)) =
   isAnOrderPreservingEqv (A , _⊑₀_) (B , _⊑₁_)
 
@@ -345,7 +345,7 @@ isAMonotonicEqv-prop P Q e@(f , _) =
 We denote by `_≃ₚ_` the type of monotonic poset equivalences.
 
 ```agda
-_≃ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type (ℓ₀ ⊔ ℓ₁)
+_≃ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _
 _≃ₚ_ P Q = Σ[ i ∈ ∣ P ∣ₚ ≃ ∣ Q ∣ₚ ] isAMonotonicEqv P Q i
 ```
 
@@ -376,7 +376,7 @@ them.
 Let us start by writing down what a poset isomorphisms is.
 
 ```agda
-isPosetIso : (P Q : Poset ℓ₀ ℓ₁) → (P ─m→ Q) → Type (ℓ₀ ⊔ ℓ₁)
+isPosetIso : (P Q : Poset ℓ₀ ℓ₁) → (P ─m→ Q) → Type _
 isPosetIso P Q (f , _) = Σ[ (g , _) ∈ (Q ─m→ P) ] section f g × retract f g
 
 isPosetIso-prop : (P Q : Poset ℓ₀ ℓ₁) (f : P ─m→ Q)
@@ -400,7 +400,7 @@ isPosetIso-prop P Q (f , f-mono) (g₀ , sec₀ , ret₀) (g₁ , sec₁ , ret�
 We will denote by `P ≅ₚ Q` the type of isomorphisms between posets `P` and `Q`.
 
 ```agda
-_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type (ℓ₀ ⊔ ℓ₁)
+_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _ 
 P ≅ₚ Q = Σ[ f ∈ P ─m→ Q ] isPosetIso P Q f
 ```
 
