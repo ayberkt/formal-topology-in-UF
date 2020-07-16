@@ -92,6 +92,11 @@ infix 9 rel
 
 syntax rel P x y = x ⊑[ P ] y
 
+rel₂ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp ℓ₁
+rel₂ P x y z = (x ⊑[ P ] z) ⊓ (y ⊑[ P ] z)
+
+syntax rel₂ P x y z = ⟨ x , y ⟩⊑[ P ] z
+
 relᵒᵖ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp ℓ₁
 relᵒᵖ (_ , _⊑_ , _) x y = y ⊑ x
 

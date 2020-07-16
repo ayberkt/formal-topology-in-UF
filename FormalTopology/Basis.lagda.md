@@ -27,7 +27,8 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
-open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[])
+open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[];
+                           ∃[∶]-syntax; ∀[∶]-syntax)
 open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
                            isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
