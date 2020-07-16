@@ -55,7 +55,7 @@ obtained via `famFromList`, such that `U` covers the frame.
 
 ```agda
 FinCover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → Type ℓ₀
-FinCover F = Σ[ xs ∈ List ∣ F ∣F ] (famFromList xs) covers F 
+FinCover F = Σ[ xs ∈ List ∣ F ∣F ] (famFromList xs) covers F
 ```
 
 The following is the property of being a *subcover*.
