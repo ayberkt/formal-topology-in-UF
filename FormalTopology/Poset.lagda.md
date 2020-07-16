@@ -243,6 +243,19 @@ DCSubset-set P =
   isSetΣ (𝒫-set ∣ P ∣ₚ) λ U → isProp→isSet (is-true-prop (isDownwardsClosed P U))
 ```
 
+## Directedness
+
+The notion of a *directed subset*, manifested here as a directed *family*.
+
+```agda
+isDirected : {ℓ₂ : Level} → (P : Poset ℓ₀ ℓ₁) → Fam ℓ₂ ∣ P ∣ₚ → hProp (ℓ-max ℓ₁ ℓ₂)
+isDirected P U@(I , _) =
+  U-inhabited ⊓ (∀[ i ∶ I ] ∀[ j ∶ I ] ∃[ k ∶ I ] ⟨ (U $ i) , (U $ j) ⟩⊑[ P ] (U $ k))
+  where
+    U-inhabited : hProp _
+    U-inhabited = ∥ index U ∥ , (∥∥-prop I)
+```
+
 ## Product of two posets
 
 ```agda
