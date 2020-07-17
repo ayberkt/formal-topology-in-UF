@@ -30,7 +30,7 @@
 
 **Definition 2.1**.
 
-<pre class="Agda"><a id="576" href="Index.html#576" class="Function">_</a> <a id="578" class="Symbol">=</a> <a id="580" href="Cubical.Foundations.Prelude.html#8650" class="Function">Basis.isContr</a>
+<pre class="Agda"><a id="576" href="Index.html#576" class="Function">_</a> <a id="578" class="Symbol">=</a> <a id="580" href="Cubical.Foundations.Prelude.html#9750" class="Function">Basis.isContr</a>
 </pre>
 **Definition 2.2**.
 
@@ -54,57 +54,57 @@
 </pre>
 **Definition 2.7**.
 
-<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3069" class="Function Operator">Basis._~_</a>
+<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3122" class="Function Operator">Basis._~_</a>
 </pre>
 **Proposition 2.8**.
 
-<pre class="Agda"><a id="960" href="Index.html#960" class="Function">_</a> <a id="962" class="Symbol">=</a> <a id="964" href="Cubical.Foundations.Prelude.html#6523" class="Function">Basis.funExt</a>
+<pre class="Agda"><a id="960" href="Index.html#960" class="Function">_</a> <a id="962" class="Symbol">=</a> <a id="964" href="Cubical.Foundations.Prelude.html#7623" class="Function">Basis.funExt</a>
 </pre>
 ### 2.4: Homotopy levels
 
 **Definition 2.9**.
 
-<pre class="Agda"><a id="1037" href="Index.html#1037" class="Function">_</a> <a id="1039" class="Symbol">=</a> <a id="1041" href="Cubical.Foundations.HLevels.html#1043" class="Function">Basis.isOfHLevel</a>
+<pre class="Agda"><a id="1037" href="Index.html#1037" class="Function">_</a> <a id="1039" class="Symbol">=</a> <a id="1041" href="Cubical.Foundations.HLevels.html#1102" class="Function">Basis.isOfHLevel</a>
 </pre>
 **Proposition 2.10**.
 
-<pre class="Agda"><a id="1094" href="Index.html#1094" class="Function">_</a> <a id="1096" class="Symbol">=</a> <a id="1098" href="Cubical.Foundations.HLevels.html#1662" class="Function">Basis.isOfHLevelSuc</a>
+<pre class="Agda"><a id="1094" href="Index.html#1094" class="Function">_</a> <a id="1096" class="Symbol">=</a> <a id="1098" href="Cubical.Foundations.HLevels.html#1721" class="Function">Basis.isOfHLevelSuc</a>
 </pre>
 **Proposition 2.11**.
 
-<pre class="Agda"><a id="1154" href="Index.html#1154" class="Function">_</a> <a id="1156" class="Symbol">=</a> <a id="1158" href="Cubical.Foundations.HLevels.html#9919" class="Function">Basis.isOfHLevelΠ</a>
+<pre class="Agda"><a id="1154" href="Index.html#1154" class="Function">_</a> <a id="1156" class="Symbol">=</a> <a id="1158" href="Cubical.Foundations.HLevels.html#9978" class="Function">Basis.isOfHLevelΠ</a>
 </pre>
 **Proposition 2.12**.
 
-<pre class="Agda"><a id="1212" href="Index.html#1212" class="Function">_</a> <a id="1214" class="Symbol">=</a> <a id="1216" href="Cubical.Foundations.HLevels.html#8011" class="Function">Basis.isOfHLevelΣ</a>
+<pre class="Agda"><a id="1212" href="Index.html#1212" class="Function">_</a> <a id="1214" class="Symbol">=</a> <a id="1216" href="Cubical.Foundations.HLevels.html#8070" class="Function">Basis.isOfHLevelΣ</a>
 </pre>
 Definition 2.13 is omitted.
 
 **Definition 2.14**.
 
-<pre class="Agda"><a id="1298" href="Index.html#1298" class="Function">_</a> <a id="1300" class="Symbol">=</a> <a id="1302" href="Cubical.Foundations.Prelude.html#8714" class="Function">Basis.isProp</a>
+<pre class="Agda"><a id="1298" href="Index.html#1298" class="Function">_</a> <a id="1300" class="Symbol">=</a> <a id="1302" href="Cubical.Foundations.Prelude.html#9814" class="Function">Basis.isProp</a>
 </pre>
 Proposition 2.15 is omitted.
 
 **Definition 2.16**.
 
-<pre class="Agda"><a id="1380" href="Index.html#1380" class="Function">_</a> <a id="1382" class="Symbol">=</a> <a id="1384" href="Cubical.Foundations.HLevels.html#1437" class="Function">Basis.hProp</a>
+<pre class="Agda"><a id="1380" href="Index.html#1380" class="Function">_</a> <a id="1382" class="Symbol">=</a> <a id="1384" href="Cubical.Foundations.HLevels.html#1496" class="Function">Basis.hProp</a>
 </pre>
 **Proposition 2.17**.
 
-<pre class="Agda"><a id="1432" href="Index.html#1432" class="Function">_</a> <a id="1434" class="Symbol">=</a> <a id="1436" href="Cubical.Foundations.HLevels.html#10250" class="Function">Basis.isPropΠ</a>
+<pre class="Agda"><a id="1432" href="Index.html#1432" class="Function">_</a> <a id="1434" class="Symbol">=</a> <a id="1436" href="Cubical.Foundations.HLevels.html#10309" class="Function">Basis.isPropΠ</a>
 </pre>
 **Proposition 2.18**.
 
-<pre class="Agda"><a id="1486" href="Index.html#1486" class="Function">_</a> <a id="1488" class="Symbol">=</a> <a id="1490" href="Cubical.Foundations.HLevels.html#7894" class="Function">Basis.isPropΣ</a>
+<pre class="Agda"><a id="1486" href="Index.html#1486" class="Function">_</a> <a id="1488" class="Symbol">=</a> <a id="1490" href="Cubical.Foundations.HLevels.html#7953" class="Function">Basis.isPropΣ</a>
 </pre>
 **Proposition 2.19**.
 
-<pre class="Agda"><a id="1540" href="Index.html#1540" class="Function">_</a> <a id="1542" class="Symbol">=</a> <a id="1544" href="Cubical.Foundations.Prelude.html#12734" class="Function">Basis.isPropIsProp</a>
+<pre class="Agda"><a id="1540" href="Index.html#1540" class="Function">_</a> <a id="1542" class="Symbol">=</a> <a id="1544" href="Cubical.Foundations.Prelude.html#13834" class="Function">Basis.isPropIsProp</a>
 </pre>
 **Proposition 2.20**.
 
-<pre class="Agda"><a id="1599" href="Index.html#1599" class="Function">_</a> <a id="1601" class="Symbol">=</a> <a id="1603" href="Cubical.Data.Sigma.Properties.html#2630" class="Function">Basis.Σ≡Prop</a>
+<pre class="Agda"><a id="1599" href="Index.html#1599" class="Function">_</a> <a id="1601" class="Symbol">=</a> <a id="1603" href="Cubical.Data.Sigma.Properties.html#2745" class="Function">Basis.Σ≡Prop</a>
 </pre>
 **Definition 2.21**. This is defined directly for h-propositions in the
 `cubical` library.
@@ -126,27 +126,27 @@ Proposition 2.15 is omitted.
 </pre>
 **Definition 2.25**.
 
-<pre class="Agda"><a id="1951" href="Index.html#1951" class="Function">_</a> <a id="1953" class="Symbol">=</a> <a id="1955" href="Cubical.Foundations.Prelude.html#8769" class="Function">Basis.isSet</a>
+<pre class="Agda"><a id="1951" href="Index.html#1951" class="Function">_</a> <a id="1953" class="Symbol">=</a> <a id="1955" href="Cubical.Foundations.Prelude.html#9869" class="Function">Basis.isSet</a>
 </pre>
 **Proposition 2.26**.
 
-<pre class="Agda"><a id="2003" href="Index.html#2003" class="Function">_</a> <a id="2005" class="Symbol">=</a> <a id="2007" href="Cubical.Foundations.Prelude.html#12262" class="Function">Basis.isProp→isSet</a>
+<pre class="Agda"><a id="2003" href="Index.html#2003" class="Function">_</a> <a id="2005" class="Symbol">=</a> <a id="2007" href="Cubical.Foundations.Prelude.html#13362" class="Function">Basis.isProp→isSet</a>
 </pre>
 **Proposition 2.27**.
 
-<pre class="Agda"><a id="2062" href="Index.html#2062" class="Function">_</a> <a id="2064" class="Symbol">=</a> <a id="2066" href="Cubical.Foundations.HLevels.html#13031" class="Function">Basis.isSetHProp</a>
+<pre class="Agda"><a id="2062" href="Index.html#2062" class="Function">_</a> <a id="2064" class="Symbol">=</a> <a id="2066" href="Cubical.Foundations.HLevels.html#13897" class="Function">Basis.isSetHProp</a>
 </pre>
 **Proposition 2.28**.
 
-<pre class="Agda"><a id="2119" href="Index.html#2119" class="Function">_</a> <a id="2121" class="Symbol">=</a> <a id="2123" href="Cubical.Foundations.HLevels.html#10896" class="Function">Basis.isSetΠ</a>
+<pre class="Agda"><a id="2119" href="Index.html#2119" class="Function">_</a> <a id="2121" class="Symbol">=</a> <a id="2123" href="Cubical.Foundations.HLevels.html#11165" class="Function">Basis.isSetΠ</a>
 </pre>
 **Proposition 2.29**.
 
-<pre class="Agda"><a id="2172" href="Index.html#2172" class="Function">_</a> <a id="2174" class="Symbol">=</a> <a id="2176" href="Cubical.Foundations.HLevels.html#8460" class="Function">Basis.isSetΣ</a>
+<pre class="Agda"><a id="2172" href="Index.html#2172" class="Function">_</a> <a id="2174" class="Symbol">=</a> <a id="2176" href="Cubical.Foundations.HLevels.html#8519" class="Function">Basis.isSetΣ</a>
 </pre>
 **Proposition 2.30**.
 
-<pre class="Agda"><a id="2225" href="Index.html#2225" class="Function">_</a> <a id="2227" class="Symbol">=</a> <a id="2229" href="Cubical.Foundations.HLevels.html#4477" class="Function">Basis.isPropIsSet</a>
+<pre class="Agda"><a id="2225" href="Index.html#2225" class="Function">_</a> <a id="2227" class="Symbol">=</a> <a id="2229" href="Cubical.Foundations.HLevels.html#4536" class="Function">Basis.isPropIsSet</a>
 </pre>
 **Definition 2.31**.
 
@@ -164,49 +164,49 @@ Proposition 2.15 is omitted.
 
 **Definition 2.34**.
 
-<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3166" class="Function">Basis.𝒫</a>
+<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3219" class="Function">Basis.𝒫</a>
 </pre>
 **Proposition 2.35**.
 
-<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#3348" class="Function">Basis.𝒫-set</a>
+<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#3401" class="Function">Basis.𝒫-set</a>
 </pre>
 **Definition 2.36**.
 
-<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#3542" class="Function Operator">Basis._⊆_</a>
+<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#3595" class="Function Operator">Basis._⊆_</a>
 </pre>
 **Definition 2.37**.
 
-<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#3874" class="Function">Basis.entire</a>
+<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#3927" class="Function">Basis.entire</a>
 </pre>
 **Definition 2.38**.
 
-<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#3941" class="Function Operator">Basis._∩_</a>
+<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#3994" class="Function Operator">Basis._∩_</a>
 </pre>
 ### 2.6: Families
 
 **Definition 2.39**.
 
-<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#4161" class="Function">Basis.Fam</a>
+<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#4214" class="Function">Basis.Fam</a>
 </pre>
 **Definition 2.41**.
 
-<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#4423" class="Function Operator">Basis._ε_</a>
+<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#4476" class="Function Operator">Basis._ε_</a>
 </pre>
 **Definition 2.42**.
 
-<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#4630" class="Function Operator">Basis._⟨$⟩_</a>
+<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#4683" class="Function Operator">Basis._⟨$⟩_</a>
 </pre>
 **Definition 2.43**.
 
-<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#5390" class="Function Operator">Basis.⟪_⟫</a>
+<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#5443" class="Function Operator">Basis.⟪_⟫</a>
 </pre>
 ### 2.8: Truncation
 
 **Definition 2.44**.
 
-<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#5883" class="Datatype Operator">Basis.∥_∥</a>
-<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#5970" class="Function">Basis.∥∥-prop</a>
-<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#6028" class="Function">Basis.∥∥-rec</a>
+<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#5936" class="Datatype Operator">Basis.∥_∥</a>
+<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#6023" class="Function">Basis.∥∥-prop</a>
+<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#6081" class="Function">Basis.∥∥-rec</a>
 </pre>
 ## Chapter 3: Frames
 
@@ -220,12 +220,12 @@ Proposition 2.15 is omitted.
 </pre>
 **Definition 3.2**.
 
-<pre class="Agda"><a id="3243" href="Index.html#3243" class="Function">_</a> <a id="3245" class="Symbol">=</a> <a id="3247" href="Poset.html#6594" class="Function">Poset.isDownwardsClosed</a>
-<a id="3271" href="Index.html#3271" class="Function">_</a> <a id="3273" class="Symbol">=</a> <a id="3275" href="Poset.html#6913" class="Function">Poset.DCSubset</a>
+<pre class="Agda"><a id="3243" href="Index.html#3243" class="Function">_</a> <a id="3245" class="Symbol">=</a> <a id="3247" href="Poset.html#6742" class="Function">Poset.isDownwardsClosed</a>
+<a id="3271" href="Index.html#3271" class="Function">_</a> <a id="3273" class="Symbol">=</a> <a id="3275" href="Poset.html#7061" class="Function">Poset.DCSubset</a>
 </pre>
 **Proposition 3.3**.
 
-<pre class="Agda"><a id="3325" href="Index.html#3325" class="Function">_</a> <a id="3327" class="Symbol">=</a> <a id="3329" href="Poset.html#7009" class="Function">Poset.DCSubset-set</a>
+<pre class="Agda"><a id="3325" href="Index.html#3325" class="Function">_</a> <a id="3327" class="Symbol">=</a> <a id="3329" href="Poset.html#7157" class="Function">Poset.DCSubset-set</a>
 </pre>
 **Proposition 3.4**.
 
@@ -233,11 +233,11 @@ Proposition 2.15 is omitted.
 </pre>
 **Definition 3.5**.
 
-<pre class="Agda"><a id="3435" href="Index.html#3435" class="Function">_</a> <a id="3437" class="Symbol">=</a> <a id="3439" href="Poset.html#4520" class="Function">Poset.isMonotonic</a>
+<pre class="Agda"><a id="3435" href="Index.html#3435" class="Function">_</a> <a id="3437" class="Symbol">=</a> <a id="3439" href="Poset.html#4668" class="Function">Poset.isMonotonic</a>
 </pre>
 **Definition 3.6**.
 
-<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#12297" class="Function">Poset.isPosetIso</a>
+<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#12825" class="Function">Poset.isPosetIso</a>
 </pre>
 ### 3.2: Definition of a frame
 
@@ -292,7 +292,7 @@ by the following function:
 
 **Definition 3.16**.
 
-<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#10643" class="Function">Poset.isAMonotonicEqv</a>
+<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#11171" class="Function">Poset.isAMonotonicEqv</a>
 </pre>
 **Definition 3.17**.
 
