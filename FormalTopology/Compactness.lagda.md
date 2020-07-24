@@ -9,7 +9,7 @@ open import Cubical.Data.Nat  using  (ℕ)
 open import Poset
 open import FormalTopology
 open import Cover
-open import Frame             hiding (pos)
+open import Frame             renaming (pos to posf)
 ```
 
 # Compactness for formal topologies
@@ -65,7 +65,7 @@ isASubcover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → FinCover F → Cover F → 
 isASubcover F (xs , _) (U , _) = famFromList xs ⊆fam U
 
 hasFinSubcover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → Cover F → Type ℓ₀
-hasFinSubcover F C₀ = Σ[ C₁ ∈ FinCover F ] isASubcover F C₁ C₀
+hasFinSubcover F C₀ = ∥ Σ[ C₁ ∈ FinCover F ] isASubcover F C₁ C₀ ∥
 ```
 
 Statement of compactness is then as follows.
