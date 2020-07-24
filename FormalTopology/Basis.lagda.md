@@ -3,9 +3,6 @@
 
 module Basis where
 
-open import Level    public
-
-
 import Cubical.Core.Everything                as CE
 import Cubical.Data.Sigma                     as DΣ
 import Cubical.Data.Sum                       as DS
@@ -20,8 +17,9 @@ import Cubical.Foundations.Function           as FF
 
 open import Cubical.Foundations.Univalence public using (ua)
 
-open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv)
-open DΣ  public using     (ΣProp≡; sigmaPath→pathSigma; pathSigma→sigmaPath; _×_; _,_)
+open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isEquiv; Level;
+                           ℓ-max; ℓ-zero; ℓ-suc)
+open DΣ  public using     (Σ≡Prop; ΣPathTransport→PathΣ; PathΣ→ΣPathTransport; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
 open DS  public using     (inl; inr; _⊎_)
 open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
@@ -29,7 +27,8 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
-open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_] )
+open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[];
+                           ∃[∶]-syntax; ∀[∶]-syntax)
 open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
                            isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
@@ -37,6 +36,13 @@ open FI  public using     (isoToPath; isoToEquiv; iso; section; retract; Iso)
 open FF  public using     (_∘_) renaming (idfun to id)
 open FEE public using     (funExtEquiv; funExt₂; funExt₂Equiv; funExt₂Path)
 open HAE public using     (isHAEquiv; equiv→HAEquiv)
+
+open import Cubical.Data.Nat  using (ℕ; _+_) renaming (suc to sucℕ; zero to zeroℕ)
+open import Cubical.Data.Nat.Properties using (injSuc; snotz; +-comm)
+open import Cubical.Data.Nat.Order
+open import Cubical.Data.Empty using (rec)
+open import Cubical.Data.List using (List; length; _∷_; [])
+open import Cubical.Data.Fin  using (Fin)
 ```
 
 ```
@@ -48,7 +54,7 @@ variable
   B    : A → Type ℓ₀
   A₀   : Type ℓ₁
 
-_↔_ : (A : Type ℓ) (B : Type ℓ′) → Type (ℓ ⊔ ℓ′)
+_↔_ : (A : Type ℓ) (B : Type ℓ′) → Type _
 A ↔ B = (A → B) × (B → A)
 
 ↔-to : {A : Type ℓ} {B : Type ℓ′} → A ↔ B → A → B
@@ -85,7 +91,7 @@ is-true-prop (P , P-prop) = P-prop
 ```
 
 ```
-∃_ : {A : Type ℓ₀} → (A → hProp ℓ₁) → Type (ℓ₀ ⊔ ℓ₁)
+∃_ : {A : Type ℓ₀} → (A → hProp ℓ₁) → Type _
 ∃_ {A = A} P = Σ[ x ∈ A ] [ P x ]
 ```
 
@@ -99,7 +105,7 @@ _~_ {A = A} f g = (x : A) → f x ≡ g x
 ## Powerset
 
 ```
-𝒫 : Type ℓ → Type (suc ℓ)
+𝒫 : Type ℓ → Type _
 𝒫 {ℓ} A = A → hProp ℓ
 
 _∈_ : A → 𝒫 A → hProp _
@@ -114,7 +120,7 @@ x ∈ U = U x
 variable
   U V : 𝒫 A
 
-_⊆⊆_ : {A : Type ℓ} → (A → Type ℓ₀) → (A → Type ℓ₁) → Type (ℓ ⊔ ℓ₀ ⊔ ℓ₁)
+_⊆⊆_ : {A : Type ℓ} → (A → Type ℓ₀) → (A → Type ℓ₁) → Type _
 _⊆⊆_ {A = A} U V =  (x : A) → U x → V x
 
 _⊆_ : {A : Type ℓ} → 𝒫 A → 𝒫 A → hProp ℓ
@@ -139,7 +145,7 @@ _∩_ {A = A} U V = λ x → ([ U x ] × [ V x ]) , prop x
 ## Family
 
 ```
-Fam : (ℓ₀ : Level) → Type ℓ₁ → Type (suc ℓ₀ ⊔ ℓ₁)
+Fam : (ℓ₀ : Level) → Type ℓ₁ → Type _
 Fam ℓ₀ A = Σ (Set ℓ₀) (λ I → I → A)
 
 index : Fam ℓ₁ A → Type ℓ₁
@@ -154,6 +160,9 @@ infixr 7 _$_
 -- Membership for families.
 _ε_ : A → Fam ℓ₁ A → Type _
 x ε (_ , f) = fiber f x
+
+_⊆fam_ : {A : Type ℓ} → Fam ℓ₁ A → Fam ℓ₁ A → Type (ℓ-max ℓ ℓ₁)
+_⊆fam_ {A = A} U V = (x : A) → x ε U → x ε V
 
 -- Composition of a family with a function.
 _⟨$⟩_ : {X : Type ℓ₀} {Y : Type ℓ₁} → (g : X → Y) → (ℱ : Fam ℓ₂ X) → Fam ℓ₂ Y
@@ -170,7 +179,7 @@ compr-∶-syntax I f = (I , f)
 syntax compr-∶-syntax I (λ i → e) = ⁅ e ∣ i ∶ I ⁆
 
 -- Forall quantification for families.
-fam-forall : {X : Type ℓ₀} (ℱ : Fam ℓ₂ X) → (X → hProp ℓ₁) → hProp (ℓ₀ ⊔ ℓ₁ ⊔ ℓ₂)
+fam-forall : {X : Type ℓ₀} (ℱ : Fam ℓ₂ X) → (X → hProp ℓ₁) → hProp _
 fam-forall {X = X} ℱ P = ((x : X) → x ε ℱ → [ P x ]) , prop
   where
     prop : isProp ((x : X) → x ε ℱ → [ P x ])
@@ -179,10 +188,18 @@ fam-forall {X = X} ℱ P = ((x : X) → x ε ℱ → [ P x ]) , prop
 syntax fam-forall ℱ (λ x → P) = ∀[ x ε ℱ ] P
 
 -- Familification of a given powerset.
-⟪_⟫ : {A : Type ℓ₀} → (A → hProp ℓ₁) → Fam (ℓ₀ ⊔ ℓ₁) A
+⟪_⟫ : {A : Type ℓ₀} → (A → hProp ℓ₁) → Fam _ A
 ⟪_⟫ {A = A} U = (Σ[ x ∈ A ] [ U x ]) , π₀
-```
 
+lookup : {A : Type ℓ₀} → (xs : List A) → Fin (length xs) → A
+lookup []       (_      , zeroℕ  , p) = rec (snotz p)
+lookup []       (_      , sucℕ i , p) = rec (snotz p)
+lookup (x ∷ xs) (zeroℕ  , _)          = x
+lookup (x ∷ xs) (sucℕ i , p)          = lookup xs (i , pred-≤-pred p)
+
+famFromList : {A : Type ℓ₀} → List A → Fam _ A
+famFromList xs = Fin (length xs) , lookup xs
+```
 
 ## Truncation
 

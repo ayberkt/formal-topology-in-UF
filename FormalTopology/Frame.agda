@@ -4,7 +4,8 @@ module Frame where
 
 open import Basis                        hiding (A)
 open import Cubical.Foundations.Function using (uncurry)
-open import Cubical.Foundations.SIP                       renaming (SNS-≡ to SNS)
+open import Cubical.Foundations.SIP
+open import Cubical.Structures.Axioms
 open import Cubical.Foundations.Equiv    using (_≃⟨_⟩_)   renaming (_■ to _𝔔𝔈𝔇)
 open import Poset
 
@@ -16,7 +17,7 @@ module JoinSyntax (A : Type ℓ₀) {ℓ₂ : Level} (join : Fam ℓ₂ A → A)
   syntax join-of (λ i → e) = ⋁⟨ i ⟩ e
 
 
-RawFrameStr : (ℓ₁ ℓ₂ : Level) → Type ℓ₀ → Type (ℓ₀ ⊔ suc ℓ₁ ⊔ suc ℓ₂)
+RawFrameStr : (ℓ₁ ℓ₂ : Level) → Type ℓ₀ → Type _
 RawFrameStr ℓ₁ ℓ₂ A = PosetStr ℓ₁ A × A × (A → A → A) × (Fam ℓ₂ A → A)
 
 pos-of-raw-frame : (Σ[ A ∈ Type ℓ₀ ] RawFrameStr ℓ₁ ℓ₂ A) → Poset ℓ₀ ℓ₁
@@ -34,10 +35,10 @@ RawFrameStr-set ℓ₁ ℓ₂ A = isSetΣ (PosetStr-set ℓ₁ A) NTS
         A-set : isSet A
         A-set = carrier-is-set (A , pos)
 
-isTop : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → hProp (ℓ₀ ⊔ ℓ₁)
+isTop : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → hProp _
 isTop P x = ((y : ∣ P ∣ₚ) → [ y ⊑[ P ] x ]) , isPropΠ λ y → is-true-prop (y ⊑[ P ] x)
 
-isGLB : (P : Poset ℓ₀ ℓ₁) → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ) → hProp (ℓ₀ ⊔ ℓ₁)
+isGLB : (P : Poset ℓ₀ ℓ₁) → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ) → hProp _
 isGLB P _∧_ = ∧-GLB , ∧-GLB-prop
   where
     ∧-GLB = -- x ∧ y is a lower bound of {x, y}.
@@ -51,7 +52,7 @@ isGLB P _∧_ = ∧-GLB , ∧-GLB-prop
         (isPropΠ2 λ x y → is-true-prop ((x ∧ y) ⊑[ P ] x ⊓ (x ∧ y) ⊑[ P ] y)) λ _ →
         isPropΠ3 λ x y z → is-true-prop (z ⊑[ P ] x ⊓ z ⊑[ P ] y ⇒ z ⊑[ P ] (x ∧ y))
 
-isLUB : (P : Poset ℓ₀ ℓ₁) → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ) → hProp (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+isLUB : (P : Poset ℓ₀ ℓ₁) → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ) → hProp _
 isLUB {ℓ₂ = ℓ₂} P ⋁_ = ⋁-LUB , ⋁-LUB-prop
   where
     ⋁-LUB = ((U : Fam ℓ₂ ∣ P ∣ₚ) → [ ∀[ x ε U ] (x ⊑[ P ] ⋁ U) ])
@@ -67,7 +68,7 @@ isLUB {ℓ₂ = ℓ₂} P ⋁_ = ⋁-LUB , ⋁-LUB-prop
 isDist : (P : Poset ℓ₀ ℓ₁)
        → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ)
        → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ)
-       → hProp (ℓ₀ ⊔ suc ℓ₂)
+       → hProp _
 isDist {ℓ₂ = ℓ₂} P _⊓_ ⋁_ = ∧-dist-over-⋁ , ∧-dist-over-⋁-prop
   where
     open JoinSyntax ∣ P ∣ₚ ⋁_
@@ -77,17 +78,17 @@ isDist {ℓ₂ = ℓ₂} P _⊓_ ⋁_ = ∧-dist-over-⋁ , ∧-dist-over-⋁-pr
     ∧-dist-over-⋁-prop : isProp ∧-dist-over-⋁
     ∧-dist-over-⋁-prop p q = funExt₂ λ x U → carrier-is-set P _ _ (p x U) (q x U)
 
-FrameAx : {A : Type ℓ₀} → RawFrameStr ℓ₁ ℓ₂ A → hProp (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+FrameAx : {A : Type ℓ₀} → RawFrameStr ℓ₁ ℓ₂ A → hProp _
 FrameAx {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} {A = A} (s@(_⊑_ , _) , ⊤ , _∧_ , ⋁_) =
   isTop P ⊤ ⊓ isGLB P _∧_ ⊓ isLUB P ⋁_ ⊓ isDist P _∧_ ⋁_
   where
     P : Poset ℓ₀ ℓ₁
     P = A , s
 
-FrameStr : (ℓ₁ ℓ₂ : Level) → Type ℓ₀ → Type (ℓ₀ ⊔ suc ℓ₁ ⊔ suc ℓ₂)
+FrameStr : (ℓ₁ ℓ₂ : Level) → Type ℓ₀ → Type _
 FrameStr ℓ₁ ℓ₂ A  = Σ[ s ∈ RawFrameStr ℓ₁ ℓ₂ A ] [ FrameAx s ]
 
-Frame : (ℓ₀ ℓ₁ ℓ₂ : Level) → Type (suc ℓ₀ ⊔ suc ℓ₁ ⊔ suc ℓ₂)
+Frame : (ℓ₀ ℓ₁ ℓ₂ : Level) → Type _
 Frame ℓ₀ ℓ₁ ℓ₂ = Σ[ A ∈ Type ℓ₀ ] FrameStr ℓ₁ ℓ₂ A
 
 -- Projection for the carrier set of a frame
@@ -280,7 +281,7 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 isRawFrameHomo : (M : Σ[ A ∈ Type ℓ₀  ] RawFrameStr ℓ₁  ℓ₂ A)
                  (N : Σ[ B ∈ Type ℓ₀′ ] RawFrameStr ℓ₁′ ℓ₂ B)
                → let M-pos = pos-of-raw-frame M ; N-pos = pos-of-raw-frame N in
-                 (M-pos ─m→ N-pos) → Type (ℓ₀ ⊔ suc ℓ₂ ⊔ ℓ₀′)
+                 (M-pos ─m→ N-pos) → Type _
 isRawFrameHomo M@(A , ps₀ , ⊤₀ , _∧₀_ , ⋁₀_) N@(B , ps₁ , ⊤₁ , _∧₁_ , ⋁₁_) (f , f-mono) =
   resp-⊤ × resp-∧ × resp-⋁
   where
@@ -309,28 +310,27 @@ isRawFrameHomo-prop M N (f , f-mono) =
 
 -- Frame homomorphisms.
 isFrameHomomorphism : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂)
-                    → (pos F ─m→ pos G) → Type (ℓ₀ ⊔ suc ℓ₂ ⊔ ℓ₀′)
+                    → (pos F ─m→ pos G) → Type _
 isFrameHomomorphism (A , rs , _) (B , rs′ , _) = isRawFrameHomo (A , rs) (B , rs′)
 
 isFrameHomomorphism-prop : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂)
                          → (f : pos F ─m→ pos G) → isProp (isFrameHomomorphism F G f)
 isFrameHomomorphism-prop (A , s , _) (B , s′ , _) = isRawFrameHomo-prop (A , s) (B , s′)
 
-_─f→_ : Frame ℓ₀ ℓ₁ ℓ₂ → Frame ℓ₀′ ℓ₁′ ℓ₂ → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
+_─f→_ : Frame ℓ₀ ℓ₁ ℓ₂ → Frame ℓ₀′ ℓ₁′ ℓ₂ → Type _
 _─f→_ {ℓ₂ = ℓ₂} F G = Σ[ f ∈ (pos F ─m→ pos G) ] (isFrameHomomorphism F G f)
 
 _$f_ : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂} → F ─f→ G → ∣ F ∣F → ∣ G ∣F
 (f , _) $f x = f $ₘ x
 
-isFrameIso : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂}
-           → (F ─f→ G) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
+isFrameIso : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂} → (F ─f→ G) → Type _
 isFrameIso {F = F} {G} ((f , _) , _) =
   Σ[ ((g , _) , _) ∈ (G ─f→ F) ] section f g × retract f g
 
 isFrameIso-prop : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂}
                 → (f : F ─f→ G) → isProp (isFrameIso {F = F} {G} f)
 isFrameIso-prop {F = F} {G} ((f , _) , _) (g₀h , sec₀ , ret₀) (g₁h , sec₁ , ret₁) =
-  ΣProp≡ NTS₀ NTS₁
+  Σ≡Prop NTS₀ NTS₁
   where
     g₀ = _$f_ {F = G} {F} g₀h
     g₁ = _$f_ {F = G} {F} g₁h
@@ -346,18 +346,18 @@ isFrameIso-prop {F = F} {G} ((f , _) , _) (g₀h , sec₀ , ret₀) (g₁h , sec
               g₁ x          ∎
 
     NTS₁ : g₀h ≡ g₁h
-    NTS₁ = ΣProp≡
+    NTS₁ = Σ≡Prop
              (isFrameHomomorphism-prop G F)
              (forget-mono (pos G) (pos F) (π₀ g₀h) (π₀ g₁h) (funExt g₀~g₁))
 
-_≅f_ : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂ ⊔ ℓ₀′ ⊔ ℓ₁′)
+_≅f_ : (F : Frame ℓ₀ ℓ₁ ℓ₂) (G : Frame ℓ₀′ ℓ₁′ ℓ₂) → Type _
 F ≅f G = Σ[ f ∈ F ─f→ G ] isFrameIso {F = F} {G} f
 
 -- An element of the poset is like a finite observation whereas an element of the
 -- frame of downward closed posets is like a general observation.
 
 -- The set of downward-closed subsets of a poset forms a frame.
-DCPoset : (P : Poset ℓ₀ ℓ₁) → Poset (suc ℓ₀ ⊔ ℓ₁) ℓ₀
+DCPoset : (P : Poset ℓ₀ ℓ₁) → Poset (ℓ-max (ℓ-suc ℓ₀) ℓ₁) ℓ₀
 DCPoset {ℓ₀ = ℓ₀} P = 𝔻 , _<<_ , 𝔻-set , <<-refl , <<-trans  , <<-antisym
   where
     𝔻     = DCSubset     P
@@ -375,10 +375,10 @@ DCPoset {ℓ₀ = ℓ₀} P = 𝔻 , _<<_ , 𝔻-set , <<-refl , <<-trans  , <<-
 
       <<-antisym : [ isAntisym 𝔻-set _<<_ ]
       <<-antisym X Y S⊆T T⊆S =
-        ΣProp≡ (is-true-prop ∘ isDownwardsClosed P) (⊆-antisym S⊆T T⊆S)
+        Σ≡Prop (is-true-prop ∘ isDownwardsClosed P) (⊆-antisym S⊆T T⊆S)
 
 -- The set of downward-closed subsets of a poset forms a frame.
-DCFrame : (P : Poset ℓ₀ ℓ₁) → Frame (suc ℓ₀ ⊔ ℓ₁) ℓ₀ ℓ₀
+DCFrame : (P : Poset ℓ₀ ℓ₁) → Frame (ℓ-max (ℓ-suc ℓ₀) ℓ₁) ℓ₀ ℓ₀
 DCFrame {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} (X , P) =
     𝔻
   , (strₚ 𝔻ₚ , ⊤ , (_∧_ , ⋁_))
@@ -466,7 +466,7 @@ DCFrame {ℓ₀ = ℓ₀} {ℓ₁ = ℓ₁} (X , P) =
 -- preserve the structure of a frame
 isARawHomoEqv : {ℓ₁ ℓ₂ : Level} (M N : Σ (Type ℓ₀) (RawFrameStr ℓ₁ ℓ₂))
               → π₀ M ≃ π₀ N
-              → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+              → Type _
 isARawHomoEqv {ℓ₂ = ℓ₂} M N e@(f , _) =
   Σ[ f-mono ∈ isMonotonic M-pos N-pos f ]
   Σ[ g-mono ∈ isMonotonic N-pos M-pos g ]
@@ -509,7 +509,7 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
       t , ⊤₁ , _⊓₁_ , ⋁₁   ∎
       where
         eq : s ≡ t
-        eq = ΣProp≡
+        eq = Σ≡Prop
                (is-true-prop ∘ PosetAx A)
                (funExt₂ λ x y → ⇔toPath (mono x y) (mono′ x y))
 
@@ -532,7 +532,7 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
     sec-f-g p = RawFrameStr-set ℓ₁ ℓ₂ A F G (f (g p)) p
 
     ret-f-g : retract f g
-    ret-f-g a@(mono , mono′ , q , r) = ΣProp≡ NTS₀ NTS₁
+    ret-f-g a@(mono , mono′ , q , r) = Σ≡Prop NTS₀ NTS₁
       where
         NTS₀ : _
         NTS₀ _ = isPropΣ (isMonotonic-prop G-pos F-pos (id A)) λ _ →
@@ -548,11 +548,11 @@ RF-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} {X = A}
 
 -- A predicate expressing that an equivalence between the underlying types of two frames
 -- is frame-homomorphic.
-isHomoEqv : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → π₀ F ≃ π₀ G → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+isHomoEqv : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → π₀ F ≃ π₀ G → Type _
 isHomoEqv {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} (A , (s , _)) (B , (t , _)) = isARawHomoEqv (A , s) (B , t)
 
 -- We collect all frame-homomorphic equivalences between two frames in the following type.
-_≃f_ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ₀ ⊔ ℓ₁ ⊔ suc ℓ₂)
+_≃f_ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → Type _
 F ≃f G = Σ[ e ∈ ∣ F ∣F ≃ ∣ G ∣F ] isHomoEqv F G e
 
 isHomoEqv-prop : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (e : ∣ F ∣F ≃ ∣ G ∣F) → isProp (isHomoEqv F G e)
@@ -593,10 +593,10 @@ isHomoEqv-prop F G e@(f , _) =
       isoToEquiv (iso f g sec ret) , f-mono , g-mono , f-homo , g-homo
 
     sec : section to from
-    sec (f , g , sec , ret) = ΣProp≡ (isFrameIso-prop {F = F} {G = G}) refl
+    sec (f , g , sec , ret) = Σ≡Prop (isFrameIso-prop {F = F} {G = G}) refl
 
     ret : retract to from
-    ret (e , f-homo , g-homo) = ΣProp≡ (isHomoEqv-prop F G) (ΣProp≡ isPropIsEquiv refl)
+    ret (e , f-homo , g-homo) = Σ≡Prop (isHomoEqv-prop F G) (Σ≡Prop isPropIsEquiv refl)
 
 FrameAx-props : (A : Type ℓ₀) (str : RawFrameStr ℓ₁ ℓ₂ A)
                    → isProp [ FrameAx str ]
@@ -604,19 +604,23 @@ FrameAx-props A str = is-true-prop (FrameAx str)
 
 frame-is-SNS : SNS {ℓ₀} (FrameStr ℓ₁ ℓ₂) isHomoEqv
 frame-is-SNS {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} =
-  SNS-PathP→SNS-≡
-    (FrameStr ℓ₁ ℓ₂)
-    isHomoEqv
-    (add-axioms-SNS _ FrameAx-props (SNS-≡→SNS-PathP isARawHomoEqv RF-is-SNS))
+  UnivalentStr→SNS (FrameStr ℓ₁ ℓ₂) isHomoEqv frame-forms-univ-str
+  where
+    NTS : (A : Type ℓ) (rs : RawFrameStr ℓ₁ ℓ₂ A) → isProp [ FrameAx rs ]
+    NTS _ rs = isProp[] (FrameAx rs)
 
-frame-is-SNS-PathP : SNS-PathP {ℓ₀} (FrameStr ℓ₁ ℓ₂) isHomoEqv
-frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
+    frame-forms-univ-str : UnivalentStr (FrameStr ℓ₁ ℓ₂) isHomoEqv
+    frame-forms-univ-str =
+      axiomsUnivalentStr _ NTS (SNS→UnivalentStr isARawHomoEqv RF-is-SNS)
+
+frame-is-univ-str : UnivalentStr {ℓ₀} (FrameStr ℓ₁ ℓ₂) isHomoEqv
+frame-is-univ-str = SNS→UnivalentStr isHomoEqv frame-is-SNS
 
 -- Similar to the poset case, this is sufficient to establish that the category of frames
 -- is univalent
 
 ≃f≃≡ : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (F ≃f G) ≃ (F ≡ G)
-≃f≃≡ = SIP frame-is-SNS-PathP
+≃f≃≡ = SIP frame-is-univ-str
 
 -- However, there are two minor issues with this.
 --
@@ -741,13 +745,13 @@ frame-is-SNS-PathP = SNS-≡→SNS-PathP isHomoEqv frame-is-SNS
 
     sec-to-from : section to from
     sec-to-from is@((f , f-mono) , ((g , g-mono) , sec , ret)) =
-      ΣProp≡
+      Σ≡Prop
         (isPosetIso-prop (pos F) (pos G))
         (forget-mono (pos F) (pos G) (f , f-mono) (π₀ (to (from is))) refl)
 
     ret-to-from : retract to from
     ret-to-from (eqv , eqv-homo) =
-      ΣProp≡ (isHomoEqv-prop F G ) (ΣProp≡ isPropIsEquiv refl)
+      Σ≡Prop (isHomoEqv-prop F G ) (Σ≡Prop isPropIsEquiv refl)
 
 -- Now that we have this result, we can move on to show that given two frames F and G,
 -- (pos F) ≅ₚ (pos G) is equivalent to F ≡ G.

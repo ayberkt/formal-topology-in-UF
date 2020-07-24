@@ -22,6 +22,7 @@ import Cubical.Foundations.SIP
 open import Cubical.Data.Bool using (Bool; _≟_)
 
 open import SnocList Bool _≟_
+import Compactness
 import CantorSpace
 ```
 
@@ -140,7 +141,7 @@ _ = Basis.isPropIsProp
 **Proposition 2.20**.
 
 ```agda
-_ = Basis.ΣProp≡
+_ = Basis.Σ≡Prop
 ```
 
 **Definition 2.21**. This is defined directly for h-propositions in the
@@ -651,13 +652,13 @@ _ = CantorSpace.cantor
 **Definition 5.7**.
 
 ```agda
-_ = CantorSpace.down
+_ = Compactness.down
 ```
 
 **Definition 5.8**.
 
 ```agda
-_ = CantorSpace.isCompact
+_ = Compactness.isCompact
 ```
 
 **Lemma 5.9**.

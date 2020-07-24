@@ -80,7 +80,7 @@ nothing but the map `U ↦ - ◁ U`.
 We denote by `L` the frame of fixed points for `𝕛`.
 
 ```
-  L : Frame (suc ℓ₀) ℓ₀ ℓ₀
+  L : Frame (ℓ-suc ℓ₀) ℓ₀ ℓ₀
   L = 𝔣𝔦𝔵 P↓ (𝕛 , 𝕛-nuclear)
 ```
 

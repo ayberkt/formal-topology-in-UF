@@ -7,7 +7,7 @@ open import Poset
 open import Frame
 
 -- A predicate expressing whether a function is a nucleus.
-isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ₀ ⊔ ℓ₁)
+isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ-max ℓ₀ ℓ₁)
 isNuclear L j = N₀ × N₁ × N₂
   where
     N₀ = (x y : ∣ L ∣F) → j (x ⊓[ L ] y) ≡ (j x) ⊓[ L ] (j y)
@@ -15,7 +15,7 @@ isNuclear L j = N₀ × N₁ × N₂
     N₂ = (x   : ∣ L ∣F) → [ j (j x) ⊑[ pos L ] j x ]
 
 -- The type of nuclei.
-Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ₀ ⊔ ℓ₁)
+Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
 
 -- The top element is fixed point for every nucleus.
@@ -61,10 +61,10 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
     g (a , a-fix) = a , ∣ a , (sym a-fix) ∣
 
     sec-f-g : section f g
-    sec-f-g (x , jx=x) = ΣProp≡ (λ y → A-set (j y) y) refl
+    sec-f-g (x , jx=x) = Σ≡Prop (λ y → A-set (j y) y) refl
 
     ret-f-g : retract f g
-    ret-f-g (x , p) = ΣProp≡ (λ y → ∥∥-prop (Σ[ a ∈ ∣ L ∣F ] y ≡ j a)) refl
+    ret-f-g (x , p) = Σ≡Prop (λ y → ∥∥-prop (Σ[ a ∈ ∣ L ∣F ] y ≡ j a)) refl
 
 -- The set of fixed points for a nucleus `j` forms a poset.
 𝔣𝔦𝔵-pos : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (N : Nucleus L) → Poset ℓ₀ ℓ₁
@@ -91,7 +91,7 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
 
     ≤-antisym : [ isAntisym 𝔽-set _≤_ ]
     ≤-antisym (x , _) (y , _) x≤y y≤x =
-      ΣProp≡ (λ z → A-set (j z) z) (⊑[ P ]-antisym x y x≤y y≤x)
+      Σ≡Prop (λ z → A-set (j z) z) (⊑[ P ]-antisym x y x≤y y≤x)
 
 -- The set of fixed points of a nucleus `j` forms a frame.
 -- The join of this frame is define as ⊔ᵢ Uᵢ := j (⊔′ᵢ Uᵢ) where ⊔′ denotes the join of L.
@@ -176,7 +176,7 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
 
     distr : (x : Σ[ x ∈ ∣ L ∣F ] j x ≡ x) (U@(I , _) : Fam ℓ₂ 𝒜)
           → x ∧ (⋁ U) ≡ ⋁⟨ i ⟩ (x ∧ (U $ i))
-    distr 𝓍@(x , jx=x) U@(I , F) = ΣProp≡ (λ x → carrier-is-set (pos L) (j x) x) NTS
+    distr 𝓍@(x , jx=x) U@(I , F) = Σ≡Prop (λ x → carrier-is-set (pos L) (j x) x) NTS
       where
         -- U is a family of inhabitants of ∣ L ∣F paired with proofs that they are fixed
         -- points for j. U₀ is the family obtained by discarding the proofs

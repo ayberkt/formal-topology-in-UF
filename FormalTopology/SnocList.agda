@@ -5,9 +5,9 @@ open import Cubical.Data.Empty.Base using (⊥; rec)
 open import Cubical.Relation.Nullary.DecidableEq using (Discrete→isSet)
 open import Cubical.Relation.Nullary using (Discrete; yes; no; Dec; ¬_)
 
-module SnocList (Z : Type zero) (_≟_ : Discrete Z) where
+module SnocList (Z : Type ℓ-zero) (_≟_ : Discrete Z) where
 
-data SnocList : Type zero where
+data SnocList : Type ℓ-zero where
   []  : SnocList
   _⌢_ : SnocList → Z → SnocList
 
@@ -21,16 +21,16 @@ infixl 5 _⌢_
 ⌢-eq-right {x = x} {y = y} p | yes q = q
 ⌢-eq-right {x = x} {y = y} p | no ¬q = sym (subst P p refl)
   where
-    P : SnocList → Type zero
+    P : SnocList → Type ℓ-zero
     P []      = ⊥
     P (_ ⌢ z) = z ≡ x
 
 ⌢≠[] : {xs : SnocList} {x : Z} → ¬ (xs ⌢ x ≡ [])
 ⌢≠[] p = subst P p tt
   where
-    P : SnocList → Type zero
+    P : SnocList → Type ℓ-zero
     P []      = ⊥
-    P (_ ⌢ _) = Unit zero
+    P (_ ⌢ _) = Unit ℓ-zero
 
 
 SnocList-discrete : Discrete SnocList
@@ -70,12 +70,12 @@ assoc xs ys []       = refl
 assoc xs ys (zs ⌢ z) = cong (λ - → - ⌢ z) (assoc xs ys zs)
 
 xs≠xs⌢y : {xs : SnocList} {y : Z} → ¬ (xs ≡ xs ⌢ y)
-xs≠xs⌢y {[]}     p = subst (λ { [] → Unit zero ; (_ ⌢ _) → ⊥ }) p tt
+xs≠xs⌢y {[]}     p = subst (λ { [] → Unit ℓ-zero ; (_ ⌢ _) → ⊥ }) p tt
 xs≠xs⌢y {xs ⌢ x} p = rec (xs≠xs⌢y (⌢-eq-left p))
 
 xs≰xs⌢y : {xs ys : SnocList} {x : Z} → ¬ (xs ≡ (xs ⌢ x) ++ ys)
-xs≰xs⌢y {[]} {[]} {y} p = subst (λ { (_ ⌢ _) → ⊥ ; [] → Unit zero }) p tt
-xs≰xs⌢y {[]} {ys ⌢ _} {y} p = subst (λ { (_ ⌢ _) → ⊥ ; [] → Unit zero }) p tt
+xs≰xs⌢y {[]} {[]} {y} p = subst (λ { (_ ⌢ _) → ⊥ ; [] → Unit ℓ-zero }) p tt
+xs≰xs⌢y {[]} {ys ⌢ _} {y} p = subst (λ { (_ ⌢ _) → ⊥ ; [] → Unit ℓ-zero }) p tt
 xs≰xs⌢y {xs ⌢ x} {[]} {y} p = rec (xs≠xs⌢y (⌢-eq-left p))
 xs≰xs⌢y {xs ⌢ x} {ys ⌢ y} {y′} p = rec (xs≰xs⌢y NTS)
   where
@@ -139,9 +139,9 @@ lemma3 {xs ⌢ x} {ys ⌢ y} {y′} p = rec (lemma3 NTS)
                 NTS : ((ys ⌢ y) ++ zs₀) ⌢ z₀ ≡ ((ys ⌢ y) ++ zs₁) ⌢ z₁
                 NTS = (ys ⌢ y) ++ zs₀ ⌢ z₀ ≡⟨ sym p ⟩ xs ⌢ x ≡⟨ q ⟩ (ys ⌢ y) ++ zs₁ ⌢ z₁ ∎
 
-nonempty : SnocList → Type zero
+nonempty : SnocList → Type ℓ-zero
 nonempty []       = ⊥
-nonempty (xs ⌢ x) = Unit zero
+nonempty (xs ⌢ x) = Unit ℓ-zero
 
 head : (xs : SnocList) → nonempty xs → Z
 head ([] ⌢ x) p = x
