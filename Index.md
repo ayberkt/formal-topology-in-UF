@@ -465,11 +465,11 @@ The proof is given in:
 
 **Definition 5.7**.
 
-<pre class="Agda"><a id="7217" href="Index.html#7217" class="Function">_</a> <a id="7219" class="Symbol">=</a> <a id="7221" href="Compactness.html#527" class="Function">Compactness.down</a>
+<pre class="Agda"><a id="7217" href="Index.html#7217" class="Function">_</a> <a id="7219" class="Symbol">=</a> <a id="7221" href="Compactness.html#537" class="Function">Compactness.down</a>
 </pre>
 **Definition 5.8**.
 
-<pre class="Agda"><a id="7272" href="Index.html#7272" class="Function">_</a> <a id="7274" class="Symbol">=</a> <a id="7276" href="Compactness.html#658" class="Function">Compactness.isCompact</a>
+<pre class="Agda"><a id="7272" href="Index.html#7272" class="Function">_</a> <a id="7274" class="Symbol">=</a> <a id="7276" href="Compactness.html#668" class="Function">Compactness.isCompact</a>
 </pre>
 **Lemma 5.9**.
 

@@ -125,7 +125,7 @@ We now want to view a list of `ℂ`s as a _finite cover_. We associate with some
 `xss : List ℂ` a subset, being covered by which corresponds to being covered by this list.
 
 <pre class="Agda"><a id="ℂ-down"></a><a id="4722" href="CantorSpace.html#4722" class="Function">ℂ-down</a> <a id="4729" class="Symbol">:</a> <a id="4731" href="Agda.Builtin.List.html#148" class="Datatype">List</a> <a id="4736" href="CantorSpace.html#549" class="Datatype">ℂ</a> <a id="4738" class="Symbol">→</a> <a id="4740" href="Basis.html#3219" class="Function">𝒫</a> <a id="4742" href="CantorSpace.html#549" class="Datatype">ℂ</a>
-<a id="4744" href="CantorSpace.html#4722" class="Function">ℂ-down</a> <a id="4751" class="Symbol">=</a> <a id="4753" href="Compactness.html#527" class="Function">down</a> <a id="4758" href="CantorSpace.html#4263" class="Function">cantor</a>
+<a id="4744" href="CantorSpace.html#4722" class="Function">ℂ-down</a> <a id="4751" class="Symbol">=</a> <a id="4753" href="Compactness.html#537" class="Function">down</a> <a id="4758" href="CantorSpace.html#4263" class="Function">cantor</a>
 
 <a id="4766" class="Keyword">syntax</a> <a id="4773" href="CantorSpace.html#4722" class="Function">ℂ-down</a> <a id="4780" class="Bound">xss</a> <a id="4784" class="Bound">xs</a> <a id="4787" class="Symbol">=</a> <a id="4789" class="Bound">xs</a> <a id="4792" class="Function">↓</a> <a id="4794" class="Bound">xss</a>
 </pre>
@@ -143,7 +143,7 @@ This subset is downwards-closed.
 </pre>
 We claim that the Cantor space is compact.
 
-<pre class="Agda"><a id="compact"></a><a id="5305" href="CantorSpace.html#5305" class="Function">compact</a> <a id="5313" class="Symbol">:</a> <a id="5315" href="Compactness.html#658" class="Function">isCompact</a> <a id="5325" href="CantorSpace.html#4263" class="Function">cantor</a>
+<pre class="Agda"><a id="compact"></a><a id="5305" href="CantorSpace.html#5305" class="Function">compact</a> <a id="5313" class="Symbol">:</a> <a id="5315" href="Compactness.html#668" class="Function">isCompact</a> <a id="5325" href="CantorSpace.html#4263" class="Function">cantor</a>
 </pre>
 ### Two little lemmas
 
