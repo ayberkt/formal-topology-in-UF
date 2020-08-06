@@ -1,3 +1,8 @@
+---
+title: Frame
+---
+
+```agda
 {-# OPTIONS --without-K --cubical --safe #-}
 
 module Frame where
