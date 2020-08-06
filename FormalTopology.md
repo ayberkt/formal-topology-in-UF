@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Formal Topology</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Formal Topology</h1>
-</div>
+---
+title: Formal Topology
+---
+
 <pre class="Agda"><a id="41" class="Symbol">{-#</a> <a id="45" class="Keyword">OPTIONS</a> <a id="53" class="Pragma">--cubical</a> <a id="63" class="Pragma">--safe</a> <a id="70" class="Symbol">#-}</a>
 
 <a id="75" class="Keyword">module</a> <a id="82" href="FormalTopology.html" class="Module">FormalTopology</a> <a id="97" class="Keyword">where</a>
@@ -82,5 +72,3 @@
 <a id="sim"></a><a id="2192" href="FormalTopology.html#2192" class="Function">sim</a> <a id="2196" class="Symbol">:</a> <a id="2198" class="Symbol">(</a><a id="2199" href="FormalTopology.html#2199" class="Bound">ℱ</a> <a id="2201" class="Symbol">:</a> <a id="2203" href="FormalTopology.html#1345" class="Function">FormalTopology</a> <a id="2218" href="Basis.html#2320" class="Generalizable">ℓ₀</a> <a id="2221" href="Basis.html#2323" class="Generalizable">ℓ₁</a><a id="2223" class="Symbol">)</a> <a id="2225" class="Symbol">→</a> <a id="2227" href="FormalTopology.html#1125" class="Function">hasSimulation</a> <a id="2241" class="Symbol">(</a><a id="2242" href="FormalTopology.html#1525" class="Function">pos</a> <a id="2246" href="FormalTopology.html#2199" class="Bound">ℱ</a><a id="2247" class="Symbol">)</a> <a id="2249" class="Symbol">(</a><a id="2250" href="FormalTopology.html#1583" class="Function">IS</a> <a id="2253" href="FormalTopology.html#2199" class="Bound">ℱ</a><a id="2254" class="Symbol">)</a>
 <a id="2256" href="FormalTopology.html#2192" class="Function">sim</a> <a id="2260" class="Symbol">(_</a> <a id="2263" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="2265" class="Symbol">_</a> <a id="2267" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="2269" class="Symbol">_</a> <a id="2271" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="2273" href="FormalTopology.html#2273" class="Bound">φ</a><a id="2274" class="Symbol">)</a> <a id="2276" class="Symbol">=</a> <a id="2278" href="FormalTopology.html#2273" class="Bound">φ</a>
 </pre>
-</body>
-</html>

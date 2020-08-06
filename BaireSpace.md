@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Baire Space</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Baire Space</h1>
-</div>
+---
+title: Baire Space
+---
+
 <pre class="Agda"><a id="37" class="Symbol">{-#</a> <a id="41" class="Keyword">OPTIONS</a> <a id="49" class="Pragma">--cubical</a> <a id="59" class="Pragma">--safe</a> <a id="66" class="Symbol">#-}</a>
 
 <a id="71" class="Keyword">open</a> <a id="76" class="Keyword">import</a> <a id="83" href="Cubical.Core.Everything.html" class="Module">Cubical.Core.Everything</a>
@@ -64,5 +54,3 @@
 <a id="1617" href="BaireSpace.html#1498" class="Function">mp</a> <a id="1620" href="BaireSpace.html#1620" class="Bound">P-dc</a> <a id="1625" href="BaireSpace.html#1625" class="Bound">Q-dc</a> <a id="1630" class="Symbol">(</a><a id="1631" href="BaireSpace.html#470" class="InductiveConstructor">branch</a> <a id="1638" href="BaireSpace.html#1638" class="Bound">f</a><a id="1639" class="Symbol">)</a>          <a id="1650" href="BaireSpace.html#1650" class="Bound">σ◀Q</a> <a id="1654" class="Symbol">=</a> <a id="1656" href="BaireSpace.html#470" class="InductiveConstructor">branch</a> <a id="1663" class="Symbol">(λ</a> <a id="1666" href="BaireSpace.html#1666" class="Bound">n</a> <a id="1668" class="Symbol">→</a> <a id="1670" href="BaireSpace.html#1498" class="Function">mp</a> <a id="1673" href="BaireSpace.html#1620" class="Bound">P-dc</a> <a id="1678" href="BaireSpace.html#1625" class="Bound">Q-dc</a> <a id="1683" class="Symbol">(</a><a id="1684" href="BaireSpace.html#1638" class="Bound">f</a> <a id="1686" href="BaireSpace.html#1666" class="Bound">n</a><a id="1687" class="Symbol">)</a> <a id="1689" class="Symbol">(</a><a id="1690" href="BaireSpace.html#915" class="Function">ζ</a> <a id="1692" href="BaireSpace.html#1666" class="Bound">n</a> <a id="1694" href="BaireSpace.html#1625" class="Bound">Q-dc</a> <a id="1699" href="BaireSpace.html#1650" class="Bound">σ◀Q</a><a id="1702" class="Symbol">))</a>
 <a id="1705" href="BaireSpace.html#1498" class="Function">mp</a> <a id="1708" href="BaireSpace.html#1708" class="Bound">P-dc</a> <a id="1713" href="BaireSpace.html#1713" class="Bound">Q-dc</a> <a id="1718" class="Symbol">(</a><a id="1719" href="BaireSpace.html#515" class="InductiveConstructor">squash</a> <a id="1726" href="BaireSpace.html#1726" class="Bound">σ◀P</a> <a id="1730" href="BaireSpace.html#1730" class="Bound">σ◀P′</a> <a id="1735" href="BaireSpace.html#1735" class="Bound">i</a><a id="1736" class="Symbol">)</a> <a id="1738" href="BaireSpace.html#1738" class="Bound">σ◀Q</a> <a id="1742" class="Symbol">=</a> <a id="1744" href="BaireSpace.html#515" class="InductiveConstructor">squash</a> <a id="1751" class="Symbol">(</a><a id="1752" href="BaireSpace.html#1498" class="Function">mp</a> <a id="1755" href="BaireSpace.html#1708" class="Bound">P-dc</a> <a id="1760" href="BaireSpace.html#1713" class="Bound">Q-dc</a> <a id="1765" href="BaireSpace.html#1726" class="Bound">σ◀P</a> <a id="1769" href="BaireSpace.html#1738" class="Bound">σ◀Q</a><a id="1772" class="Symbol">)</a> <a id="1774" class="Symbol">(</a><a id="1775" href="BaireSpace.html#1498" class="Function">mp</a> <a id="1778" href="BaireSpace.html#1708" class="Bound">P-dc</a> <a id="1783" href="BaireSpace.html#1713" class="Bound">Q-dc</a> <a id="1788" href="BaireSpace.html#1730" class="Bound">σ◀P′</a> <a id="1793" href="BaireSpace.html#1738" class="Bound">σ◀Q</a><a id="1796" class="Symbol">)</a> <a id="1798" href="BaireSpace.html#1735" class="Bound">i</a>
 </pre>
-</body>
-</html>

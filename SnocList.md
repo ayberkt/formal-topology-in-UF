@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Snoc List</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Snoc List</h1>
-</div>
+---
+title: Snoc List
+---
+
 <pre class="Agda"><a id="35" class="Symbol">{-#</a> <a id="39" class="Keyword">OPTIONS</a> <a id="47" class="Pragma">--cubical</a> <a id="57" class="Pragma">--safe</a> <a id="64" class="Symbol">#-}</a>
 
 <a id="69" class="Keyword">open</a> <a id="74" class="Keyword">import</a> <a id="81" href="Basis.html" class="Module">Basis</a>
@@ -169,5 +159,3 @@
 <a id="6143" href="SnocList.html#6055" class="Function">hd-tl-lemma</a> <a id="6155" class="Symbol">(</a><a id="6156" href="SnocList.html#379" class="InductiveConstructor">[]</a> <a id="6159" href="SnocList.html#396" class="InductiveConstructor Operator">⌢</a> <a id="6161" href="SnocList.html#6161" class="Bound">x</a><a id="6162" class="Symbol">)</a> <a id="6164" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="6167" class="Symbol">=</a> <a id="6169" href="Cubical.Foundations.Prelude.html#898" class="Function">refl</a>
 <a id="6174" href="SnocList.html#6055" class="Function">hd-tl-lemma</a> <a id="6186" class="Symbol">(</a><a id="6187" href="SnocList.html#6187" class="Bound">xs</a> <a id="6190" href="SnocList.html#396" class="InductiveConstructor Operator">⌢</a> <a id="6192" href="SnocList.html#6192" class="Bound">x₀</a> <a id="6195" href="SnocList.html#396" class="InductiveConstructor Operator">⌢</a> <a id="6197" href="SnocList.html#6197" class="Bound">x₁</a><a id="6199" class="Symbol">)</a> <a id="6201" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="6204" class="Symbol">=</a> <a id="6206" href="Cubical.Foundations.Prelude.html#1138" class="Function">cong</a> <a id="6211" class="Symbol">(λ</a> <a id="6214" href="SnocList.html#6214" class="Bound">-</a> <a id="6216" class="Symbol">→</a> <a id="6218" href="SnocList.html#6214" class="Bound">-</a> <a id="6220" href="SnocList.html#396" class="InductiveConstructor Operator">⌢</a> <a id="6222" href="SnocList.html#6197" class="Bound">x₁</a><a id="6224" class="Symbol">)</a> <a id="6226" class="Symbol">(</a><a id="6227" href="SnocList.html#6055" class="Function">hd-tl-lemma</a> <a id="6239" class="Symbol">(</a><a id="6240" href="SnocList.html#6187" class="Bound">xs</a> <a id="6243" href="SnocList.html#396" class="InductiveConstructor Operator">⌢</a> <a id="6245" href="SnocList.html#6192" class="Bound">x₀</a><a id="6247" class="Symbol">)</a> <a id="6249" href="Basis.html#2715" class="InductiveConstructor">tt</a><a id="6251" class="Symbol">)</a>
 </pre>
-</body>
-</html>

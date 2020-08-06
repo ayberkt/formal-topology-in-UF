@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Nucleus</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Nucleus</h1>
-</div>
+---
+title: Nucleus
+---
+
 <pre class="Agda"><a id="33" class="Symbol">{-#</a> <a id="37" class="Keyword">OPTIONS</a> <a id="45" class="Pragma">--cubical</a> <a id="55" class="Pragma">--safe</a> <a id="62" class="Symbol">#-}</a>
 
 <a id="67" class="Keyword">module</a> <a id="74" href="Nucleus.html" class="Module">Nucleus</a> <a id="82" class="Keyword">where</a>
@@ -208,5 +198,3 @@
           <a id="7079" href="Nucleus.html#3625" class="Bound">j</a> <a id="7081" class="Symbol">(</a><a id="7082" href="Nucleus.html#4093" class="Function Operator">⋁L</a> <a id="7085" href="Basis.html#4796" class="Function">⁅</a> <a id="7087" href="Nucleus.html#6317" class="Bound">x</a> <a id="7089" href="Frame.html#3723" class="Function">⊓[</a> <a id="7092" href="Nucleus.html#3620" class="Bound">L</a> <a id="7094" href="Frame.html#3723" class="Function">]</a> <a id="7096" href="Nucleus.html#7101" class="Bound">yᵢ</a> <a id="7099" href="Basis.html#4796" class="Function">∣</a> <a id="7101" href="Nucleus.html#7101" class="Bound">yᵢ</a> <a id="7104" href="Basis.html#4796" class="Function">ε</a> <a id="7106" href="Nucleus.html#6574" class="Function">U₀</a> <a id="7109" href="Basis.html#4796" class="Function">⁆</a><a id="7110" class="Symbol">)</a>   <a id="7114" href="Cubical.Foundations.Prelude.html#6490" class="Function Operator">≡⟨</a> <a id="7117" href="Cubical.Foundations.Prelude.html#898" class="Function">refl</a>                                 <a id="7154" href="Cubical.Foundations.Prelude.html#6490" class="Function Operator">⟩</a>
           <a id="7166" href="Basis.html#955" class="Field">π₀</a> <a id="7169" class="Symbol">(</a><a id="7170" href="Frame.html#455" class="Function">⋁⟨</a> <a id="7173" href="Nucleus.html#7173" class="Bound">i</a> <a id="7175" href="Frame.html#455" class="Function">⟩</a> <a id="7177" class="Symbol">(</a><a id="7178" href="Nucleus.html#6314" class="Bound">𝓍</a> <a id="7180" href="Nucleus.html#4269" class="Function Operator">∧</a> <a id="7182" class="Symbol">(</a><a id="7183" href="Nucleus.html#6327" class="Bound">U</a> <a id="7185" href="Basis.html#4382" class="Function Operator">$</a> <a id="7187" href="Nucleus.html#7173" class="Bound">i</a><a id="7188" class="Symbol">)))</a>          <a id="7201" href="Cubical.Foundations.Prelude.html#6792" class="Function Operator">∎</a>
 </pre>
-</body>
-</html>

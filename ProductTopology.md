@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Product Topology</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Product Topology</h1>
-</div>
+---
+title: Product Topology
+---
+
 <pre class="Agda"><a id="42" class="Symbol">{-#</a> <a id="46" class="Keyword">OPTIONS</a> <a id="54" class="Pragma">--cubical</a> <a id="64" class="Pragma">--safe</a> <a id="71" class="Symbol">#-}</a>
 
 <a id="76" class="Keyword">module</a> <a id="83" href="ProductTopology.html" class="Module">ProductTopology</a> <a id="99" class="Keyword">where</a>
@@ -52,5 +42,3 @@
       <a id="1235" class="Symbol">...</a> <a id="1239" class="Symbol">|</a> <a id="1241" href="Cubical.Data.Sum.Base.html#264" class="InductiveConstructor">inr</a> <a id="1245" href="ProductTopology.html#1245" class="Bound">b₁</a> <a id="1248" class="Symbol">=</a> <a id="1250" class="Keyword">let</a> <a id="1254" class="Symbol">(</a><a id="1255" href="ProductTopology.html#1255" class="Bound">b₁′</a> <a id="1259" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1261" href="ProductTopology.html#1261" class="Bound">p</a><a id="1262" class="Symbol">)</a> <a id="1264" class="Symbol">=</a> <a id="1266" href="FormalTopology.html#2192" class="Function">sim</a> <a id="1270" href="ProductTopology.html#182" class="Bound">𝔊</a> <a id="1272" class="Symbol">_</a> <a id="1274" class="Symbol">_</a> <a id="1276" class="Bound">a₁⊑a′</a> <a id="1282" href="ProductTopology.html#1245" class="Bound">b₁</a>
                      <a id="1306" class="Keyword">in</a> <a id="1309" href="Cubical.Data.Sum.Base.html#264" class="InductiveConstructor">inr</a> <a id="1313" href="ProductTopology.html#1255" class="Bound">b₁′</a> <a id="1317" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1319" class="Symbol">λ</a> <a id="1321" href="ProductTopology.html#1321" class="Bound">c₁</a> <a id="1324" class="Symbol">→</a> <a id="1326" href="Basis.html#955" class="Field">π₀</a> <a id="1329" class="Symbol">(</a><a id="1330" href="ProductTopology.html#1261" class="Bound">p</a> <a id="1332" href="ProductTopology.html#1321" class="Bound">c₁</a><a id="1334" class="Symbol">)</a> <a id="1336" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1338" class="Bound">a₀⊑a</a> <a id="1343" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1345" href="Basis.html#966" class="Field">π₁</a> <a id="1348" class="Symbol">(</a><a id="1349" href="ProductTopology.html#1261" class="Bound">p</a> <a id="1351" href="ProductTopology.html#1321" class="Bound">c₁</a><a id="1353" class="Symbol">)</a>
 </pre>
-</body>
-</html>

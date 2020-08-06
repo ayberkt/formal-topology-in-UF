@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Frame</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Frame</h1>
-</div>
+---
+title: Frame
+---
+
 <pre class="Agda"><a id="31" class="Symbol">{-#</a> <a id="35" class="Keyword">OPTIONS</a> <a id="43" class="Pragma">--without-K</a> <a id="55" class="Pragma">--cubical</a> <a id="65" class="Pragma">--safe</a> <a id="72" class="Symbol">#-}</a>
 
 <a id="77" class="Keyword">module</a> <a id="84" href="Frame.html" class="Module">Frame</a> <a id="90" class="Keyword">where</a>
@@ -776,5 +766,3 @@
 <a id="≅ₚ≃≅f"></a><a id="28938" href="Frame.html#28938" class="Function">≅ₚ≃≅f</a> <a id="28944" class="Symbol">:</a> <a id="28946" class="Symbol">(</a><a id="28947" href="Frame.html#28947" class="Bound">F</a> <a id="28949" href="Frame.html#28949" class="Bound">G</a> <a id="28951" class="Symbol">:</a> <a id="28953" href="Frame.html#3257" class="Function">Frame</a> <a id="28959" href="Basis.html#2320" class="Generalizable">ℓ₀</a> <a id="28962" href="Basis.html#2323" class="Generalizable">ℓ₁</a> <a id="28965" href="Basis.html#2326" class="Generalizable">ℓ₂</a><a id="28967" class="Symbol">)</a> <a id="28969" class="Symbol">→</a> <a id="28971" class="Symbol">(</a><a id="28972" href="Frame.html#3524" class="Function">pos</a> <a id="28976" href="Frame.html#28947" class="Bound">F</a> <a id="28978" href="Poset.html#13712" class="Function Operator">≅ₚ</a> <a id="28981" href="Frame.html#3524" class="Function">pos</a> <a id="28985" href="Frame.html#28949" class="Bound">G</a><a id="28986" class="Symbol">)</a> <a id="28988" href="Agda.Builtin.Cubical.Glue.html#1051" class="Function Operator">≃</a> <a id="28990" class="Symbol">(</a><a id="28991" href="Frame.html#28947" class="Bound">F</a> <a id="28993" href="Frame.html#12962" class="Function Operator">≅f</a> <a id="28996" href="Frame.html#28949" class="Bound">G</a><a id="28997" class="Symbol">)</a>
 <a id="28999" href="Frame.html#28938" class="Function">≅ₚ≃≅f</a> <a id="29005" href="Frame.html#29005" class="Bound">F</a> <a id="29007" href="Frame.html#29007" class="Bound">G</a> <a id="29009" class="Symbol">=</a> <a id="29011" href="Frame.html#3524" class="Function">pos</a> <a id="29015" href="Frame.html#29005" class="Bound">F</a> <a id="29017" href="Poset.html#13712" class="Function Operator">≅ₚ</a> <a id="29020" href="Frame.html#3524" class="Function">pos</a> <a id="29024" href="Frame.html#29007" class="Bound">G</a> <a id="29026" href="Cubical.Foundations.Equiv.html#6968" class="Function Operator">≃⟨</a> <a id="29029" href="Frame.html#23230" class="Function">≃f≃≅ₚ</a> <a id="29035" href="Frame.html#29005" class="Bound">F</a> <a id="29037" href="Frame.html#29007" class="Bound">G</a> <a id="29039" href="Cubical.Foundations.Equiv.html#6968" class="Function Operator">⟩</a> <a id="29041" href="Frame.html#29005" class="Bound">F</a> <a id="29043" href="Frame.html#20118" class="Function Operator">≃f</a> <a id="29046" href="Frame.html#29007" class="Bound">G</a> <a id="29048" href="Cubical.Foundations.Equiv.html#6968" class="Function Operator">≃⟨</a> <a id="29051" href="Frame.html#20917" class="Function">≃f≃≅f</a> <a id="29057" href="Frame.html#29005" class="Bound">F</a> <a id="29059" href="Frame.html#29007" class="Bound">G</a> <a id="29061" href="Cubical.Foundations.Equiv.html#6968" class="Function Operator">⟩</a> <a id="29063" href="Frame.html#29005" class="Bound">F</a> <a id="29065" href="Frame.html#12962" class="Function Operator">≅f</a> <a id="29068" href="Frame.html#29007" class="Bound">G</a> <a id="29070" href="Frame.html#354" class="Function Operator">𝔔𝔈𝔇</a>
 </pre>
-</body>
-</html>

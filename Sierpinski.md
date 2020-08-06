@@ -1,17 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title>Sierpinski</title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="Agda.css" type="text/css" />
-</head>
-<body>
-<div id="header">
-<h1 class="title">Sierpinski</h1>
-</div>
+---
+title: Sierpinski
+---
+
 <pre class="Agda"><a id="36" class="Symbol">{-#</a> <a id="40" class="Keyword">OPTIONS</a> <a id="48" class="Pragma">--cubical</a> <a id="58" class="Pragma">--safe</a> <a id="65" class="Symbol">#-}</a>
 
 <a id="70" class="Keyword">module</a> <a id="77" href="Sierpinski.html" class="Module">Sierpinski</a> <a id="88" class="Keyword">where</a>
@@ -65,5 +55,3 @@
     <a id="1360" href="Sierpinski.html#1261" class="Function">𝕊-has-sim</a> <a id="1370" href="Agda.Builtin.Bool.html#182" class="InductiveConstructor">false</a> <a id="1376" href="Agda.Builtin.Bool.html#188" class="InductiveConstructor">true</a>  <a id="1382" href="Sierpinski.html#1382" class="Bound">x</a> <a id="1384" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1387" class="Symbol">=</a> <a id="1389" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1392" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1394" class="Symbol">λ</a> <a id="1396" class="Symbol">{</a> <a id="1398" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1401" class="Symbol">→</a> <a id="1403" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1406" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1408" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1411" class="Symbol">}</a>
     <a id="1417" href="Sierpinski.html#1261" class="Function">𝕊-has-sim</a> <a id="1427" href="Agda.Builtin.Bool.html#188" class="InductiveConstructor">true</a>  <a id="1433" href="Agda.Builtin.Bool.html#188" class="InductiveConstructor">true</a>  <a id="1439" href="Sierpinski.html#1439" class="Bound">x</a> <a id="1441" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1444" class="Symbol">=</a> <a id="1446" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1449" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1451" class="Symbol">λ</a> <a id="1453" class="Symbol">{</a> <a id="1455" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1458" class="Symbol">→</a> <a id="1460" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1463" href="Agda.Builtin.Sigma.html#236" class="InductiveConstructor Operator">,</a> <a id="1465" href="Basis.html#2715" class="InductiveConstructor">tt</a> <a id="1468" class="Symbol">}</a>
 </pre>
-</body>
-</html>
