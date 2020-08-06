@@ -1,3 +1,8 @@
+---
+title: Sierpinski
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 module Sierpinski where
@@ -50,3 +55,4 @@ open import FormalTopology
     𝕊-has-sim false false x tt = tt , λ { tt → tt , tt }
     𝕊-has-sim false true  x tt = tt , λ { tt → tt , tt }
     𝕊-has-sim true  true  x tt = tt , λ { tt → tt , tt }
+```
