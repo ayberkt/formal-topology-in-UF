@@ -1,3 +1,8 @@
+---
+title: Snoc List
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 open import Basis

@@ -1,3 +1,8 @@
+---
+title: Product Topology
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 module ProductTopology where

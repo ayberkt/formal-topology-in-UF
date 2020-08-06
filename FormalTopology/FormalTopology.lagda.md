@@ -1,3 +1,8 @@
+---
+title: Formal Topology
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 module FormalTopology where
@@ -67,3 +72,4 @@ mono (_ , _ , φ , _) = φ
 
 sim : (ℱ : FormalTopology ℓ₀ ℓ₁) → hasSimulation (pos ℱ) (IS ℱ)
 sim (_ , _ , _ , φ) = φ
+```

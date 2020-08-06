@@ -1,3 +1,8 @@
+---
+title: Baire Space
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 open import Cubical.Core.Everything
@@ -49,4 +54,4 @@ mp : IsDC P → IsDC Q → σ ◀ P → σ ◀ Q → σ ◀ (λ - → P - × Q -
 mp P-dc Q-dc (dir    σεP)        σ◀Q = lemma P-dc σεP σ◀Q
 mp P-dc Q-dc (branch f)          σ◀Q = branch (λ n → mp P-dc Q-dc (f n) (ζ n Q-dc σ◀Q))
 mp P-dc Q-dc (squash σ◀P σ◀P′ i) σ◀Q = squash (mp P-dc Q-dc σ◀P σ◀Q) (mp P-dc Q-dc σ◀P′ σ◀Q) i
-
+```
