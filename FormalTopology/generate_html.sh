@@ -7,7 +7,7 @@ for f in `ls *.lagda.md`; do
 done
 
 for f in `ls *.agda`; do
-    agda -css Agda.css --html --html-highlight=code $f
+    agda --css Agda.css --html --html-highlight=code $f
 done
 
 cp -f ../resources/Agda.css html/Agda.css
