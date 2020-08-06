@@ -1,3 +1,8 @@
+---
+title: Nucleus
+---
+
+```agda
 {-# OPTIONS --cubical --safe #-}
 
 module Nucleus where
@@ -193,3 +198,4 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
           j (x ⊓[ L ] (⋁L U₀))               ≡⟨ cong j (dist L x U₀)                 ⟩
           j (⋁L ⁅ x ⊓[ L ] yᵢ ∣ yᵢ ε U₀ ⁆)   ≡⟨ refl                                 ⟩
           π₀ (⋁⟨ i ⟩ (𝓍 ∧ (U $ i)))          ∎
+```
