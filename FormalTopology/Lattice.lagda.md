@@ -157,3 +157,18 @@ Both operations are commutative.
     up : [ (y ∧[ L ] x) ⊑[ pos L ] (x ∧[ L ] y) ]
     up = ∧-greatest L (∧-lower₁ L y x , ∧-lower₀ L y x)
 ```
+
+## Distributive
+
+```agda
+isDistributive : Lattice ℓ₀ ℓ₁ → Type ℓ₀
+isDistributive L =
+  (x y z : ∣ L ∣ₗ) → x ∧[ L ] (y ∨[ L ] z) ≡ (x ∧[ L ] y) ∨[ L ] (x ∧[ L ] z)
+
+isDistributiveᵒᵖ : Lattice ℓ₀ ℓ₁ → Type ℓ₀
+isDistributiveᵒᵖ L =
+  (x y z : ∣ L ∣ₗ) → x ∨[ L ] (y ∧[ L ] z) ≡ (x ∨[ L ] y) ∧[ L ] (x ∨[ L ] z)
+
+-- TODO: prove the following.
+-- dist⇒distᵒᵖ : (L : Lattice ℓ₀ ℓ₁) → isDistributive L → isDistributiveᵒᵖ L
+```
