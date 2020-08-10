@@ -101,6 +101,11 @@ relᵒᵖ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → hPro
 relᵒᵖ (_ , _⊑_ , _) x y = y ⊑ x
 
 syntax relᵒᵖ P x y = x ⊒[ P ] y
+
+rel₂ᵒᵖ : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp ℓ₁
+rel₂ᵒᵖ P x y z = (z ⊑[ P ] x) ⊓ (z ⊑[ P ] y)
+
+syntax rel₂ᵒᵖ P x y z = z ⊑[ P ]⟨ x , y ⟩
 ```
 
 Similarly, we define projections for the poset properties.
