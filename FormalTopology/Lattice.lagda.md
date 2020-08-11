@@ -328,5 +328,4 @@ dist⇒distᵒᵖ L L-dist x y z =
 
     y∨x=x∨y : y ∨ x ≡ x ∨ y
     y∨x=x∨y = ∨-comm L y x
-
 ```
