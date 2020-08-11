@@ -162,6 +162,12 @@ Both operations are commutative.
 
     up : [ (y ∧[ L ] x) ⊑[ pos L ] (x ∧[ L ] y) ]
     up = ∧-greatest L (∧-lower₁ L y x , ∧-lower₀ L y x)
+
+∨-comm : (L : Lattice ℓ₀ ℓ₁) → (x y : ∣ L ∣ₗ) → x ∨[ L ] y ≡ y ∨[ L ] x
+∨-comm L x y = ⊑[ pos L ]-antisym _ _ (φ x y) (φ y x)
+  where
+    φ : (z w : ∣ L ∣ₗ) → [ z ∨[ L ] w ⊑[ pos L ] w ∨[ L ] z ]
+    φ z w = ∨-least L (∨-upper₁ L w z , ∨-upper₀ L w z)
 ```
 
 ```agda
