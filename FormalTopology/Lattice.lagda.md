@@ -82,6 +82,9 @@ pos (P , _) = P
 ```
 
 ```agda
+⊤[_] : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ
+⊤[ (_ , (⊤ , _) , _) ] = fst ⊤
+
 meet-of : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
 meet-of (_ , (⊤ , _∧_) , _) x y = fst (x ∧ y)
 
@@ -100,6 +103,9 @@ syntax meet-of L x y = x ∧[ L ] y
 ```
 
 ```agda
+⊥[_] : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ
+⊥[ (_ , _  , (⊥ , _)) ] = fst ⊥
+
 join-of : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
 join-of (_ , _ , (⊥ , _∨_)) x y = fst (x ∨ y)
 
