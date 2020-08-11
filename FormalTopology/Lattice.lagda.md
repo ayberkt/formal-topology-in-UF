@@ -7,10 +7,10 @@ title: Lattice
 
 module Lattice where
 
-open import Cubical.Core.Everything
-open import Cubical.Foundations.Prelude
+open import Cubical.Core.Everything hiding (_∨_; _∧_)
+open import Cubical.Foundations.Prelude hiding (_∨_; _∧_)
 open import Cubical.Foundations.Logic
-open import Cubical.Data.Sigma
+open import Cubical.Data.Sigma hiding (_∨_; _∧_)
 open import Poset
 
 private
@@ -277,5 +277,28 @@ isDistributiveᵒᵖ L =
   (x y z : ∣ L ∣ₗ) → x ∨[ L ] (y ∧[ L ] z) ≡ (x ∨[ L ] y) ∧[ L ] (x ∨[ L ] z)
 
 -- TODO: prove the following.
--- dist⇒distᵒᵖ : (L : Lattice ℓ₀ ℓ₁) → isDistributive L → isDistributiveᵒᵖ L
+dist⇒distᵒᵖ : (L : Lattice ℓ₀ ℓ₁) → isDistributive L → isDistributiveᵒᵖ L
+dist⇒distᵒᵖ L L-dist x y z =
+  x ∨ (y ∧ z)                   ≡⟨ cong (λ - → x ∨ -) (∧-comm L y z)             ⟩
+  x ∨ (z ∧ y)                   ≡⟨ cong (λ - → - ∨ _) (sym (∨-absorb L x z))     ⟩
+  (x ∨ (z ∧ x)) ∨ (z ∧ y)       ≡⟨ sym (∨-assoc L x _ _)                         ⟩
+  x ∨ ((z ∧ x) ∨ (z ∧ y))       ≡⟨ cong (λ - → x ∨ -) (sym (L-dist z x y))       ⟩
+  x ∨ (z ∧ (x ∨ y))             ≡⟨ cong (λ - → x ∨ -) (∧-comm L z (x ∨ y))       ⟩
+  x ∨ ((x ∨ y) ∧ z)             ≡⟨ cong (λ - → - ∨ (_ ∧ _)) (sym (∧-abs _ _))    ⟩
+  (x ∧ (y ∨ x)) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (λ - → (x ∧ -) ∨ ((_ ∨ _) ∧ z)) y∨x=x∨y  ⟩
+  (x ∧ (x ∨ y)) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (λ - → - ∨ ((x ∨ y) ∧ z)) (∧-comm L _ _) ⟩
+  ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z) ≡⟨ sym (L-dist (x ∨ y) x z)                      ⟩
+  (x ∨ y) ∧ (x ∨ z)             ∎
+  where
+    ∧-abs = ∧-absorb L
+
+    _∨_ : ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
+    _∨_ = λ x y → x ∨[ L ] y
+
+    _∧_ : ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
+    _∧_ = λ x y → x ∧[ L ] y
+
+    y∨x=x∨y : y ∨ x ≡ x ∨ y
+    y∨x=x∨y = ∨-comm L y x
+
 ```
