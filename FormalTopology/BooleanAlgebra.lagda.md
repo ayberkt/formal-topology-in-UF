@@ -26,7 +26,7 @@ private
 ```agda
 hasComplements : (L : Lattice ℓ₀ ℓ₁) → Type ℓ₀
 hasComplements L =
-  (x : ∣ L ∣ₗ) → Σ[ ¬x ∈ ∣ L ∣ₗ ] (¬x ∧[ L ] x ≡ ⊤[ L ]) × (¬x ∨[ L ] x ≡ ⊥[ L ])
+  (x : ∣ L ∣ₗ) → Σ[ ¬x ∈ ∣ L ∣ₗ ] (¬x ∧[ L ] x ≡ ⊥[ L ]) × (¬x ∨[ L ] x ≡ ⊤[ L ])
 
 BooleanAlgebra : (ℓ₀ ℓ₁ : Level) → Type (ℓ-max (ℓ-suc ℓ₀) (ℓ-suc ℓ₁))
 BooleanAlgebra ℓ₀ ℓ₁ = Σ[ L ∈ Lattice ℓ₀ ℓ₁ ] isDistributive L × hasComplements L
@@ -44,11 +44,11 @@ latt : BooleanAlgebra ℓ₀ ℓ₁ → Lattice ℓ₀ ℓ₁
 latt (L , _) = L
 
 ¬-inv-∧ : (B : BooleanAlgebra ℓ₀ ℓ₁)
-        → (x : ∣ B ∣B) → (¬[ B ] x) ∧[ latt B ] x ≡ ⊤[ latt B ]
+        → (x : ∣ B ∣B) → (¬[ B ] x) ∧[ latt B ] x ≡ ⊥[ latt B ]
 ¬-inv-∧ (_ , _ , comp) x = fst (snd (comp x))
 
 ¬-inv-∨ : (B : BooleanAlgebra ℓ₀ ℓ₁)
-        → (x : ∣ B ∣B) → (¬[ B ] x) ∨[ latt B ] x ≡ ⊥[ latt B ]
+        → (x : ∣ B ∣B) → (¬[ B ] x) ∨[ latt B ] x ≡ ⊤[ latt B ]
 ¬-inv-∨ (_ , _ , comp) x = snd (snd (comp x))
 ```
 
@@ -78,8 +78,8 @@ record BooleanAlgebraStr (A : Type ℓ) : Type ℓ where
     ∧-dist : (x y z : A) → x ⊓ (y ⊔ z) ≡ (x ⊓ y) ⊔ (x ⊓ z)
     ∨-dist : (x y z : A) → x ⊔ (y ⊓ z) ≡ (x ⊔ y) ⊓ (x ⊔ z)
 
-    ∧-inv : (x : A) → x ⊓ (¬ x) ≡ ⊥
-    ∨-inv : (x : A) → x ⊓ (¬ x) ≡ ⊤
+    ∧-inv : (x : A) → (¬ x) ⊓ x ≡ ⊥
+    ∨-inv : (x : A) → (¬ x) ⊔ x ≡ ⊤
 
     A-set : isSet A
 ```
@@ -87,6 +87,35 @@ record BooleanAlgebraStr (A : Type ℓ) : Type ℓ where
 ```agda
 BooleanAlgebra′ : (ℓ : Level) → Type (ℓ-suc ℓ)
 BooleanAlgebra′ ℓ = Σ[ A ∈ Type ℓ ] BooleanAlgebraStr A
+```
+
+## Equivalence of These Definitions
+
+```agda
+bool⇒bool′ : BooleanAlgebra ℓ₀ ℓ₁ → BooleanAlgebra′ ℓ₀
+bool⇒bool′ B@(L , dist , complements) = ∣ L ∣ₗ , BA
+  where
+    open BooleanAlgebraStr
+
+    BA : BooleanAlgebraStr ∣ L ∣ₗ
+    _⊓_      BA  = λ x y → x ∧[ L ] y
+    _⊔_      BA  = λ x y → x ∨[ L ] y
+    ⊤        BA  = ⊤[ L ]
+    ⊥        BA  = ⊥[ L ]
+    ¬        BA  = λ x → ¬[ B ] x
+    ⊓-assoc  BA  = ∧-assoc L
+    ⊔-assoc  BA  = ∨-assoc L
+    ⊓-comm   BA  = ∧-comm L
+    ⊔-comm   BA  = ∨-comm L
+    ⊓-absorb BA  = ∧-absorb L
+    ⊔-absorb BA  = ∨-absorb L
+    ⊤-id     BA  = ∧-id L
+    ⊥-id     BA  = ∨-id L
+    ∧-dist   BA  = dist
+    ∨-dist   BA  = dist⇒distᵒᵖ L dist 
+    ∧-inv    BA  = ¬-inv-∧ B
+    ∨-inv    BA  = ¬-inv-∨ B
+    A-set    BA  = carrier-is-set (pos-of-lattice L) 
 ```
 
 ## Some laws
