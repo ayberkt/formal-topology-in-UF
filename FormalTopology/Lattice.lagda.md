@@ -43,7 +43,7 @@ MeetSemilattice ℓ₀ ℓ₁ = Σ[ P ∈ Poset ℓ₀ ℓ₁ ] hasAllFinMeets P
 
 ```agda
 hasBottom : Poset ℓ₀ ℓ₁ → Type (ℓ-max ℓ₀ ℓ₁)
-hasBottom P = Σ[ x ∈ ∣ P ∣ₚ ] ((y : ∣ P ∣ₚ) → [ y ⊑[ P ] x ])
+hasBottom P = Σ[ x ∈ ∣ P ∣ₚ ] ((y : ∣ P ∣ₚ) → [ x ⊑[ P ] y ])
 
 isAJoinOf : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ × ∣ P ∣ₚ → Type (ℓ-max ℓ₀ ℓ₁)
 isAJoinOf P x (y , z) = [ ⟨ y , z ⟩⊑[ P ] x ]
@@ -85,6 +85,9 @@ pos (P , _) = P
 ⊤[_] : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ
 ⊤[ (_ , (⊤ , _) , _) ] = fst ⊤
 
+⊤-top : (L : Lattice ℓ₀ ℓ₁) → (x : ∣ L ∣ₗ) → [ x ⊑[ pos L ] ⊤[ L ] ]
+⊤-top (_ , (⊤ , _) , _) = snd ⊤
+
 meet-of : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
 meet-of (_ , (⊤ , _∧_) , _) x y = fst (x ∧ y)
 
@@ -106,6 +109,9 @@ syntax meet-of L x y = x ∧[ L ] y
 ⊥[_] : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ
 ⊥[ (_ , _  , (⊥ , _)) ] = fst ⊥
 
+⊥-bot : (L : Lattice ℓ₀ ℓ₁) → (x : ∣ L ∣ₗ) → [ ⊥[ L ] ⊑[ pos L ] x ]
+⊥-bot (_ , _  , (⊥ , _)) = snd ⊥
+
 join-of : (L : Lattice ℓ₀ ℓ₁) → ∣ L ∣ₗ → ∣ L ∣ₗ → ∣ L ∣ₗ
 join-of (_ , _ , (⊥ , _∨_)) x y = fst (x ∨ y)
 
@@ -124,6 +130,28 @@ syntax join-of L x y = x ∨[ L ] y
 ```
 
 ## Some properties of lattices
+
+`⊥` and `⊤` are identity elements.
+
+```agda
+∧-id : (L : Lattice ℓ₀ ℓ₁) → (x : ∣ L ∣ₗ) → x ∧[ L ] ⊤[ L ] ≡ x
+∧-id L x = ⊑[ pos L ]-antisym _ _ down up
+  where
+    down : [ x ∧[ L ] ⊤[ L ] ⊑[ pos L ] x ]
+    down = ∧-lower₀ L x ⊤[ L ]
+
+    up : [ x ⊑[ pos L ] x ∧[ L ] ⊤[ L ] ]
+    up = ∧-greatest L (⊑[ pos L ]-refl x , ⊤-top L x)
+
+∨-id : (L : Lattice ℓ₀ ℓ₁) → (x : ∣ L ∣ₗ) → x ∨[ L ] ⊥[ L ] ≡ x
+∨-id L x = ⊑[ pos L ]-antisym _ _ down up
+  where
+    down : [ x ∨[ L ] ⊥[ L ] ⊑[ pos L ] x ]
+    down = ∨-least L (⊑[ pos L ]-refl x , ⊥-bot L x)
+
+    up : [ x ⊑[ pos L ] x ∨[ L ] ⊥[ L ] ]
+    up = ∨-upper₀ L x ⊥[ L ]
+```
 
 Both the meet and join operations are idempotent in a lattice.
 
