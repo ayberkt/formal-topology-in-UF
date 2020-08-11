@@ -170,6 +170,77 @@ Both operations are commutative.
     φ z w = ∨-least L (∨-upper₁ L w z , ∨-upper₀ L w z)
 ```
 
+Both operations are associative.
+
+```agda
+∧-assoc : (L : Lattice ℓ₀ ℓ₁)
+        → (x y z : ∣ L ∣ₗ) → x ∧[ L ] (y ∧[ L ] z) ≡ (x ∧[ L ] y) ∧[ L ] z
+∧-assoc L x y z = ⊑[ pos L ]-antisym _ _ down up
+  where
+    open PosetReasoning (pos L)
+
+    p : [ x ∧[ L ] (y ∧[ L ] z) ⊑[ pos L ] y ]
+    p = x ∧[ L ] (y ∧[ L ] z) ⊑⟨ ∧-lower₁ L _ _ ⟩
+        y ∧[ L ] z            ⊑⟨ ∧-lower₀ L y z ⟩
+        y                     ■
+
+    q : [ x ∧[ L ] (y ∧[ L ] z) ⊑[ pos L ] z ]
+    q = x ∧[ L ] (y ∧[ L ] z) ⊑⟨ ∧-lower₁ L _ _ ⟩
+        y ∧[ L ] z            ⊑⟨ ∧-lower₁ L y z ⟩
+        z                     ■
+
+    r : [ (x ∧[ L ] y) ∧[ L ] z ⊑[ pos L ] x ]
+    r = (x ∧[ L ] y) ∧[ L ] z ⊑⟨ ∧-lower₀ L _ _ ⟩ x ∧[ L ] y ⊑⟨ ∧-lower₀ L x y ⟩ x ■
+
+    r′ : [ (x ∧[ L ] y) ∧[ L ] z ⊑[ pos L ] y ]
+    r′ = (x ∧[ L ] y) ∧[ L ] z ⊑⟨ ∧-lower₀ L _ _ ⟩ x ∧[ L ] y ⊑⟨ ∧-lower₁ L x y ⟩ y ■
+
+    s : [ (x ∧[ L ] y) ∧[ L ] z ⊑[ pos L ] (y ∧[ L ] z) ]
+    s = ∧-greatest L (r′ , ∧-lower₁ L _ _)
+
+    down : _
+    down = ∧-greatest L ((∧-greatest L (∧-lower₀ L _ _ , p)) , q)
+
+    up : _
+    up = ∧-greatest L (r , s)
+
+∨-assoc : (L : Lattice ℓ₀ ℓ₁)
+        → (x y z : ∣ L ∣ₗ) → x ∨[ L ] (y ∨[ L ] z) ≡ (x ∨[ L ] y) ∨[ L ] z
+∨-assoc L x y z = ⊑[ pos L ]-antisym _ _ down up
+  where
+    open PosetReasoning (pos L)
+
+    r : [ y ⊑[ pos L ] ((x ∨[ L ] y) ∨[ L ] z) ]
+    r = y ⊑⟨ ∨-upper₁ L x y ⟩ x ∨[ L ] y ⊑⟨ ∨-upper₀ L _ _ ⟩ (x ∨[ L ] y) ∨[ L ] z ■
+
+    r′ : [ x ⊑[ pos L ] ((x ∨[ L ] y) ∨[ L ] z) ]
+    r′ = x ⊑⟨ ∨-upper₀ L x y ⟩ x ∨[ L ] y ⊑⟨ ∨-upper₀ L _ _ ⟩ (x ∨[ L ] y) ∨[ L ] z ■
+
+    p : [ (y ∨[ L ] z) ⊑[ pos L ] (x ∨[ L ] y) ∨[ L ] z ]
+    p = ∨-least L (r , ∨-upper₁ L (x ∨[ L ] y) z)
+
+    q′ : [ y ⊑[ pos L ] ((x ∨[ L ] y) ∨[ L ] z) ]
+    q′ = y ⊑⟨ ∨-upper₁ L x y ⟩ x ∨[ L ] y ⊑⟨ ∨-upper₀ L _ _ ⟩ (x ∨[ L ] y) ∨[ L ] z ■
+
+    q : [ (y ∨[ L ] z ) ⊑[ pos L ] ((x ∨[ L ] y) ∨[ L ] z) ]
+    q = ∨-least L (q′ , ∨-upper₁ L _ _)
+
+    down : [ x ∨[ L ] (y ∨[ L ] z) ⊑[ pos L ] (x ∨[ L ] y) ∨[ L ] z ]
+    down = ∨-least L (r′ , q)
+
+    s′ : [ y ⊑[ pos L ] x ∨[ L ] (y ∨[ L ] z) ]
+    s′ = y ⊑⟨ ∨-upper₀ L y z ⟩ y ∨[ L ] z ⊑⟨ ∨-upper₁ L _ _ ⟩ x ∨[ L ] (y ∨[ L ] z) ■
+
+    s : [ (x ∨[ L ] y) ⊑[ pos L ] x ∨[ L ] (y ∨[ L ] z) ]
+    s = ∨-least L (∨-upper₀ L _ _ , s′)
+
+    t : [ z ⊑[ pos L ] x ∨[ L ] (y ∨[ L ] z) ]
+    t = z ⊑⟨ ∨-upper₁ L y z ⟩ y ∨[ L ] z ⊑⟨ ∨-upper₁ L _ _ ⟩ x ∨[ L ] (y ∨[ L ] z) ■
+
+    up : [ (x ∨[ L ] y) ∨[ L ] z ⊑[ pos L ] x ∨[ L ] (y ∨[ L ] z) ]
+    up = ∨-least L (s , t)
+```
+
 ```agda
 ∧-absorb : (L : Lattice ℓ₀ ℓ₁)
          → (x y : ∣ L ∣ₗ)
