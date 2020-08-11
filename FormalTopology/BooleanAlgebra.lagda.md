@@ -52,6 +52,25 @@ latt (L , _) = L
 ¬-inv-∨ (_ , _ , comp) x = snd (snd (comp x))
 ```
 
+# Symmetric difference
+
+```agda
+sym-diff : (B : BooleanAlgebra ℓ₀ ℓ₁) → ∣ B ∣B → ∣ B ∣B → ∣ B ∣B
+sym-diff B@(L , _) x y = (x ∧[ L ] (¬[ B ] y)) ∨[ L ] (y ∧[ L ] (¬[ B ] x))
+
+syntax sym-diff B x y = x ⊕[ B ] y
+
+module SymmetricDifference (B : BooleanAlgebra ℓ₀ ℓ₁) where
+
+  L = fst B
+
+  _⊕_ : ∣ B ∣B → ∣ B ∣B → ∣ B ∣B
+  x ⊕ y = x ⊕[ B ] y
+
+  -- TODO: prove the following
+  -- ⊕-dist : (x y z : ∣ B ∣B) → x ∧[ L ] (y ⊕ z) ≡ (x ∧[ L ] y) ⊕ (x ∧[ L ] z)
+```
+
 # Direct Definition of Boolean Algebras
 
 ```agda
