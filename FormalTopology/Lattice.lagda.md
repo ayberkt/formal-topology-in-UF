@@ -164,6 +164,30 @@ Both operations are commutative.
     up = ∧-greatest L (∧-lower₁ L y x , ∧-lower₀ L y x)
 ```
 
+```agda
+∧-absorb : (L : Lattice ℓ₀ ℓ₁)
+         → (x y : ∣ L ∣ₗ)
+         → x ∧[ L ] (y ∨[ L ] x) ≡ x
+∧-absorb L x y = ⊑[ pos L ]-antisym _ _ down up
+  where
+    down : [ x ∧[ L ] (y ∨[ L ] x) ⊑[ pos L ] x ]
+    down = ∧-lower₀ L x _
+
+    up : [ x ⊑[ pos L ] (x ∧[ L ] (y ∨[ L ] x)) ]
+    up = ∧-greatest L (⊑[ pos L ]-refl x , ∨-upper₁ L y x)
+
+∨-absorb : (L : Lattice ℓ₀ ℓ₁)
+         → (x y : ∣ L ∣ₗ)
+         → x ∨[ L ] (y ∧[ L ] x) ≡ x
+∨-absorb L x y = ⊑[ pos L ]-antisym _ _ down up
+  where
+    down : [ x ∨[ L ] (y ∧[ L ] x) ⊑[ pos L ] x ]
+    down = ∨-least L (⊑[ pos L ]-refl x , ∧-lower₁ L y x)
+
+    up : [ x ⊑[ pos L ] (x ∨[ L ] (y ∧[ L ] x)) ]
+    up = ∨-upper₀ L x _
+```
+
 ## Distributive
 
 ```agda
