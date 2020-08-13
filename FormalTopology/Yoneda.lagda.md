@@ -23,9 +23,11 @@ yoneda : (P : Poset ℓ₀ ℓ₁)
        → [ (x ⊑[ P ] y) ⇔ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ]
 yoneda P x y = forwards , backwards
   where
+    open PosetReasoning P
+
     forwards : [ x ⊑[ P ] y ⇒ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ]
-    forwards x⊑y z = {!!}
+    forwards x⊑y z z⊑x = z ⊑⟨ z⊑x ⟩ x ⊑⟨ x⊑y ⟩ y ■
 
     backwards : [ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ⇒ x ⊑[ P ] y ]
-    backwards = {!!}
+    backwards p = p x (⊑[ P ]-refl x)
 ```
