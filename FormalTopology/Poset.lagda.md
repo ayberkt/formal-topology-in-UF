@@ -283,6 +283,19 @@ P ×ₚ Q = (∣ P ∣ₚ × ∣ Q ∣ₚ) , _⊑_ , carrier-set , (⊑-refl , �
         NTS = subst (_≡_ y₁) (sym (transportRefl y₀)) (⊑[ Q ]-antisym _ _ y₁⊑y₀ y₀⊑y₁)
 ```
 
+The *diagonal* monotonic map.
+
+```agda
+Δ : (P : Poset ℓ₀ ℓ₁) → P ─m→ (P ×ₚ P)
+Δ P = f , f-mono
+  where
+    f : ∣ P ∣ₚ → ∣ P ×ₚ P ∣ₚ
+    f x = x , x
+
+    f-mono : isMonotonic P (P ×ₚ P) f
+    f-mono x y x⊑y = x⊑y , x⊑y
+```
+
 ## Posetal Yoneda lemma
 
 ```agda
