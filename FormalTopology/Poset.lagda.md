@@ -436,7 +436,7 @@ isPosetIso-prop P Q (f , f-mono) (g₀ , sec₀ , ret₀) (g₁ , sec₁ , ret�
 We will denote by `P ≅ₚ Q` the type of isomorphisms between posets `P` and `Q`.
 
 ```agda
-_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _ 
+_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _
 P ≅ₚ Q = Σ[ f ∈ P ─m→ Q ] isPosetIso P Q f
 ```
 
