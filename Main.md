@@ -15,4 +15,5 @@
 <a id="291" class="Keyword">open</a> <a id="296" class="Keyword">import</a> <a id="303" href="Compactness.html" class="Module">Compactness</a>
 <a id="315" class="Keyword">open</a> <a id="320" class="Keyword">import</a> <a id="327" href="CantorSpace.html" class="Module">CantorSpace</a>
 <a id="339" class="Keyword">open</a> <a id="344" class="Keyword">import</a> <a id="351" href="Sierpinski.html" class="Module">Sierpinski</a>
+<a id="362" class="Keyword">open</a> <a id="367" class="Keyword">import</a> <a id="374" href="GaloisConnection.html" class="Module">GaloisConnection</a>
 </pre>

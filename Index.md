@@ -237,7 +237,7 @@ Proposition 2.15 is omitted.
 </pre>
 **Definition 3.6**.
 
-<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#13295" class="Function">Poset.isPosetIso</a>
+<pre class="Agda"><a id="3491" href="Index.html#3491" class="Function">_</a> <a id="3493" class="Symbol">=</a> <a id="3495" href="Poset.html#14743" class="Function">Poset.isPosetIso</a>
 </pre>
 ### 3.2: Definition of a frame
 
@@ -292,7 +292,7 @@ by the following function:
 
 **Definition 3.16**.
 
-<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#11641" class="Function">Poset.isAMonotonicEqv</a>
+<pre class="Agda"><a id="4499" href="Index.html#4499" class="Function">_</a> <a id="4501" class="Symbol">=</a> <a id="4503" href="Poset.html#13089" class="Function">Poset.isAMonotonicEqv</a>
 </pre>
 **Definition 3.17**.
 
