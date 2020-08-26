@@ -300,6 +300,18 @@ yoneda P x y = forwards , backwards
     backwards p = p x (⊑[ P ]-refl x)
 ```
 
+## Galois connections
+
+```agda
+module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
+
+  _⊣_ : (P ─m→ Q) → (Q ─m→ P) → hProp (ℓ-max ℓ₀ ℓ₁)
+  f ⊣ g = ∀[ x ∶ ∣ P ∣ₚ ] ∀[ y ∶ ∣ Q ∣ₚ ] f $ₘ x ⊑[ Q ] y ⇔ x ⊑[ P ] g $ₘ y
+
+  GaloisConnection : Type (ℓ-max ℓ₀ ℓ₁)
+  GaloisConnection = Σ[ f ∈ P ─m→ Q  ] Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]
+```
+
 
 ## Poset univalence
 
