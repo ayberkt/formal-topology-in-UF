@@ -45,7 +45,7 @@ bin-meets→bin-meets′ P meet = (f , f-mono) , f⊣Δ
         ψ : [ f (x₀ , x₁) ⊑[ P ] y₁ ]
         ψ = f (x₀ , x₁) ⊑⟨ snd (fst (snd meet) x₀ x₁)  ⟩ x₁ ⊑⟨ x₁⊑y₁ ⟩ y₁ ■
 
-    f⊣Δ : [ (Δ P) ⊣ (f , f-mono) ]
+    f⊣Δ : [ Δ P ⊣ (f , f-mono) ]
     f⊣Δ x (y₀ , y₁) = NTS₀ , NTS₁
       where
         NTS₀ : [ (x , x) ⊑[ P ×ₚ P ] (y₀ , y₁) ⇒ x ⊑[ P ] f (y₀ , y₁) ]
