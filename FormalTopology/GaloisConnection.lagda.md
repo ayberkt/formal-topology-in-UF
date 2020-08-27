@@ -85,3 +85,8 @@ bin-meets′→bin-meets P (g , Δ⊣g) = inf , inf-is-glb
         NTS₁ : (x y z : ∣ P ∣ₚ) → [ z ⊑[ P ] x ⊓ z ⊑[ P ] y ⇒ z ⊑[ P ] inf x y ]
         NTS₁ x y z (z⊑x , z⊑y) = π₀ (Δ⊣g z (x , y)) (z⊑x , z⊑y)
 ```
+
+```agda
+meets⇔meets′ : (P : Poset ℓ₀ ℓ₁) → hasBinMeets P ↔ hasBinMeets′ P
+meets⇔meets′ P = bin-meets→bin-meets′ P , bin-meets′→bin-meets P
+```
