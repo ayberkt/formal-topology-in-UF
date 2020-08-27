@@ -23,6 +23,12 @@ hasBinMeets′ : (P : Poset ℓ₀ ℓ₁) → Type (ℓ-max ℓ₀ ℓ₁)
 hasBinMeets′ P = Σ[ g ∈ (P ×ₚ P) ─m→ P ] [ (Δ P) ⊣ g ]
   where
     open GaloisConnection P (P ×ₚ P)
+
+hasBinMeets′-prop : (P : Poset ℓ₀ ℓ₁) → isProp (hasBinMeets′ P)
+hasBinMeets′-prop P (_⊓₀_ , Δ⊣⊓₀) (_⊓₁_ , Δ⊣⊓₁) =
+  Σ≡Prop (λ g → isProp[] (Δ P ⊣ g)) (⊣-unique-right (Δ P) _⊓₀_ _⊓₁_ Δ⊣⊓₀ Δ⊣⊓₁)
+  where
+    open GaloisConnection P (P ×ₚ P)
 ```
 
 ```agda
