@@ -11,6 +11,7 @@ open import Cubical.Core.Everything
 open import Basis
 open import Poset
 open import Frame
+open import CoverFormsNucleus
 
 ```
 
@@ -24,6 +25,8 @@ syntax well-inside F x y = x ≪[ F ] y
 
 ```agda
 module SomePropertiesOf≪ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
+
+  _⊑_ = λ (x y : ∣ F ∣F) → x ⊑[ pos F ] y
 
   hasComplement : ∣ F ∣F → Type ℓ₀
   hasComplement x =
@@ -45,4 +48,22 @@ module SomePropertiesOf≪ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
             (x ⊓[ F ] y) ∨[ F ] ⊥[ F ]       ≡⟨ ∨-comm F (x ⊓[ F ] y) ⊥[ F ]    ⟩
             ⊥[ F ] ∨[ F ] (x ⊓[ F ] y)       ≡⟨ x∨⊥=x F (x ⊓[ F ] y)            ⟩
             x ⊓[ F ] y                       ∎
+```
+
+# Regular locales
+
+A locale A is said to be *regular* if it satisfies the axiom of approximation
+
+  a = ⋁ { b ∈ A | b ≪ a }
+
+for every a ∈ A.
+
+```agda
+⇊ : (F : Frame ℓ ℓ ℓ) → ∣ F ∣F → 𝒫 ∣ F ∣F
+⇊ F x = λ y → ∥ y ≪[ F ] x ∥ , ∥∥-prop _
+```
+
+```agda
+isRegular : (F : Frame ℓ ℓ ℓ) → Type ℓ
+isRegular F = (x : ∣ F ∣F) → x ≡ ⋁[ F ] ⟪ ⇊ F x ⟫
 ```
