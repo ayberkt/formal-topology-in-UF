@@ -131,7 +131,7 @@ x) = e x` for every `x`. We call the version `e` with the refined codomain `η`.
       up = π₀ (π₁ 𝕛-nuclear) (e x)
 
   η : stage ℱ → ∣ L ∣F
-  η x = (e x) , (fixing x)
+  η x = e x , fixing x
 ```
 
 Furthermore, `η` is a monotonic map.
