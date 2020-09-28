@@ -83,6 +83,20 @@ bot : (ℓ : Level) → hProp ℓ
 bot ℓ = 𝟘 ℓ , λ ()
 ```
 
+## Booleans
+
+```agda
+data Bool (ℓ : Level) : Type ℓ where
+  true  : Bool ℓ
+  false : Bool ℓ
+```
+
+```agda
+if_then_else_ : {A : Type ℓ₀} → Bool ℓ₁ → A → A → A
+if true  then x else y = x
+if false then x else y = y
+```
+
 ## Propositions
 
 ```

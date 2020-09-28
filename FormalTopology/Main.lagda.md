@@ -17,4 +17,5 @@ open import Compactness
 open import CantorSpace
 open import Sierpinski
 open import GaloisConnection
+open import Regular
 ```
