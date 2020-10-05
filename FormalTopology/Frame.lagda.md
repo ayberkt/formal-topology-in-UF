@@ -70,6 +70,18 @@ isLUB {ℓ₂ = ℓ₂} P ⋁_ = ⋁-LUB , ⋁-LUB-prop
                    isPropΠ λ U → isPropΠ λ x →
                      is-true-prop (∀[ y ε U ] (y ⊑[ P ] x) ⇒ (⋁ U) ⊑[ P ] x)
 
+isSup : (P : Poset ℓ₀ ℓ₁) → Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₂)
+isSup {ℓ₀} {ℓ₁} {ℓ₂} P U u = sup , sup-prop
+  where
+    sup : Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₂)
+    sup = [ ∀[ x ε U ] (x ⊑[ P ] u) ]
+        × ((y : ∣ P ∣ₚ) → [ ∀[ x ε U ] (x ⊑[ P ] y) ] → [ u ⊑[ P ] y ])
+
+    sup-prop : isProp sup
+    sup-prop =
+      isPropΣ (isProp[] (∀[ x ε U ] (x ⊑[ P ] u))) λ _ →
+        isPropΠ λ y → isPropΠ λ _ → isProp[] (u ⊑[ P ] y)
+
 isDist : (P : Poset ℓ₀ ℓ₁)
        → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ)
        → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ)

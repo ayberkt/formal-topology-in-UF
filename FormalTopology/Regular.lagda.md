@@ -59,11 +59,11 @@ A locale A is said to be *regular* if it satisfies the axiom of approximation
 for every a ∈ A.
 
 ```agda
-⇊ : (F : Frame ℓ ℓ ℓ) → ∣ F ∣F → 𝒫 ∣ F ∣F
+⇊ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → 𝒫 ∣ F ∣F
 ⇊ F x = λ y → ∥ y ≪[ F ] x ∥ , ∥∥-prop _
 ```
 
 ```agda
-isRegular : (F : Frame ℓ ℓ ℓ) → Type ℓ
-isRegular F = (x : ∣ F ∣F) → x ≡ ⋁[ F ] ⟪ ⇊ F x ⟫
+isRegular : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ-max ℓ₀ ℓ₁)
+isRegular F = (x : ∣ F ∣F) → [ isSup (pos F) ⟪ ⇊ F x ⟫ x ]
 ```
