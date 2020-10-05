@@ -65,5 +65,5 @@ for every a ∈ A.
 
 ```agda
 isRegular : (F : Frame ℓ₀ ℓ₁ ℓ₂) → hProp (ℓ-max ℓ₀ ℓ₁)
-isRegular F = ∀[ x ∶ ∣ F ∣F ] (isSup (pos F) ⟪ ⇊ F x ⟫ x)
+isRegular F = ∀[ x ∶ ∣ F ∣F ] isSup (pos F) ⟪ ⇊ F x ⟫ x
 ```
