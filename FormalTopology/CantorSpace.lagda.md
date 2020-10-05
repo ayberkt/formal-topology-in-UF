@@ -7,6 +7,9 @@ open import Basis                     hiding (A; B)
 open import Cubical.Data.Empty.Base   using (⊥; rec)
 open import Cubical.Data.Bool.Base    using (true; false; _≟_) renaming (Bool to 𝔹)
 open import Cubical.Data.List         using (List; _∷_; [])    renaming (_++_ to _^_)
+open import Frame
+open import Nucleus
+open import CoverFormsNucleus
 open import Cover
 open import Poset
 open import FormalTopology
@@ -128,6 +131,11 @@ We finally package up all this as a formal topology
 ```
 cantor : FormalTopology ℓ-zero ℓ-zero
 cantor = ℂ-pos , ℂ-IS , ℂ-mono , ℂ-sim
+
+open NucleusFrom cantor using () renaming (L to cantor-frame)
+
+_ : Frame (ℓ-suc ℓ-zero) ℓ-zero ℓ-zero
+_ = cantor-frame
 ```
 
 from which we get a covering relation
