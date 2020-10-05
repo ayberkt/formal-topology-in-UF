@@ -20,11 +20,11 @@ well-inside : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → ∣ F ∣F →
 well-inside F x y =
   Σ[ z ∈ ∣ F ∣F ] (x ⊓[ F ] z ≡ ⊥[ F ]) × (y ∨[ F ] z ≡ ⊤[ F ])
 
-syntax well-inside F x y = x ≪[ F ] y
+syntax well-inside F x y = x ⋜[ F ] y
 ```
 
 ```agda
-module SomePropertiesOf≪ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
+module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
   _⊑_ = λ (x y : ∣ F ∣F) → x ⊑[ pos F ] y
 
@@ -32,11 +32,11 @@ module SomePropertiesOf≪ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   hasComplement x =
     Σ[ y ∈ ∣ F ∣F ] (x ⊓[ F ] y ≡ ⊥[ F ]) × (x ∨[ F ] y ≡ ⊤[ F ])
 
-  ≪-comp : (x : ∣ F ∣F) → (x ≪[ F ] x) ↔ hasComplement x
-  ≪-comp x = (λ x → x) , (λ x → x)
+  ⋜-comp : (x : ∣ F ∣F) → (x ⋜[ F ] x) ↔ hasComplement x
+  ⋜-comp x = (λ x → x) , (λ x → x)
 
-  a≪b→a⊑b : (x y : ∣ F ∣F) → x ≪[ F ] y → [ x ⊑[ pos F ] y ]
-  a≪b→a⊑b x y (z , p , q) = x=x∧y⇒x⊑y F NTS
+  a⋜b→a⊑b : (x y : ∣ F ∣F) → x ⋜[ F ] y → [ x ⊑[ pos F ] y ]
+  a⋜b→a⊑b x y (z , p , q) = x=x∧y⇒x⊑y F NTS
     where
       open PosetReasoning (pos F)
 
@@ -54,13 +54,13 @@ module SomePropertiesOf≪ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
 A locale A is said to be *regular* if it satisfies the axiom of approximation
 
-  a = ⋁ { b ∈ A | b ≪ a }
+  a = ⋁ { b ∈ A | b ⋜ a }
 
 for every a ∈ A.
 
 ```agda
 ⇊ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → 𝒫 ∣ F ∣F
-⇊ F x = λ y → ∥ y ≪[ F ] x ∥ , ∥∥-prop _
+⇊ F x = λ y → ∥ y ⋜[ F ] x ∥ , ∥∥-prop _
 ```
 
 ```agda
