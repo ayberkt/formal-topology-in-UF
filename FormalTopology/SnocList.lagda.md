@@ -7,6 +7,7 @@ title: Snoc List
 
 open import Basis
 open import Cubical.Data.Empty.Base using (⊥; rec)
+open import Cubical.Data.Empty.Properties using (isProp⊥)
 open import Cubical.Relation.Nullary.DecidableEq using (Discrete→isSet)
 open import Cubical.Relation.Nullary using (Discrete; yes; no; Dec; ¬_)
 
@@ -17,6 +18,12 @@ data SnocList : Type ℓ-zero where
   _⌢_ : SnocList → Z → SnocList
 
 infixl 5 _⌢_
+
+_elem_ : (z : Z) → SnocList → hProp ℓ-zero
+z elem []        = ⊥ , isProp⊥
+z elem (zs ⌢ z′) with z ≟ z′
+z elem (zs ⌢ z′) | yes  p = (Unit ℓ-zero) , Unit-prop
+z elem (zs ⌢ z′) | no  ¬p = z elem zs
 
 ⌢-eq-left : {xs ys : SnocList} {x y : Z} → xs ⌢ x ≡ ys ⌢ y → xs ≡ ys
 ⌢-eq-left {ys = ys} p = subst (λ { (zs ⌢ _) → zs ≡ ys ; [] → Z }) (sym p) refl
@@ -57,6 +64,12 @@ SnocList-set = Discrete→isSet SnocList-discrete
 _++_ : SnocList → SnocList → SnocList
 xs ++ []       = xs
 xs ++ (ys ⌢ y) = (xs ++ ys) ⌢ y
+
+elem-lemma : (xs ys : SnocList) (z : Z) → [ z elem xs ] → [ z elem (xs ++ ys) ]
+elem-lemma xs []       z z∈xs = z∈xs
+elem-lemma xs (ys ⌢ y) z z∈xs with z ≟ y
+elem-lemma xs (ys ⌢ y) z z∈xs | yes p = tt
+elem-lemma xs (ys ⌢ y) z z∈xs | no ¬p = elem-lemma xs ys z z∈xs
 
 []≠⌢++ : (xs ys : SnocList) (x : Z) → ¬ ([] ≡ ((xs ⌢ x) ++ ys))
 []≠⌢++ xs []        x p = ⌢≠[] (sym p)

@@ -270,3 +270,42 @@ compact xs U U-dc (branch tt f) =
 compact xs U U-dc (squash xs◁U₀ xs◁U₁ i) =
   squash (compact xs U U-dc xs◁U₀) (compact xs U U-dc xs◁U₁) i
 ```
+
+## Some examples
+
+An example of an element of the Cantor frame is the set of opens that contain `true`. This
+is clearly downwards-closed and a fixed point for the covering relation.
+
+```agda
+containing-true : ∣ cantor-frame ∣F
+containing-true = (W , W-dc) , fixing
+  where
+    W : 𝒫 ℂ
+    W xs = true elem xs
+
+    W-dc : [ isDownwardsClosed ℂ-pos W ]
+    W-dc xs ys xs∈W ys≤xs@(zs , ys=xs++zs) =
+      subst (λ - → [ - ∈ W ]) (sym ys=xs++zs) (elem-lemma xs zs true xs∈W)
+
+    lemma : (xs : ℂ) → ((x : 𝔹) → [ true elem (xs ⌢ x) ]) → [ true elem xs ]
+    lemma []       f with f false
+    lemma []       f | ()
+    lemma (xs ⌢ x) f with x
+    lemma (xs ⌢ x) f | false = lemma xs λ { false → f false ; true → tt }
+    lemma (xs ⌢ x) f | true  = tt
+
+    fixing : NucleusFrom.𝕛 cantor (W , W-dc) ≡ (W , W-dc)
+    fixing =
+      Σ≡Prop
+        (isProp[] ∘ isDownwardsClosed ℂ-pos)
+        (funExt λ xs → ⇔toPath (fixing₀ xs) (fixing₁ xs))
+      where
+        fixing₀ : (xs : ℂ) → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ] → [ xs ∈ W ]
+        fixing₀ xs (dir p)        = p
+        fixing₀ xs (branch b f)   = lemma xs (λ x → fixing₀ (xs ⌢ x) (f x))
+        fixing₀ xs (squash p q i) = isProp[] (W xs) (fixing₀ xs p) (fixing₀ xs q) i
+
+        fixing₁ : (xs : ℂ) → [ xs ∈ W ] → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ]
+        fixing₁ xs xs∈W = dir xs∈W
+```
+
