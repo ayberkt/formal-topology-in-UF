@@ -56,10 +56,16 @@ module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
   a⋜c≤d : {x y z : ∣ F ∣F} → x ⋜[ F ] y → [ y ⊑[ pos F ] z ] → x ⋜[ F ] z
   a⋜c≤d {x} {y} {z} (c , p , q) y⊑z =
-    c , (p , ⊑[ pos F ]-antisym _ _ (⊤[ F ]-top _)
-             (subst (λ - → [ - ⊑[ pos F ] (z ∨[ F ] c) ]) q (⊔[ F ]-least y c (z ∨[ F ] c) (⊑[ pos F ]-trans y z _ y⊑z (⊔[ F ]-upper₀ z c)) (⊔[ F ]-upper₁ z c))))
+    c , (p , ⊑[ pos F ]-antisym _ _ (⊤[ F ]-top _) ⊤⊑z∨c)
     where
       open PosetReasoning (pos F)
+
+      y⊑z∨c : [ y ⊑[ pos F ] (z ∨[ F ] c) ]
+      y⊑z∨c = y ⊑⟨ y⊑z ⟩ z ⊑⟨ ⊔[ F ]-upper₀ z c ⟩ z ∨[ F ] c ■
+
+      ⊤⊑z∨c : [ ⊤[ F ] ⊑[ pos F ] (z ∨[ F ] c) ]
+      ⊤⊑z∨c =
+        subst (λ - → [ - ⊑[ pos F ] _ ]) q (⊔[ F ]-least _ _ _ y⊑z∨c (⊔[ F ]-upper₁ z c))
 ```
 
 # Regular formal topologies
