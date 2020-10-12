@@ -155,7 +155,6 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   ⊓[_]-lower₀ : (x y : ∣ F ∣F) → [ (x ⊓[ F ] y) ⊑ x ]
   ⊓[_]-lower₀ = let (_ , _ , str) = F in λ x y → π₀ (π₀ (π₀ (π₁ str)) x y)
 
-
   ⊓[_]-lower₁ : (x y : ∣ F ∣F) → [ (x ⊓[ F ] y) ⊑ y ]
   ⊓[_]-lower₁ = let (_ , _ , str) = F in λ x y → π₁ (π₀ (π₀ (π₁ str)) x y)
 
@@ -166,9 +165,24 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   ⋁[_]-upper : (U : Fam ℓ₂ ∣ F ∣F) (o : ∣ F ∣F) → o ε U → [ o ⊑ (⋁[ F ] U) ]
   ⋁[_]-upper = let (_ , _ , str) = F in π₀ (π₀ (π₁ (π₁ str)))
 
+  ⊔[_]-upper₀ : (x y : ∣ F ∣F) → [ x ⊑[ pos F ] (x ∨[ F ] y) ]
+  ⊔[_]-upper₀ x y = ⋁[_]-upper (Bool _ , λ p → if p then x else y) x (true , refl)
+
+  ⊔[_]-upper₁ : (x y : ∣ F ∣F) → [ y ⊑[ pos F ] (x ∨[ F ] y) ]
+  ⊔[_]-upper₁ x y = ⋁[_]-upper (Bool _ , λ p → if p then x else y) y (false , refl)
+
+
   ⋁[_]-least : (U : Fam ℓ₂ ∣ F ∣F) (x : ∣ F ∣F)
              → [ ∀[ y ε U ] (y ⊑ x) ] → [ (⋁[ F ] U) ⊑ x ]
   ⋁[_]-least = let (_ , _ , str) = F in π₁ (π₀ (π₁ (π₁ str)))
+
+  ⊔[_]-least : (x y z : ∣ F ∣F)
+             → [ x ⊑[ pos F ] z ] → [ y ⊑[ pos F ] z ] → [ (x ∨[ F ] y) ⊑[ pos F ] z ]
+  ⊔[_]-least x y z x⊑z y⊑z = ⋁[_]-least (Bool _ , λ p → if p then x else y) z NTS
+    where
+      NTS : [ fam-forall (Bool ℓ₂ , (λ p → if p then x else y)) (λ y₁ → y₁ ⊑ z) ]
+      NTS k (true  , p) = subst (λ - → [ - ⊑ z ]) p x⊑z
+      NTS k (false , p) = subst (λ - → [ - ⊑ z ]) p y⊑z
 
   ⊥[_]-bottom : (x : ∣ F ∣F) → [ ⊥[ F ] ⊑ x ]
   ⊥[_]-bottom x = ⋁[ _ ]-least x (λ a ())
@@ -232,8 +246,12 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   x∨⊥=x : (x : ∣ F ∣F) → ⊥[ F ] ∨[ F ] x ≡ x
   x∨⊥=x = sym ∘ x⊑y⇒y=x∨y ∘ ⊥[_]-bottom
 
+  x∧⊥=⊥ : (x : ∣ F ∣F) → x ⊓[ F ] ⊥[ F ] ≡ ⊥[ F ]
+  x∧⊥=⊥ x =
+    ⊑[ pos F ]-antisym (glb-of F x ⊥[ F ]) ⊥[ F ] (⊓[_]-lower₁ _ _) (⊥[_]-bottom _)
+
   ∨-comm : (x y : ∣ F ∣F) → x ∨[ F ] y ≡ y ∨[ F ] x
-  ∨-comm x y = ⊑[ pos F ]-antisym _ _ (Ψ x y) (Ψ y x) 
+  ∨-comm x y = ⊑[ pos F ]-antisym _ _ (Ψ x y) (Ψ y x)
     where
       Ψ : (a b : ∣ F ∣F) → [ a ∨[ F ] b ⊑[ pos F ] b ∨[ F ] a ]
       Ψ a b = ⋁[_]-least _ (b ∨[ F ] a) NTS
