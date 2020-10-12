@@ -93,25 +93,38 @@ regularity-lemma : (F : Frame ℓ₀ ℓ₁ ℓ₂)
                        (((y : ∣ F ∣F) → y ε U → hasComplement F y)
                         × (x ≡ ⋁[ F ] U)))
                  → [ isRegular F ]
-regularity-lemma F p x =
-  upper , subst (λ - → (y : ∣ F ∣F) → [ fam-forall (⇊ F x) (λ k → rel (pos F) k y) ] → [ rel (pos F) - y ]) (sym x=⋁𝔘) ψ
+regularity-lemma F p x = upper , subst goal (sym x=⋁𝔘) ψ
   where
     open PosetReasoning (pos F)
     open SomePropertiesOf⋜ F
+
+    goal = λ - → (y : ∣ F ∣F) → [ ∀[ k ε ⇊ F x ] (k ⊑[ pos F ] y) ] → [ - ⊑[ pos F ] y ]
 
     𝔘 = π₀ (p x)
 
     x=⋁𝔘 : x ≡ ⋁[ F ] 𝔘
     x=⋁𝔘 = π₁ (π₁ (p x))
 
-    upper : [ ∀[ y ε (⇊ F x) ] (y ⊑[ pos F ] x) ]
-    upper y (i , eq) = subst (λ - → [ - ⊑[ pos F ] x ]) eq (a⋜b→a⊑b (π₁ (⇊ F x) i) x (π₁ i))
+    has-comp : (y : ∣ F ∣F) → y ε 𝔘 → hasComplement F y
+    has-comp = π₀ (π₁ (p x))
 
-    ψ : (y : ∣ pos F ∣ₚ) → [ ∀[ x₁ ε (⇊ F x) ] (x₁ ⊑[ pos F ] y) ] → [ (⋁[ F ] 𝔘) ⊑[ pos F ] y ]
+    upper : [ ∀[ y ε (⇊ F x) ] (y ⊑[ pos F ] x) ]
+    upper y ((_ , wi) , eq) = subst (λ - → [ - ⊑[ pos F ] x ]) eq (a⋜b→a⊑b _ x wi)
+
+    ψ : (y : ∣ F ∣F) → [ ∀[ k ε ⇊ F x ] (k ⊑[ pos F ] y) ] → [ (⋁[ F ] 𝔘) ⊑[ pos F ] y ]
     ψ y q = ⋁[ F ]-least 𝔘 y NTS
       where
         NTS : [ ∀[ k ε 𝔘 ] (k ⊑[ pos F ] y) ]
-        NTS k (i , eq) = q k ((𝔘 $ i , subst (λ - → (𝔘 $ i) ⋜[ F ] -) (sym x=⋁𝔘) (a⋜c≤d {y = 𝔘 $ i} (π₀ (π₁ (p x)) (𝔘 $ i) (i , refl)) (⋁[ F ]-upper 𝔘 (𝔘 $ i) (i , refl)))) , eq)
+        NTS k (i , eq) = q k kε⇊Fx
+          where
+            𝔘ᵢ-has-comp : hasComplement F (𝔘 $ i)
+            𝔘ᵢ-has-comp = has-comp (𝔘 $ i) (i , refl)
+
+            𝔘ᵢ⋜⋁𝔘 : (𝔘 $ i) ⋜[ F ] (⋁[ F ] 𝔘)
+            𝔘ᵢ⋜⋁𝔘 = a⋜c≤d 𝔘ᵢ-has-comp (⋁[ F ]-upper 𝔘 (𝔘 $ i) (i , refl))
+
+            kε⇊Fx : k ε ⇊ F x
+            kε⇊Fx = (𝔘 $ i , subst (λ - → _ ⋜[ F ] -) (sym x=⋁𝔘) 𝔘ᵢ⋜⋁𝔘) , eq
 ```
 
 ```agda
