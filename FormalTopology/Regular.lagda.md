@@ -16,6 +16,13 @@ open import CoverFormsNucleus
 
 ```
 
+## Definition
+
+We define the well-inside relation exactly as in Johstone. This is a pointless
+characterisation of the relation that *U* ⋜ *V* := Clos(*U*) ⊆ *V*. Notice why this is
+called "well-inside": if Clos(*U*) ⊆ *V* it means *U* is inside *V* in such way that it
+doesn't touch its boundary.
+
 ```agda
 well-inside : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → ∣ F ∣F → Type ℓ₀
 well-inside F x y =
@@ -24,14 +31,29 @@ well-inside F x y =
 syntax well-inside F x y = x ⋜[ F ] y
 ```
 
+We denote by ⇊ *x* the set of everything well-inside *x*.
+
+```agda
+⇊ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Fam ℓ₀ ∣ F ∣F
+⇊ F x = (Σ[ y ∈ ∣ F ∣F ] y ⋜[ F ] x) , π₀
+```
+
+A locale *L* is then called **regular** iff every element in it is the join of all
+elements well-inside it.
+
+```agda
+isRegular : (F : Frame ℓ₀ ℓ₁ ℓ₂) → hProp (ℓ-max ℓ₀ ℓ₁)
+isRegular F = ∀[ x ∶ ∣ F ∣F ] isSup (pos F) (⇊ F x) x
+```
+
+## Some properties
+
 ```agda
 -- In other words, x is clopen.
 hasComplement : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Type ℓ₀
 hasComplement F x =
   Σ[ y ∈ ∣ F ∣F ] (x ⊓[ F ] y ≡ ⊥[ F ]) × (x ∨[ F ] y ≡ ⊤[ F ])
-```
 
-```agda
 module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
   private
@@ -68,37 +90,25 @@ module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
         subst (λ - → [ - ⊑[ pos F ] _ ]) q (⊔[ F ]-least _ _ _ y⊑z∨c (⊔[ F ]-upper₁ z c))
 ```
 
-# Regular formal topologies
+## Alternative characterisation
+
+Another way of characterising regularity is this: a locale *L* is called regular iff each
+of its elements can be written as the join of a _clopen_ family. Before looking at this
+though, let us first discuss how we can express clopen-ness.
+
+We say that some open *x* ∈ *L* is clopen iff it has a complement. This can be motivated
+by the fact that a set is clopen iff its boundary is empty i.e. it satisfies LEM. Now
+we can write down the alternative characterisation we mentioned.
 
 ```agda
+hasClopenBasis : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ-max ℓ₀ (ℓ-suc ℓ₂))
+hasClopenBasis {ℓ₂ = ℓ₂} F =
+  (x : ∣ F ∣F) →
+    Σ[ U ∈ Fam ℓ₂ _ ] ((y : ∣ F ∣F) → y ε U → hasComplement F y) × (x ≡ ⋁[ F ] U)
 ```
 
-# Regular locales
-
-A locale A is said to be *regular* if it satisfies
-
-  a = ⋁ { b ∈ A | b ⋜ a }
-
-for every a ∈ A.
-
 ```agda
-⇊ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Fam ℓ₀ ∣ F ∣F
-⇊ F x = (Σ[ y ∈ ∣ F ∣F ] y ⋜[ F ] x) , π₀
-```
-
-```agda
-isRegular : (F : Frame ℓ₀ ℓ₁ ℓ₂) → hProp (ℓ-max ℓ₀ ℓ₁)
-isRegular F = ∀[ x ∶ ∣ F ∣F ] isSup (pos F) (⇊ F x) x
-```
-
-Prove lemma stating that if any element
-```agda
-regularity-lemma : (F : Frame ℓ₀ ℓ₁ ℓ₂)
-                 → ((x : ∣ F ∣F) →
-                      Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ]
-                       (((y : ∣ F ∣F) → y ε U → hasComplement F y)
-                        × (x ≡ ⋁[ F ] U)))
-                 → [ isRegular F ]
+regularity-lemma : (F : Frame ℓ₀ ℓ₁ ℓ₂) → hasClopenBasis F → [ isRegular F ]
 regularity-lemma F p x = upper , subst goal (sym x=⋁𝔘) ψ
   where
     open PosetReasoning (pos F)
@@ -131,12 +141,4 @@ regularity-lemma F p x = upper , subst goal (sym x=⋁𝔘) ψ
 
             kε⇊Fx : k ε ⇊ F x
             kε⇊Fx = (𝔘 $ i , subst (λ - → _ ⋜[ F ] -) (sym x=⋁𝔘) 𝔘ᵢ⋜⋁𝔘) , eq
-```
-
-```agda
--- sublocale-regular : (F : Frame ℓ₀ ℓ₁ ℓ₂)
---                   → (j : Nucleus F)
---                   → [ isRegular F ]
---                   → [ isRegular (𝔣𝔦𝔵 F j) ]
--- sublocale-regular F j F-reg (x , jx=x) = {!!} , {!!}
 ```
