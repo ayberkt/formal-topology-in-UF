@@ -34,43 +34,24 @@ module _ (F : FormalTopology ℓ₀ ℓ₀) where
                 a ◁ U → ∥ Σ[ as ∈ List A ] (a ◁ down as) × [ down as ⊆ U ] ∥
 ```
 
-# Compactness for frames
+## Compactness for frames
 
-We start by stating the notion of a *cover* for a frame.
+Johnstone's definition of a compact frame is simply a frame whose top element is
+finite. Therefore, let us start by writing down Johnstone's notion of
+finiteness (Lemma 3.1.ii, pg. 63).
 
 ```agda
-cover-syntax : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Fam ℓ₂ ∣ F ∣F → Type ℓ₀
-cover-syntax F U = ⋁[ F ] U ≡ ⊤[ F ]
-
-syntax cover-syntax F U = U covers F
-
-Cover : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ-max ℓ₀ (ℓ-suc ℓ₂))
-Cover {ℓ₂ = ℓ₂} F = Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] U covers F
+isFinite₂ : (F : Frame ℓ₀ ℓ₁ ℓ₂)
+          → ∣ F ∣F → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+isFinite₂ {ℓ₂ = ℓ₂} F x =
+  (U : Fam ℓ₂ ∣ F ∣F) →
+    [ isDirected (Frame.pos F) U ] →
+      x ≡ ⋁[ F ] U → ∥ Σ[ i ∈ index U ] [ x ⊑[ Frame.pos F ] (U $ i) ] ∥
 ```
 
-Next, we define the type of *finite* covers. This is achieved by talking about lists of
-elements of the frame. Given a list `xs`, `famFromList xs` denotes the family
-corresponding to that list. The type of finite covers is exactly those families `U`,
-obtained via `famFromList`, such that `U` covers the frame.
+A frame is compact iff its top element is finite.
 
 ```agda
-FinCover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → Type ℓ₀
-FinCover F = Σ[ xs ∈ List ∣ F ∣F ] (famFromList xs) covers F
-```
-
-The following is the property of being a *subcover*.
-
-```agda
-isASubcover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → FinCover F → Cover F → Type ℓ₀
-isASubcover F (xs , _) (U , _) = famFromList xs ⊆fam U
-
-hasFinSubcover : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → Cover F → Type ℓ₀
-hasFinSubcover F C₀ = ∥ Σ[ C₁ ∈ FinCover F ] isASubcover F C₁ C₀ ∥
-```
-
-Statement of compactness is then as follows.
-
-```agda
-isACompactFrame : (F : Frame ℓ₀ ℓ₁ ℓ-zero) → Type (ℓ-max (ℓ-suc ℓ-zero) ℓ₀)
-isACompactFrame F = (C : Cover F) → hasFinSubcover F C
+isCompactFrame : (F : Frame ℓ₀ ℓ₁ ℓ₂) → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+isCompactFrame F = isFinite₂ F ⊤[ F ] , isPropΠ3 (λ x y z → ∥∥-prop _)
 ```
