@@ -12,7 +12,9 @@ open import Nucleus
 open import CoverFormsNucleus
 open import Cover
 open import Poset
+open import Regular
 open import FormalTopology
+open import UniversalProperty using (compr; main-lemma)
 open import Compactness
 ```
 
@@ -132,10 +134,13 @@ We finally package up all this as a formal topology
 cantor : FormalTopology ℓ-zero ℓ-zero
 cantor = ℂ-pos , ℂ-IS , ℂ-mono , ℂ-sim
 
-open NucleusFrom cantor using () renaming (L to cantor-frame)
+open NucleusFrom cantor using (η; ⦅_⦆) renaming (L to cantor-frame)
 
 _ : Frame (ℓ-suc ℓ-zero) ℓ-zero ℓ-zero
 _ = cantor-frame
+
+cantor-pos : Poset (ℓ-suc ℓ-zero) ℓ-zero
+cantor-pos = Frame.pos cantor-frame
 ```
 
 from which we get a covering relation
@@ -309,3 +314,82 @@ containing-true = (W , W-dc) , fixing
         fixing₁ xs xs∈W = dir xs∈W
 ```
 
+## Compact
+
+## Regular
+
+```agda
+cneg : ∣ cantor-frame ∣F → ∣ cantor-frame ∣F
+cneg U = ⋁[ cantor-frame ] ⁅ η u ∣ u ∈ (⦅ U ⦆ ^c) ⁆
+
+cneg-comp-∧ : (U : ∣ cantor-frame ∣F) → U ⊓[ cantor-frame ] (cneg U) ≡ ⊥[ cantor-frame ]
+cneg-comp-∧ U =
+  ⊑[ cantor-pos ]-antisym _ _ NTS (⊥[ CF ]-bottom (U ⊓[ CF ] (cneg U)))
+  where
+    CF = cantor-frame
+
+    NTS : [ U ⊓[ CF ] cneg U ⊑[ cantor-pos ] ⊥[ CF ] ]
+    NTS = subst (λ - → [ - ⊓[ CF ] cneg U ⊑[ cantor-pos ] ⊥[ CF ] ]) (sym (main-lemma cantor U)) NTS′
+      where
+        NTS′ : [ ((⋁[ cantor-frame ] compr η ⦅ U ⦆) ⊓[ CF ] (cneg U)) ⊑[ cantor-pos ] ⊥[ CF ] ]
+        NTS′ xs (p , q) = rec (U∩U^c=∅ ⦅ U ⦆ (xs , ({!!} , {!!})))
+          where
+            φ : Σ[ ys ∈ ℂ ] ([ ys ∈ (⦅ U ⦆ ^c) ] × (η xs ≡ η ys))
+            φ = {!!}
+
+            ψ : Σ[ zs ∈ ℂ ] ([ zs ∈ ⦅ U ⦆ ] × (η xs ≡ η zs))
+            ψ = {!!}
+
+cneg-comp-∨ : (U : ∣ cantor-frame ∣F) → U ∨[ cantor-frame ] (cneg U) ≡ ⊤[ cantor-frame ]
+cneg-comp-∨ U =
+  ⊑[ cantor-pos ]-antisym _ _ (⊤[ CF ]-top (U ∨[ cantor-frame ] (cneg U))) NTS
+  where
+    CF = cantor-frame
+
+    NTS : [ ⊤[ CF ] ⊑[ cantor-pos ] (U ∨[ cantor-frame ] (cneg U)) ]
+    NTS = subst (λ - → [ ⊤[ CF ] ⊑[ cantor-pos ] (- ∨[ cantor-frame ] (cneg U)) ]) (sym (main-lemma cantor U)) NTS′
+      where
+        NTS′ : [ ⊤[ CF ] ⊑[ cantor-pos ] ((⋁[ cantor-frame ] compr η ⦅ U ⦆) ∨[ cantor-frame ] (cneg U)) ]
+        NTS′ []       tt = dir ∣ true , dir ∣ ([] , {!!}) , {!!} ∣ ∣
+        NTS′ (xs ⌢ x) tt = {!!}
+```
+
+```agda
+cantor-regular : [ isRegular cantor-frame ]
+cantor-regular =
+  regularity-lemma cantor-frame cantor-has-clopen-basis
+  where
+    cantor-has-clopen-basis : hasClopenBasis cantor-frame
+    cantor-has-clopen-basis 𝔘 = ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ , comps , main-lemma cantor 𝔘
+      where
+        comps : (U : ∣ cantor-frame ∣F)
+              → U ε ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ → hasComplement cantor-frame U
+        comps U (i , eq) = cneg U , cneg-comp-∧ U , cneg-comp-∨ U
+
+        -- NTS : (y : ∣ cantor-frame ∣F)
+        --     → y ε ((Σ[ x ∈ ℂ ] [ U x ]) , η ∘ π₀) → hasComplement cantor-frame y
+        -- NTS ((U , U-dc) , fix) (i , eq) =
+        --   (((λ xs → [ ∀[ ys ∶ ℂ ] ys ∈ U ⇒ ¬ (ys ⊑[ ℂ-pos ] xs) ] , isProp[] (∀[ ys ∶ ℂ ] ys ∈ U ⇒ ¬ (ys ⊑[ ℂ-pos ] xs))) , dc) , fixing) , comp₀ , comp₁
+        --   where
+        --     dc : [ isDownwardsClosed ℂ-pos ((λ xs → [ ∀[ ys ∶ ℂ ] ys ∈ U ⇒ ¬ (ys ⊑[ ℂ-pos ] xs) ] , isProp[] (∀[ ys ∶ ℂ ] ys ∈ U ⇒ ¬ (ys ⊑[ ℂ-pos ] xs)))) ]
+        --     dc xs ys φ ys⊑xs zs zs∈U zs⊑ys = φ zs zs∈U (⊑[ ℂ-pos ]-trans _ _ _ zs⊑ys ys⊑xs)
+
+        --     fixing : NucleusFrom.𝕛 cantor ((λ xs → [ ∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs) ] , isProp[] (∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs))) , dc)
+        --            ≡ ((λ xs → [ ∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs) ] , isProp[] (∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs))) , dc)
+        --     fixing = {!!}
+
+        --     comp₀ : glb-of cantor-frame ((U , U-dc) , fix) (((λ xs → [ ∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs) ] , isProp[] (∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs))) , dc) , fixing)
+        --           ≡ ⊥[ cantor-frame ]
+        --     comp₀ = ⊑[ Frame.pos cantor-frame ]-antisym _ _ θ (⊥[ cantor-frame ]-bottom (glb-of cantor-frame ((U , U-dc) , fix) (((λ xs → [ ∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs) ] , isProp[] (∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs))) , dc) , fixing)))
+        --       where
+        --         θ : _
+        --         θ xs (p , q) = rec (q xs p (⊑[ ℂ-pos ]-refl xs))
+
+        --     comp₁ : bin-join cantor-frame ((U , U-dc) , fix) (((λ xs → [ ∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs) ] , isProp[] (∀[∶]-syntax (λ ys → (ys ∈ U) ⇒ ¬ rel ℂ-pos ys xs))) , dc) , fixing)
+        --           ≡ ⊤[ cantor-frame ]
+        --     comp₁ = ⊑[ Frame.pos cantor-frame ]-antisym _ _ (⊤[ cantor-frame ]-top (bin-join cantor-frame _ _)) θ
+        --       where
+        --         θ : _
+        --         θ []       tt = {!subst!}
+        --         θ (xs ⌢ x) tt = {!!}
+```
