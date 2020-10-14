@@ -131,6 +131,9 @@ x ∈ U = U x
 𝒫-set : (A : Type ℓ) → isSet (𝒫 A)
 𝒫-set A = isSetΠ λ _ → isSetHProp
 
+_^c : {A : Type ℓ} → 𝒫 A → 𝒫 A
+U ^c = λ x → ¬ (x ∈ U)
+
 variable
   U V : 𝒫 A
 
@@ -154,6 +157,11 @@ _∩_ {A = A} U V = λ x → ([ U x ] × [ V x ]) , prop x
   where
     prop : (x : A) → isProp ([ U x ] × [ V x ])
     prop x = isPropΣ (is-true-prop (x ∈ U)) λ _ → is-true-prop (V x)
+```
+
+```agda
+U∩U^c=∅ : {A : Type ℓ} → (U : 𝒫 A) → Σ[ x ∈ A ] [ x ∈ (U ∩ (U ^c)) ] → Cubical.Data.Empty.⊥
+U∩U^c=∅ U (x , (x∈U , x∈U^c)) = rec (x∈U^c x∈U)
 ```
 
 ## Family
