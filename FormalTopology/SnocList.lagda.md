@@ -5,7 +5,7 @@ title: Snoc List
 ```agda
 {-# OPTIONS --cubical --safe #-}
 
-open import Basis
+open import Basis hiding (¬_)
 open import Cubical.Data.Empty.Base using (⊥; rec)
 open import Cubical.Data.Empty.Properties using (isProp⊥)
 open import Cubical.Relation.Nullary.DecidableEq using (Discrete→isSet)
