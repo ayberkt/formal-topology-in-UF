@@ -3,13 +3,14 @@
 
 module CantorSpace where
 
-open import Basis                     hiding (A; B; if_then_else_)
+open import Basis                     hiding (A; B)
 open import Cubical.Data.Empty.Base   using (⊥; rec)
 open import Cubical.Data.Empty.Properties using (isProp⊥)
-open import Cubical.Data.Bool.Base    using (true; false; _≟_; if_then_else_; not) renaming (Bool to 𝔹)
+open import Cubical.Data.Bool.Base    using (true; false; _≟_; not) renaming (Bool to 𝔹)
 open import Cubical.Data.List         using (List; _∷_; []; foldr; length)    renaming (_++_ to _^_)
 open import Cubical.Data.Nat          using (ℕ; predℕ)
 open import Cubical.Relation.Nullary  using (Dec; yes; no)
+open import Cubical.Foundations.Logic using (_⊔_)
 open import Frame
 open import Nucleus
 open import CoverFormsNucleus
@@ -330,10 +331,6 @@ containing-true = (W , W-dc) , fixing
 ## Regular
 
 ```agda
-flip : ℂ → ℂ
-flip []       = []
-flip (bs ⌢ b) = flip bs ⌢ (if b then false else true)
-
 map : List ℂ → (ℂ → ℂ) → List ℂ
 map []       f = []
 map (x ∷ xs) f = f x ∷ map xs f
@@ -365,6 +362,12 @@ xs sib ys = [ xs ∈L siblings ys ] , isProp[] (xs ∈L siblings ys)
 _^* : ℂ → ∣ cantor-frame ∣F
 xs ^* = ⋁[ cantor-frame ] ⁅ η xs* ∣ xs* ∈ (_sib_ xs)  ⁆
 
+bar : ℂ → 𝒫 ℂ
+bar xs = λ ys → ∥ (Σ[ b ∈ Bool _ ] [ ys ∈ ⦅ if b then η xs else (xs ^*) ⦆ ]) ∥ , ∥∥-prop _
+  where
+    W : Fam ℓ-zero _
+    W = (Bool _) , λ b → if b then ⦅ η xs ⦆ else ⦅ xs ^* ⦆
+
 ⊥-lemma : (xs : ℂ) → [ xs ∈ ⦅ ⊥[ cantor-frame ] ⦆ ] → ⊥
 ⊥-lemma xs (dir p)                = ∥∥-rec isProp⊥ (λ ()) p
 ⊥-lemma xs (branch tt f)          = ⊥-lemma (xs ⌢ true) (f true)
@@ -378,27 +381,28 @@ comp-∧ xs = ⊑[ cantor-pos ]-antisym _ _ NTS (⊥[ CF ]-bottom (η xs ⊓[ CF
     NTS : [ (η xs) ⊓[ CF ] (xs ^*) ⊑[ cantor-pos ] ⊥[ CF ] ]
     NTS = {!!}
 
-comp-∨-lemma : (xs : ℂ) → [ ⊤[ CF ] ⊑[ cantor-pos ] ((η xs) ∨[ CF ] (xs ^*)) ]
-comp-∨-lemma []       ys tt = dir ∣ true , dir ([]-bot ys) ∣
-comp-∨-lemma (xs ⌢ x) ys tt = {!!}
+comp-∨-lemma : (xs zs : ℂ) → zs <ℂ| bar xs
+comp-∨-lemma []       zs       = dir ∣ true , (dir ([]-bot zs)) ∣
+comp-∨-lemma (xs ⌢ x) []       = {!!}
+comp-∨-lemma (xs ⌢ x) (zs ⌢ s) = {!!}
 
 comp-∨ : (xs : ℂ) → (η xs) ∨[ cantor-frame ] (xs ^*) ≡ ⊤[ cantor-frame ]
 comp-∨ xs =
-  ⊑[ cantor-pos ]-antisym _ _ (⊤[ CF ]-top ((η xs) ∨[ CF ] (xs ^*))) (comp-∨-lemma xs)
+  ⊑[ cantor-pos ]-antisym _ _ (⊤[ CF ]-top (η xs ∨[ CF ] (xs ^*))) (λ ys _ → comp-∨-lemma xs ys)
 ```
 
 ```agda
--- cantor-regular : [ isRegular cantor-frame ]
--- cantor-regular =
---   regularity-lemma cantor-frame cantor-has-clopen-basis
---   where
---     cantor-has-clopen-basis : hasClopenBasis cantor-frame
---     cantor-has-clopen-basis 𝔘 = ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ , comps , main-lemma cantor 𝔘
---       where
---         comps : (U : ∣ cantor-frame ∣F)
---               → U ε ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ → hasComplement cantor-frame U
---         comps U ((xs , xs∈U) , eq) = subst (λ - → hasComplement cantor-frame -) eq NTS
---           where
---             NTS : hasComplement cantor-frame (η xs)
---             NTS = (xs ^*) , (comp-∧ xs) , (comp-∨ xs)
+cantor-regular : [ isRegular cantor-frame ]
+cantor-regular =
+  regularity-lemma cantor-frame cantor-has-clopen-basis
+  where
+    cantor-has-clopen-basis : hasClopenBasis cantor-frame
+    cantor-has-clopen-basis 𝔘 = ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ , comps , main-lemma cantor 𝔘
+      where
+        comps : (U : ∣ cantor-frame ∣F)
+              → U ε ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ → hasComplement cantor-frame U
+        comps U ((xs , xs∈U) , eq) = subst (λ - → hasComplement cantor-frame -) eq NTS
+          where
+            NTS : hasComplement cantor-frame (η xs)
+            NTS = (xs ^*) , (comp-∧ xs) , (comp-∨ xs)
 ```
