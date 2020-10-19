@@ -383,16 +383,28 @@ bar-dc xs ys zs ys∈bar-xs zs⊑ys =
 
 CF = cantor-frame
 
+comp-∧-lemma : (xs ys : ℂ) → [ ys ∈ ⦅ η xs ⦆ ] → [ ys ∈ ⦅ xs ^* ⦆ ] → ⊥
+comp-∧-lemma xs ys p q = {!!}
+
 comp-∧ : (xs : ℂ) → (η xs) ⊓[ CF ] (xs ^*) ≡ ⊥[ CF ]
 comp-∧ xs = ⊑[ cantor-pos ]-antisym _ _ NTS (⊥[ CF ]-bottom (η xs ⊓[ CF ] (xs ^*)))
   where
     NTS : [ (η xs) ⊓[ CF ] (xs ^*) ⊑[ cantor-pos ] ⊥[ CF ] ]
-    NTS = {!!}
+    NTS ys (ys∈η-xs , ys∈xs*) = rec (comp-∧-lemma xs ys ys∈η-xs ys∈xs*)
 
 comp-∨-lemma : (xs zs : ℂ) → zs <ℂ| bar xs
-comp-∨-lemma []       zs       = dir ∣ true , (dir ([]-bot zs)) ∣
-comp-∨-lemma (xs ⌢ x) []       = {!!}
-comp-∨-lemma (xs ⌢ x) (zs ⌢ s) = {!!}
+comp-∨-lemma []       zs       = dir ∣ true , dir ([]-bot zs) ∣
+comp-∨-lemma (xs ⌢ x) []       = NTS
+  where
+    NTS : [] <ℂ| bar (xs ⌢ x)
+    NTS = {!!}
+comp-∨-lemma (xs ⌢ x) (zs ⌢ z) = branch tt f
+  where
+    IH : zs <ℂ| bar (xs ⌢ x)
+    IH = comp-∨-lemma (xs ⌢ x) zs
+
+    f : (b : 𝔹) → ((zs ⌢ z) ⌢ b) <ℂ| bar (xs ⌢ x)
+    f b = ◁-lem₁ (bar-dc (xs ⌢ x)) (([] ⌢ z ⌢ b) , refl) IH
 
 comp-∨ : (xs : ℂ) → (η xs) ∨[ cantor-frame ] (xs ^*) ≡ ⊤[ cantor-frame ]
 comp-∨ xs =
