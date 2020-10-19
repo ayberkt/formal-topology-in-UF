@@ -368,6 +368,14 @@ bar xs = λ ys → ∥ (Σ[ b ∈ Bool _ ] [ ys ∈ ⦅ if b then η xs else (xs
     W : Fam ℓ-zero _
     W = (Bool _) , λ b → if b then ⦅ η xs ⦆ else ⦅ xs ^* ⦆
 
+bar-dc : (xs : ℂ) → [ isDownwardsClosed ℂ-pos (bar xs) ]
+bar-dc xs ys zs ys∈bar-xs zs⊑ys =
+  ∥∥-rec (isProp[] (zs ∈ bar xs)) NTS ys∈bar-xs
+  where
+    NTS : Σ[ b ∈ Bool ℓ-zero ] [ ys ∈ ⦅ if b then η xs else (xs ^*) ⦆ ] → [ zs ∈ bar xs ]
+    NTS (true  , p) = ∣ true , (π₁ (π₀ (η xs)) ys zs p zs⊑ys) ∣
+    NTS (false , p) = ∣ false , π₁ (π₀ (xs ^*)) ys zs p zs⊑ys ∣
+
 ⊥-lemma : (xs : ℂ) → [ xs ∈ ⦅ ⊥[ cantor-frame ] ⦆ ] → ⊥
 ⊥-lemma xs (dir p)                = ∥∥-rec isProp⊥ (λ ()) p
 ⊥-lemma xs (branch tt f)          = ⊥-lemma (xs ⌢ true) (f true)
