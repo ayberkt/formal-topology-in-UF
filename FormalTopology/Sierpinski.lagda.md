@@ -7,7 +7,7 @@ title: Sierpinski
 
 module Sierpinski where
 
-open import Basis
+open import Basis hiding (Bool)
 open import Cubical.Data.Bool
 open import Poset
 open import FormalTopology

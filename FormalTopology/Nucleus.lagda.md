@@ -199,3 +199,8 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
           j (⋁L ⁅ x ⊓[ L ] yᵢ ∣ yᵢ ε U₀ ⁆)   ≡⟨ refl                                 ⟩
           π₀ (⋁⟨ i ⟩ (𝓍 ∧ (U $ i)))          ∎
 ```
+
+```agda
+isASublocaleOf : (S : Frame ℓ₀ ℓ₁ ℓ₂) (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type _
+isASublocaleOf S F = Σ[ j ∈ Nucleus F ] S ≡ 𝔣𝔦𝔵 F j
+```

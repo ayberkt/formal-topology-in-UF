@@ -288,6 +288,74 @@ P ×ₚ Q = (∣ P ∣ₚ × ∣ Q ∣ₚ) , _⊑_ , carrier-set , (⊑-refl , �
         NTS = subst (_≡_ y₁) (sym (transportRefl y₀)) (⊑[ Q ]-antisym _ _ y₁⊑y₀ y₀⊑y₁)
 ```
 
+The *diagonal* monotonic map.
+
+```agda
+Δ : (P : Poset ℓ₀ ℓ₁) → P ─m→ (P ×ₚ P)
+Δ P = f , f-mono
+  where
+    f : ∣ P ∣ₚ → ∣ P ×ₚ P ∣ₚ
+    f x = x , x
+
+    f-mono : isMonotonic P (P ×ₚ P) f
+    f-mono x y x⊑y = x⊑y , x⊑y
+```
+
+## Posetal Yoneda lemma
+
+```agda
+yoneda : (P : Poset ℓ₀ ℓ₁)
+       → (x y : ∣ P ∣ₚ)
+       → [ (x ⊑[ P ] y) ⇔ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ]
+yoneda P x y = forwards , backwards
+  where
+    open PosetReasoning P
+
+    forwards : [ x ⊑[ P ] y ⇒ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ]
+    forwards x⊑y z z⊑x = z ⊑⟨ z⊑x ⟩ x ⊑⟨ x⊑y ⟩ y ■
+
+    backwards : [ (∀[ z ∶ ∣ P ∣ₚ ] z ⊑[ P ] x ⇒ z ⊑[ P ] y) ⇒ x ⊑[ P ] y ]
+    backwards p = p x (⊑[ P ]-refl x)
+```
+
+## Galois connections
+
+```agda
+module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
+
+  _⊣_ : (P ─m→ Q) → (Q ─m→ P) → hProp (ℓ-max ℓ₀ ℓ₁)
+  f ⊣ g = ∀[ x ∶ ∣ P ∣ₚ ] ∀[ y ∶ ∣ Q ∣ₚ ] f $ₘ x ⊑[ Q ] y ⇔ x ⊑[ P ] g $ₘ y
+
+  ⊣-unique-right : (f : P ─m→ Q) (g₀ g₁ : Q ─m→ P)
+                 → [ f ⊣ g₀ ] → [ f ⊣ g₁ ] → g₀ ≡ g₁
+  ⊣-unique-right f g₀ g₁ f⊣g₀ f⊣g₁ = forget-mono Q P g₀ g₁ (funExt g₀~g₁)
+    where
+      g₀~g₁ : (y : ∣ Q ∣ₚ) → g₀ $ₘ y ≡ g₁ $ₘ y
+      g₀~g₁ y = ⊑[ P ]-antisym (g₀ $ₘ y) (g₁ $ₘ y) NTS₀ NTS₁
+        where
+          α : [ f $ₘ (g₀ $ₘ y) ⊑[ Q ] y ⇔ (g₀ $ₘ y ⊑[ P ] g₁ $ₘ y) ]
+          α = f⊣g₁ (g₀ $ₘ y) y
+
+          β : [ (f $ₘ (g₀ $ₘ y)) ⊑[ Q ] y ⇔ (g₀ $ₘ y) ⊑[ P ] (g₀ $ₘ y) ]
+          β = f⊣g₀ (g₀ $ₘ y) y
+
+          NTS₀ : [ g₀ $ₘ y ⊑[ P ] g₁ $ₘ y ]
+          NTS₀ = π₀ α (π₁ β (⊑[ P ]-refl _))
+
+          φ : [ (f $ₘ (g₁ $ₘ y) ⊑[ Q ] y) ⇔ (g₁ $ₘ y ⊑[ P ] g₀ $ₘ y) ]
+          φ = f⊣g₀ (g₁ $ₘ y) y
+
+          ψ : [ f $ₘ (g₁ $ₘ y) ⊑[ Q ] y ⇔ ((g₁ $ₘ y) ⊑[ P ] (g₁ $ₘ y))]
+          ψ = f⊣g₁ (g₁ $ₘ y) y
+
+          NTS₁ : [ g₁ $ₘ y ⊑[ P ] g₀ $ₘ y ]
+          NTS₁ = π₀ φ (π₁ ψ (⊑[ P ]-refl _))
+
+  GaloisConnection : Type (ℓ-max ℓ₀ ℓ₁)
+  GaloisConnection = Σ[ f ∈ P ─m→ Q  ] Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]
+```
+
+
 ## Poset univalence
 
 Now, we would like to show that ordered structures, as given by `Order`, are a standard
@@ -423,7 +491,7 @@ isPosetIso-prop P Q (f , f-mono) (g₀ , sec₀ , ret₀) (g₁ , sec₁ , ret�
 We will denote by `P ≅ₚ Q` the type of isomorphisms between posets `P` and `Q`.
 
 ```agda
-_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _ 
+_≅ₚ_ : Poset ℓ₀ ℓ₁ → Poset ℓ₀ ℓ₁ → Type _
 P ≅ₚ Q = Σ[ f ∈ P ─m→ Q ] isPosetIso P Q f
 ```
 

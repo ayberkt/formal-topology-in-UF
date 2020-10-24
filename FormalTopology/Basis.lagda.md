@@ -28,7 +28,7 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
 open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[];
-                           ∃[∶]-syntax; ∀[∶]-syntax)
+                           ∃[∶]-syntax; ∀[∶]-syntax; ¬_)
 open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
                            isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)
@@ -83,6 +83,20 @@ bot : (ℓ : Level) → hProp ℓ
 bot ℓ = 𝟘 ℓ , λ ()
 ```
 
+## Booleans
+
+```agda
+data Bool (ℓ : Level) : Type ℓ where
+  true  : Bool ℓ
+  false : Bool ℓ
+```
+
+```agda
+if_then_else_ : {A : Type ℓ₀} → Bool ℓ₁ → A → A → A
+if true  then x else y = x
+if false then x else y = y
+```
+
 ## Propositions
 
 ```
@@ -117,6 +131,9 @@ x ∈ U = U x
 𝒫-set : (A : Type ℓ) → isSet (𝒫 A)
 𝒫-set A = isSetΠ λ _ → isSetHProp
 
+_^c : {A : Type ℓ} → 𝒫 A → 𝒫 A
+U ^c = λ x → ¬ (x ∈ U)
+
 variable
   U V : 𝒫 A
 
@@ -140,6 +157,11 @@ _∩_ {A = A} U V = λ x → ([ U x ] × [ V x ]) , prop x
   where
     prop : (x : A) → isProp ([ U x ] × [ V x ])
     prop x = isPropΣ (is-true-prop (x ∈ U)) λ _ → is-true-prop (V x)
+```
+
+```agda
+U∩U^c=∅ : {A : Type ℓ} → (U : 𝒫 A) → Σ[ x ∈ A ] [ x ∈ (U ∩ (U ^c)) ] → Cubical.Data.Empty.⊥
+U∩U^c=∅ U (x , (x∈U , x∈U^c)) = rec (x∈U^c x∈U)
 ```
 
 ## Family

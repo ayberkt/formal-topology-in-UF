@@ -70,6 +70,18 @@ isLUB {ℓ₂ = ℓ₂} P ⋁_ = ⋁-LUB , ⋁-LUB-prop
                    isPropΠ λ U → isPropΠ λ x →
                      is-true-prop (∀[ y ε U ] (y ⊑[ P ] x) ⇒ (⋁ U) ⊑[ P ] x)
 
+isSup : (P : Poset ℓ₀ ℓ₁) → Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₂)
+isSup {ℓ₀} {ℓ₁} {ℓ₂} P U u = sup , sup-prop
+  where
+    sup : Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₂)
+    sup = [ ∀[ x ε U ] (x ⊑[ P ] u) ]
+        × ((y : ∣ P ∣ₚ) → [ ∀[ x ε U ] (x ⊑[ P ] y) ] → [ u ⊑[ P ] y ])
+
+    sup-prop : isProp sup
+    sup-prop =
+      isPropΣ (isProp[] (∀[ x ε U ] (x ⊑[ P ] u))) λ _ →
+        isPropΠ λ y → isPropΠ λ _ → isProp[] (u ⊑[ P ] y)
+
 isDist : (P : Poset ℓ₀ ℓ₁)
        → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ)
        → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ)
@@ -118,6 +130,14 @@ syntax glb-of F x y = x ⊓[ F ] y
 ⋁[_]_ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Fam ℓ₂ ∣ F ∣F → ∣ F ∣F
 ⋁[ (_ , (_ , (_ , _ , ⋁_)) , _) ] U = ⋁ U
 
+⊥[_] : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F
+⊥[ F ] = ⋁[ F ] (𝟘 _ , λ ())
+
+bin-join : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
+bin-join {ℓ₂ = ℓ₂} F x y = ⋁[ F ] (Bool ℓ₂ , λ p → if p then x else y)
+
+syntax bin-join F x y = x ∨[ F ] y
+
 -- Projections for frame laws.
 
 module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
@@ -135,7 +155,6 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   ⊓[_]-lower₀ : (x y : ∣ F ∣F) → [ (x ⊓[ F ] y) ⊑ x ]
   ⊓[_]-lower₀ = let (_ , _ , str) = F in λ x y → π₀ (π₀ (π₀ (π₁ str)) x y)
 
-
   ⊓[_]-lower₁ : (x y : ∣ F ∣F) → [ (x ⊓[ F ] y) ⊑ y ]
   ⊓[_]-lower₁ = let (_ , _ , str) = F in λ x y → π₁ (π₀ (π₀ (π₁ str)) x y)
 
@@ -146,9 +165,27 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   ⋁[_]-upper : (U : Fam ℓ₂ ∣ F ∣F) (o : ∣ F ∣F) → o ε U → [ o ⊑ (⋁[ F ] U) ]
   ⋁[_]-upper = let (_ , _ , str) = F in π₀ (π₀ (π₁ (π₁ str)))
 
+  ⊔[_]-upper₀ : (x y : ∣ F ∣F) → [ x ⊑[ pos F ] (x ∨[ F ] y) ]
+  ⊔[_]-upper₀ x y = ⋁[_]-upper (Bool _ , λ p → if p then x else y) x (true , refl)
+
+  ⊔[_]-upper₁ : (x y : ∣ F ∣F) → [ y ⊑[ pos F ] (x ∨[ F ] y) ]
+  ⊔[_]-upper₁ x y = ⋁[_]-upper (Bool _ , λ p → if p then x else y) y (false , refl)
+
+
   ⋁[_]-least : (U : Fam ℓ₂ ∣ F ∣F) (x : ∣ F ∣F)
              → [ ∀[ y ε U ] (y ⊑ x) ] → [ (⋁[ F ] U) ⊑ x ]
   ⋁[_]-least = let (_ , _ , str) = F in π₁ (π₀ (π₁ (π₁ str)))
+
+  ⊔[_]-least : (x y z : ∣ F ∣F)
+             → [ x ⊑[ pos F ] z ] → [ y ⊑[ pos F ] z ] → [ (x ∨[ F ] y) ⊑[ pos F ] z ]
+  ⊔[_]-least x y z x⊑z y⊑z = ⋁[_]-least (Bool _ , λ p → if p then x else y) z NTS
+    where
+      NTS : [ fam-forall (Bool ℓ₂ , (λ p → if p then x else y)) (λ y₁ → y₁ ⊑ z) ]
+      NTS k (true  , p) = subst (λ - → [ - ⊑ z ]) p x⊑z
+      NTS k (false , p) = subst (λ - → [ - ⊑ z ]) p y⊑z
+
+  ⊥[_]-bottom : (x : ∣ F ∣F) → [ ⊥[ F ] ⊑ x ]
+  ⊥[_]-bottom x = ⋁[ _ ]-least x (λ a ())
 
   dist : (x : ∣ F ∣F) (U : Fam ℓ₂ ∣ F ∣F)
        → x ⊓[ F ] (⋁⟨ i ⟩ (U $ i)) ≡ ⋁⟨ i ⟩ (x ⊓[ F ] (U $ i))
@@ -186,11 +223,54 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
       up : [ (x ⊓[ F ] y) ⊑ x ]
       up = ⊓[_]-lower₀ x y
 
+  x⊑y⇒y=x∨y : {x y : ∣ F ∣F} → [ x ⊑ y ] → y ≡ x ∨[ F ] y
+  x⊑y⇒y=x∨y {x} {y} x⊑y = ⊑[ pos F ]-antisym _ _ (⋁[_]-upper _ y (false , refl)) NTS
+    where
+      NTS : [ (x ∨[ F ] y) ⊑[ pos F ] y ]
+      NTS = ⋁[_]-least _ y NTS₁
+        where
+          NTS₁ : [ ∀[ z ε _ ] (z ⊑[ pos F ] y) ]
+          NTS₁ z (true  , p) = subst (λ - → [ - ⊑[ pos F ] y ]) p x⊑y 
+          NTS₁ z (false , p) = subst (λ - → [ - ⊑[ pos F ] y ]) p (⊑[ pos F ]-refl y)
+
+
   x=x∧y⇒x⊑y : {x y : ∣ F ∣F}
             → x ≡ x ⊓[ F ] y → [ x ⊑ y ]
   x=x∧y⇒x⊑y {x} {y} eq = x ⊑⟨ ≡⇒⊑ P eq ⟩ x ⊓[ F ] y ⊑⟨ ⊓[_]-lower₁ x y ⟩ y ■
     where
       open PosetReasoning (pos F)
+
+  x∧⊤=x : (x : ∣ F ∣F) → x ⊓[ F ] ⊤[ F ] ≡ x
+  x∧⊤=x = sym ∘ x⊑y⇒x=x∧y ∘ ⊤[_]-top
+
+  x∨⊥=x : (x : ∣ F ∣F) → ⊥[ F ] ∨[ F ] x ≡ x
+  x∨⊥=x = sym ∘ x⊑y⇒y=x∨y ∘ ⊥[_]-bottom
+
+  x∧⊥=⊥ : (x : ∣ F ∣F) → x ⊓[ F ] ⊥[ F ] ≡ ⊥[ F ]
+  x∧⊥=⊥ x =
+    ⊑[ pos F ]-antisym (glb-of F x ⊥[ F ]) ⊥[ F ] (⊓[_]-lower₁ _ _) (⊥[_]-bottom _)
+
+  ∨-comm : (x y : ∣ F ∣F) → x ∨[ F ] y ≡ y ∨[ F ] x
+  ∨-comm x y = ⊑[ pos F ]-antisym _ _ (Ψ x y) (Ψ y x)
+    where
+      Ψ : (a b : ∣ F ∣F) → [ a ∨[ F ] b ⊑[ pos F ] b ∨[ F ] a ]
+      Ψ a b = ⋁[_]-least _ (b ∨[ F ] a) NTS
+        where
+          NTS : [ ∀[ k ε (Bool ℓ₂ , (λ p → if p then a else b)) ] (k ⊑ (b ∨[ F ] a)) ]
+          NTS z (true  , p) = subst (λ - → [ - ⊑ _ ]) p (⋁[_]-upper _ _ (false , refl))
+          NTS z (false , p) = subst (λ - → [ - ⊑ _ ]) p (⋁[_]-upper _ _ (true  , refl))
+
+  bin-dist : (x y z : ∣ F ∣F) → x ⊓[ F ] (y ∨[ F ] z) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
+  bin-dist x y z =
+    x ⊓[ F ] (y ∨[ F ] z)               ≡⟨ dist x 𝒰  ⟩
+    join-of (λ i → glb-of F x (𝒰 $ i))  ≡⟨ NTS       ⟩
+    (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)    ∎
+    where
+      𝒰 : Fam ℓ₂ ∣ F ∣F
+      𝒰 = Bool ℓ₂ , λ p → if p then y else z
+
+      NTS : ⋁⟨ b ⟩ (x ⊓[ F ] (𝒰 $ b)) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
+      NTS = cong (λ - → ⋁[ F ] (Bool ℓ₂ , -)) (funExt λ { true → refl ; false → refl })
 
   comm : (x y : ∣ F ∣F) → x ⊓[ F ] y ≡ y ⊓[ F ] x
   comm x y = ⊓-unique y x _ (⊓[_]-lower₁ x y) (⊓[_]-lower₀ x y) NTS
