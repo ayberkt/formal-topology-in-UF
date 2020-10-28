@@ -233,8 +233,17 @@ data ∥_∥ (A : Type ℓ) : Type ℓ where
 ∥∥-prop : (A : Type ℓ) → isProp ∥ A ∥
 ∥∥-prop _ = squash
 
-∥∥-rec : {X Y : Type ℓ} → isProp Y → (X → Y) → ∥ X ∥ → Y
+∥∥-rec : {X : Type ℓ} {Y : Type ℓ₀} → isProp Y → (X → Y) → ∥ X ∥ → Y
 ∥∥-rec Y-prop f ∣ x ∣                = f x
 ∥∥-rec Y-prop f (squash ∣x∣₀ ∣x∣₁ i) =
   Y-prop (∥∥-rec Y-prop f ∣x∣₀) (∥∥-rec Y-prop f ∣x∣₁) i
+
+∥∥-× : {A : Type ℓ₀} {B : Type ℓ₁} → ∥ A ∥ → ∥ B ∥ → ∥ A × B ∥
+∥∥-× {A = A} {B} p q = ∥∥-rec (∥∥-prop (A × B)) NTS p
+  where
+    NTS′ : B → A → ∥ A × B ∥
+    NTS′ y x = ∣ x , y ∣
+
+    NTS : A → ∥ A × B ∥
+    NTS = ∥∥-rec (isPropΠ (λ _ → ∥∥-prop (A × B))) NTS′ q
 ```
