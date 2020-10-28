@@ -50,7 +50,7 @@ isKFin A U = Σ[ n ∈ ℕ ] Fin n ↠ (Σ[ x ∈ fst A ] [ U x ])
 
 ```agda
 KFin : Ψ ℓ → Type (ℓ-suc ℓ)
-KFin A = Σ[ U ∈ ℙ (fst A) ] isKFin A U 
+KFin A = Σ[ U ∈ ℙ (fst A) ] isKFin A U
 
 +-lemma : {m n : ℕ} → m + suc (suc n) ≡ 1 → [ ⊥ ]
 +-lemma {m} {n} p = snotz (injSuc q)
