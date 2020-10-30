@@ -41,7 +41,7 @@ private
 ⟦ A , _ ⟧ = A
 
 isSurjective : (A : Ψ ℓ₀) (B : Ψ ℓ₁) → (⟦ A ⟧ → ⟦ B ⟧) → Type (ℓ-max ℓ₀ ℓ₁)
-isSurjective A B f = (y : ⟦ B ⟧) → Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y
+isSurjective A B f = (y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥
 
 isSet⟦⟧ : (A : Ψ ℓ) → isSet (fst A)
 isSet⟦⟧ (_ , A-set) = A-set
@@ -49,7 +49,7 @@ isSet⟦⟧ (_ , A-set) = A-set
 isSurjective-set : {A : Ψ ℓ₀} {B : Ψ ℓ₁}
                  → (f : ⟦ A ⟧ → ⟦ B ⟧) → isSet (isSurjective A B f)
 isSurjective-set {A = A} {B} f =
-  isSetΠ (λ y → isSetΣ (isSet⟦⟧ A) λ x → isProp→isSet (isSet⟦⟧ B (f x) y))
+  isSetΠ (λ y → isProp→isSet (∥∥-prop (Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y)))
 
 ℙ : Ψ ℓ → Type (ℓ-suc ℓ)
 ℙ (A , A-set) = ℙ′ A
@@ -128,8 +128,7 @@ module _ (A : Ψ ℓ) where
           f = (λ _ → x , refl) , surj
             where
               surj : isSurjective (Fin 1) (A restricted-to single x) (λ _ → x , refl)
-              surj (y , p) = 𝟎 , Σ≡Prop (isProp[] ∘ single x) p
-
+              surj (y , p) = ∣ 𝟎 , Σ≡Prop (isProp[] ∘ single x) p ∣
 
 module Union (A : Ψ ℓ) where
 
@@ -143,8 +142,12 @@ module Union (A : Ψ ℓ) where
                n + m            ≡⟨ +-comm n m           ⟩
                m + n            ∎)
 
-  inj : (m n : ℕ) → ⟦ Fin m ⟧ → ⟦ Fin (m + n) ⟧
-  inj m n (k , k<m) = k , +<-lemma m n k k<m
+  finj+₀ : (m n : ℕ) → ⟦ Fin m ⟧ → ⟦ Fin (m + n) ⟧
+  finj+₀ m n (k , k<m) = k , +<-lemma m n k k<m
+
+  finj+₁ : (m n : ℕ) → ⟦ Fin n ⟧ → ⟦ Fin (m + n) ⟧
+  finj+₁ m n (k , k<n) =
+    k , subst (λ - → k < -) (+-comm n m) (+<-lemma n m k k<n)
 
   <-lemma : (m n o : ℕ) → o < m → (o ∸ n) < m
   <-lemma m zero o o<m = o<m
@@ -153,39 +156,40 @@ module Union (A : Ψ ℓ) where
   <-lemma (suc m) (suc n) (suc o) o<m =
     subst (λ - → o ∸ n < -) (+-comm m 1) (+<-lemma m 1 (o ∸ n) (<-lemma m n o (pred-≤-pred o<m)))
 
-  open <-Reasoning
-
   ∸-lemma : (m n o : ℕ) → o < (m + n) → (o ∸ n) < (m + n)
   ∸-lemma m zero o p = p
   ∸-lemma m (suc n) o p = <-lemma (m + suc n) (suc n) o p
 
-  split : (m n o : ℕ) → o < (m + n) → ⟦ Fin (m + n) ⟧
-  split m n o o<m+n with o ≟ n
-  split m n o o<m+n | lt (z , p) =
-    o , (m + z) , (m + z + suc o   ≡⟨ sym (+-assoc m z (suc o)) ⟩
-                   m + (z + suc o) ≡⟨ cong (λ - → m + -) p      ⟩
-                   m + n           ∎)
-  split m n o o<m+n | eq o=n = o , o<m+n
-  split m n o o<m+n | gt (z , p) = (o ∸ n) , (∸-lemma m n o o<m+n)
-
   split₁-lemma : (m n o : ℕ) → o < m + n → m ≤ n → m ≤ o → (o ∸ m) < n
-  split₁-lemma zero    n o o<m+n m≤n m<o = o<m+n
-  split₁-lemma (suc m) n zero o<m+n m≤n m<o = rec (¬-<-zero m<o)
-  split₁-lemma (suc m) n (suc o) o<m+n m≤n m<o = split₁-lemma m n o (pred-≤-pred o<m+n) (<-weaken m≤n) (pred-≤-pred m<o)
+  split₁-lemma zero    n o       o<m+n m≤n m<o = o<m+n
+  split₁-lemma (suc m) n zero    o<m+n m≤n m<o = rec (¬-<-zero m<o)
+  split₁-lemma (suc m) n (suc o) o<m+n m≤n m<o =
+    split₁-lemma m n o (pred-≤-pred o<m+n) (<-weaken m≤n) (pred-≤-pred m<o)
 
-  todo-pick-a-name : (m n o : ℕ) → o < m + n → m ≤ n → m ≤ o → ⟦ Fin n ⟧
-  todo-pick-a-name m n o o<m+n m≤n m<o = o ∸ m , split₁-lemma m n o o<m+n m≤n m<o
+  ζ : (m n o : ℕ) → o < m + n → m ≤ n → m ≤ o → ⟦ Fin n ⟧
+  ζ m n o o<m+n m≤n m<o = o ∸ m , split₁-lemma m n o o<m+n m≤n m<o
 
-  another-thing : (m n : ℕ) → m < m + n → 0 < n
-  another-thing zero zero m<m+n = rec (¬-<-zero m<m+n)
-  another-thing zero (suc n) m<m+n = m<m+n
-  another-thing (suc m) n m<m+n = another-thing m n (pred-≤-pred m<m+n)
+  υ : (m n : ℕ) → m < m + n → 0 < n
+  υ zero    zero    m<m+n = rec (¬-<-zero m<m+n)
+  υ zero    (suc n) m<m+n = m<m+n
+  υ (suc m) n       m<m+n = υ m n (pred-≤-pred m<m+n)
 
   ξ : (m n : ℕ) → m ≤ n → ⟦ Fin (m + n) ⟧ → ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
   ξ m n m≤n (o , p) with o ≟ m
   ξ m n m≤n (o , p) | lt o<m = inl (o , o<m)
-  ξ m n m≤n (o , p) | eq o=m = inr (todo-pick-a-name m n o p m≤n (subst (λ - → - ≤ o) o=m ≤-refl))
-  ξ m n m≤n (o , p) | gt m<o = inr (todo-pick-a-name m n o p m≤n (<-weaken m<o))
+  ξ m n m≤n (o , p) | eq o=m = inr (ζ m n o p m≤n (subst (λ - → - ≤ o) o=m ≤-refl))
+  ξ m n m≤n (o , p) | gt m<o = inr (ζ m n o p m≤n (<-weaken m<o))
+
+  isLeft : {A : Type ℓ₀} {B : Type ℓ₁} → A ⊎ B → hProp ℓ-zero
+  isLeft (inl _) = ⊤
+  isLeft (inr _) = ⊥
+
+  isRight : {A : Type ℓ₀} {B : Type ℓ₁} → A ⊎ B → hProp ℓ-zero
+  isRight (inr _) = ⊤
+  isRight (inl _) = ⊥
+
+  finj+₀-lemma : (m n : ℕ) → (p : m ≤ n) → (o : ⟦ Fin m ⟧) → ξ m n p (finj+₀ m n o) ≡ inl o
+  finj+₀-lemma m n m≤n o = {!!}
 
   _∪_ : ⟦ KFin A ⟧ → ⟦ KFin A ⟧ → ⟦ KFin A ⟧
   _∪_ (U , U-kfin) (V , V-kfin) =
@@ -202,14 +206,30 @@ module Union (A : Ψ ℓ) where
           h o | inl k = (fst (f $ k)) , ∣ inl (snd (f $ k)) ∣
           h o | inr k = (fst (g $ k)) , ∣ inr (snd (g $ k)) ∣
 
-          h-surj : isSurjective (Fin (m + n)) (A restricted-to (U ∪ℙ V)) h   
-          h-surj (y , ∣ x ∣) = {!!} , {!!}
-          h-surj (y , ∥_∥.squash p p₁ i) = {!!}
+          h-surj : isSurjective (Fin (m + n)) (A restricted-to (U ∪ℙ V)) h
+          h-surj (y , ∣y∈U∪V∣) = ∥∥-rec (∥∥-prop _) NTS′ ∣y∈U∪V∣
+            where
+              NTS′ : (y ∈ U) ⊎ (y ∈ V) → ∥ Σ[ o ∈ ⟦ Fin (m + n) ⟧ ] h o ≡ (y , ∣y∈U∪V∣) ∥
+              NTS′ (inl y∈U) = ∥∥-rec (∥∥-prop _) NTS′′ (snd f (y , y∈U))
+                where
+                  NTS′′ : (Σ[ z ∈ ⟦ Fin m ⟧ ] fst f z ≡ (y , y∈U))
+                        → ∥ Σ[ o ∈ ⟦ Fin (m + n) ⟧ ] h o ≡ (y , ∣y∈U∪V∣) ∥
+                  NTS′′ (z , fz=y) = ∣ (finj+₀ m n z) , (λ i → {!!}) ∣
+              NTS′ (inr y∈V) = ∥∥-rec (∥∥-prop _) {!!} (snd g (y , y∈V))
       NTS ((m , f) , (n , g)) | eq m=n = ∣ (m + n) , {!!} ∣
-      NTS ((m , f) , (n , g)) | gt m>n = ∣ (m + n) , {!!} ∣
+      NTS ((m , f) , (n , g)) | gt m>n = ∣ (m + n) , h , h-surj ∣
+        where
+          h : ⟦ Fin (m + n) ⟧ → ⟦ A restricted-to (U ∪ℙ V) ⟧
+          h x = {!!}
+
+          h-surj : isSurjective (Fin (m + n)) (A restricted-to (U ∪ℙ V)) h
+          h-surj = {!!}
+
 ```
 
+
 ```agda
+{--
 KFin1→isContr : (A : Ψ ℓ) → ⟦ Fin 1 ↠ A ⟧ → isContr ⟦ A ⟧
 KFin1→isContr A (f , f-surj) = f centre , NTS
   where
