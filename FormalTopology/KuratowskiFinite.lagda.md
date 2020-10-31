@@ -18,8 +18,10 @@ open import Cubical.Data.Nat.Properties
 open import Cubical.Data.Nat.Order
 open import Cubical.Data.Sigma
 open import Cubical.Data.Sum using (inl; inr; _⊎_)
+open import Cubical.Data.Sum using (isSetSum)
 open import Cubical.Foundations.Logic hiding (inl; inr) renaming (ℙ to ℙ′; powersets-are-sets to isSetℙ′)
-open import Cubical.Foundations.Isomorphism using (isoToPath; iso; section; retract)
+open import Cubical.Foundations.Isomorphism using (isoToPath; iso; section; retract; Iso)
+open import Cubical.Foundations.Equiv       using (equivToIso)
 open import Cubical.Foundations.Function
 open import Cubical.Data.Unit
 open import Basis using (bot; ∥_∥; ∥∥-rec; ∥∥-prop; ∣_∣; ∥∥-×)
@@ -46,6 +48,9 @@ isSurjective A B f = (y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥
 
 isSet⟦⟧ : (A : Ψ ℓ) → isSet (fst A)
 isSet⟦⟧ (_ , A-set) = A-set
+
+_⊍_ : Ψ ℓ₀ → Ψ ℓ₁ → Ψ (ℓ-max ℓ₀ ℓ₁)
+A ⊍ B = (⟦ A ⟧ ⊎ ⟦ B ⟧) , isSetSum (isSet⟦⟧ A) (isSet⟦⟧ B)
 
 isSurjective-set : {A : Ψ ℓ₀} {B : Ψ ℓ₁}
                  → (f : ⟦ A ⟧ → ⟦ B ⟧) → isSet (isSurjective A B f)
@@ -248,40 +253,32 @@ module Union (A : Ψ ℓ) where
       ret-f-g (k , k<m+n) | inl _   = Σ≡Prop (λ _ → m≤n-isProp) refl
       ret-f-g (k , k<m+n) | inr m≥k = Σ≡Prop (λ _ → m≤n-isProp) (∸-lemma₁ m k m≥k)
 
+  Fin-sum-lemma′ : (m n : ℕ) → Fin (m + n) ≡ (Fin m) ⊍ (Fin n)
+  Fin-sum-lemma′ m n = Σ≡Prop (λ A → isPropIsSet {A = A}) (Fin-sum-lemma m n)
+
   _∪_ : ⟦ KFin A ⟧ → ⟦ KFin A ⟧ → ⟦ KFin A ⟧
   _∪_ (U , U-kfin) (V , V-kfin) =
     (U ∪ℙ V) , ∥∥-rec (isProp[] (isKFin A (U ∪ℙ V))) NTS (∥∥-× U-kfin V-kfin)
     where
-      NTS : (Σ[ m ∈ ℕ ] ⟦ Fin m ↠ (A restricted-to U) ⟧) ×
-            (Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (A restricted-to V) ⟧)
-          → [ isKFin A (U ∪ℙ V) ]
-      NTS ((m , f) , (n , g)) with m ≟ n
-      NTS ((m , f) , (n , g)) | lt m<n = ∣ (m + n) , h , h-surj ∣
+      NTS : (Σ[ m ∈ ℕ ] ⟦ Fin m ↠ (A restricted-to U) ⟧) × (Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (A restricted-to V) ⟧) → [ isKFin A (U ∪ℙ V) ]
+      NTS ((m , f) , (n , g)) = ∣ (m + n) , subst (λ - → ⟦ - ↠ (A restricted-to (U ∪ℙ V)) ⟧) (sym (Fin-sum-lemma′ m n)) (h , h-surj) ∣
         where
-          h : ⟦ Fin (m + n) ⟧ → ⟦ A restricted-to (U ∪ℙ V) ⟧
-          h o with ξ m n (<-weaken m<n) o
-          h o | inl k = (fst (f $ k)) , ∣ inl (snd (f $ k)) ∣
-          h o | inr k = (fst (g $ k)) , ∣ inr (snd (g $ k)) ∣
+          h : ⟦ Fin m ⊍ Fin n ⟧ → ⟦ A restricted-to (U ∪ℙ V) ⟧
+          h (inl (k , k<m)) = let (x , x∈U) = f $ (k , k<m) in x , ∣ inl x∈U ∣
+          h (inr (k , k<n)) = let (y , y∈V) = g $ (k , k<n) in y , ∣ inr y∈V ∣
 
-          h-surj : isSurjective (Fin (m + n)) (A restricted-to (U ∪ℙ V)) h
-          h-surj (y , ∣y∈U∪V∣) = ∥∥-rec (∥∥-prop _) NTS′ ∣y∈U∪V∣
+          h-surj : isSurjective (Fin m ⊍ Fin n) (A restricted-to (U ∪ℙ V)) h
+          h-surj (x , ∣x∈U∪V∣) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem ∣x∈U∪V∣ 
             where
-              NTS′ : (y ∈ U) ⊎ (y ∈ V) → ∥ Σ[ o ∈ ⟦ Fin (m + n) ⟧ ] h o ≡ (y , ∣y∈U∪V∣) ∥
-              NTS′ (inl y∈U) = ∥∥-rec (∥∥-prop _) NTS′′ (snd f (y , y∈U))
+              rem : (x ∈ U) ⊎ (x ∈ V) → ∥ Σ[ k ∈ ⟦ Fin m ⊍ Fin n ⟧ ] h k ≡ (x , ∣x∈U∪V∣) ∥
+              rem (inl x∈U) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem₀ (snd f (x , x∈U))
                 where
-                  NTS′′ : (Σ[ z ∈ ⟦ Fin m ⟧ ] fst f z ≡ (y , y∈U))
-                        → ∥ Σ[ o ∈ ⟦ Fin (m + n) ⟧ ] h o ≡ (y , ∣y∈U∪V∣) ∥
-                  NTS′′ (z , fz=y) = ∣ (finj+₀ m n z) , {!!} ∣
-              NTS′ (inr y∈V) = ∥∥-rec (∥∥-prop _) {!!} (snd g (y , y∈V))
-      NTS ((m , f) , (n , g)) | eq m=n = ∣ (m + n) , {!!} ∣
-      NTS ((m , f) , (n , g)) | gt m>n = ∣ (m + n) , h , h-surj ∣
-        where
-          h : ⟦ Fin (m + n) ⟧ → ⟦ A restricted-to (U ∪ℙ V) ⟧
-          h x = {!!}
-
-          h-surj : isSurjective (Fin (m + n)) (A restricted-to (U ∪ℙ V)) h
-          h-surj = {!!}
-
+                  rem₀ : Σ-syntax ⟦ Fin m ⟧ (λ x₁ → fst f x₁ ≡ (x , x∈U)) → ∥ Σ-syntax ⟦ Fin m ⊍ Fin n ⟧ (λ k → h k ≡ (x , ∣x∈U∪V∣)) ∥
+                  rem₀ ((k , k<m) , fk=x) = ∣ inl (k , k<m) , Σ≡Prop (λ z → isProp[] ((U ∪ℙ V) z) ) (λ i → fst (fk=x i)) ∣
+              rem (inr x∈V) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem₁ (snd g (x , x∈V))
+                where
+                  rem₁ : Σ-syntax ⟦ Fin n ⟧ (λ x₁ → fst g x₁ ≡ (x , x∈V)) → ∥ Σ-syntax ⟦ Fin m ⊍ Fin n ⟧ (λ k → h k ≡ (x , ∣x∈U∪V∣)) ∥
+                  rem₁ ((k , k<n) , gk=x) = ∣ inr (k , k<n) , Σ≡Prop (λ z → isProp[] ((U ∪ℙ V) z)) (λ i → fst (gk=x i)) ∣
 ```
 
 
