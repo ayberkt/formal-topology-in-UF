@@ -378,3 +378,5 @@ lemma3 A U f =
 -- --}
 -- --}
 ```
+
+[0]: https://ncatlab.org/nlab/show/finite+set#Constructivist
