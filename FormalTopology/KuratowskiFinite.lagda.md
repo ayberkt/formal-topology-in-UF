@@ -177,111 +177,116 @@ module _ (A : Ψ ℓ) where
 
 ### Union of two Kuratowski-finite sets ###
 
-Let us first define the union of two subsets.
-
-```agda
-  _∪ℙ_ : ℙ A → ℙ A → ℙ A
-  _∪ℙ_ U V = λ x → ∥ (x ∈ U) ⊎ (x ∈ V) ∥ , ∥∥-prop _
-```
-
 Some arithmetic lemmata. It is likely that these have either been proven in
 `cubical` or can be proven more efficiently using other lemmata that have been
 proven in `cubical`. If you have any suggestions please make a PR.
 
 ```agda
-  o<m→o<m+n : (m n o : ℕ) → o < m → o < (m + n)
-  o<m→o<m+n m n o (k , p) =
-    (n + k) , (n + k + suc o    ≡⟨ sym (+-assoc n k _)  ⟩
-               n + (k + suc o)  ≡⟨ cong (λ - → n + -) p ⟩
-               n + m            ≡⟨ +-comm n m           ⟩
-               m + n            ∎)
+o<m→o<m+n : (m n o : ℕ) → o < m → o < (m + n)
+o<m→o<m+n m n o (k , p) =
+  (n + k) , (n + k + suc o    ≡⟨ sym (+-assoc n k _)  ⟩
+              n + (k + suc o)  ≡⟨ cong (λ - → n + -) p ⟩
+              n + m            ≡⟨ +-comm n m           ⟩
+              m + n            ∎)
 ```
 
 ```agda
-  main-lemma : (m n o : ℕ) → o < m + n → m ≤ o → (o ∸ m) < n
-  main-lemma zero    n o       o<m+n m<o = o<m+n
-  main-lemma (suc m) n zero    o<m+n m<o = rec (¬-<-zero m<o)
-  main-lemma (suc m) n (suc o) o<m+n m<o =
-    main-lemma m n o (pred-≤-pred o<m+n) (pred-≤-pred m<o)
+main-lemma : (m n o : ℕ) → o < m + n → m ≤ o → (o ∸ m) < n
+main-lemma zero    n o       o<m+n m<o = o<m+n
+main-lemma (suc m) n zero    o<m+n m<o = rec (¬-<-zero m<o)
+main-lemma (suc m) n (suc o) o<m+n m<o =
+  main-lemma m n o (pred-≤-pred o<m+n) (pred-≤-pred m<o)
 ```
 
 ```agda
-  ≤-refl′ : {m n : ℕ} → m ≡ n → m ≤ n
-  ≤-refl′ {m} {n} m=n = subst (λ - → m ≤ -) m=n ≤-refl
+≤-refl′ : {m n : ℕ} → m ≡ n → m ≤ n
+≤-refl′ {m} {n} m=n = subst (λ - → m ≤ -) m=n ≤-refl
 ```
 
 We will often be interested in whether `m < n` or not.
 
 ```agda
-  _≤?_ : (m n : ℕ) → (m < n) ⊎ (n ≤ m)
-  _≤?_ m n with m ≟ n
-  (m ≤? n) | lt m<n = inl m<n
-  (m ≤? n) | eq m=n = inr (≤-refl′ (sym m=n))
-  (m ≤? n) | gt n<m = inr (<-weaken n<m)
+_≤?_ : (m n : ℕ) → (m < n) ⊎ (n ≤ m)
+_≤?_ m n with m ≟ n
+(m ≤? n) | lt m<n = inl m<n
+(m ≤? n) | eq m=n = inr (≤-refl′ (sym m=n))
+(m ≤? n) | gt n<m = inr (<-weaken n<m)
 
-  ¬-<-and-≥ : {m n : ℕ} → m < n → n ≤ m → [ ⊥ ]
-  ¬-<-and-≥ {m} {zero}    m<n n≤m = ¬-<-zero m<n
-  ¬-<-and-≥ {zero} {suc n} m<n n≤m = ¬-<-zero n≤m
-  ¬-<-and-≥ {suc m} {suc n} m<n n≤m =
-    ¬-<-and-≥ (pred-≤-pred m<n) (pred-≤-pred n≤m)
+¬-<-and-≥ : {m n : ℕ} → m < n → n ≤ m → [ ⊥ ]
+¬-<-and-≥ {m} {zero}    m<n n≤m = ¬-<-zero m<n
+¬-<-and-≥ {zero} {suc n} m<n n≤m = ¬-<-zero n≤m
+¬-<-and-≥ {suc m} {suc n} m<n n≤m =
+  ¬-<-and-≥ (pred-≤-pred m<n) (pred-≤-pred n≤m)
 ```
 
 I'm a bit surprised this one isn't already in `cubical`.
 
 ```agda
-  m+n∸n=m : (n m : ℕ) → (m + n) ∸ n ≡ m
-  m+n∸n=m zero    k = +-zero k
-  m+n∸n=m (suc m) k =
-    (k + suc m) ∸ suc m   ≡⟨ cong (λ - → - ∸ suc m) (+-suc k m) ⟩
-    suc (k + m) ∸ (suc m) ≡⟨ refl                               ⟩
-    (k + m) ∸ m           ≡⟨ m+n∸n=m m k                        ⟩
-    k                     ∎
+m+n∸n=m : (n m : ℕ) → (m + n) ∸ n ≡ m
+m+n∸n=m zero    k = +-zero k
+m+n∸n=m (suc m) k =
+  (k + suc m) ∸ suc m   ≡⟨ cong (λ - → - ∸ suc m) (+-suc k m) ⟩
+  suc (k + m) ∸ (suc m) ≡⟨ refl                               ⟩
+  (k + m) ∸ m           ≡⟨ m+n∸n=m m k                        ⟩
+  k                     ∎
 ```
 
 It's quite hard to come up with a descriptive name for this one...
 
 ```agda
-  ∸-lemma : {m n : ℕ} → m ≤ n → m + (n ∸ m) ≡ n
-  ∸-lemma {zero}  {k}     _   = refl {x = k}
-  ∸-lemma {suc m} {zero}  m≤k = rec (¬-<-and-≥ (suc-≤-suc zero-≤) m≤k)
-  ∸-lemma {suc m} {suc k} m≤k =
-    suc m + (suc k ∸ suc m)   ≡⟨ refl                                 ⟩
-    suc (m + (suc k ∸ suc m)) ≡⟨ refl                                 ⟩
-    suc (m + (k ∸ m))         ≡⟨ cong suc (∸-lemma (pred-≤-pred m≤k)) ⟩
-    suc k                     ∎
+∸-lemma : {m n : ℕ} → m ≤ n → m + (n ∸ m) ≡ n
+∸-lemma {zero}  {k}     _   = refl {x = k}
+∸-lemma {suc m} {zero}  m≤k = rec (¬-<-and-≥ (suc-≤-suc zero-≤) m≤k)
+∸-lemma {suc m} {suc k} m≤k =
+  suc m + (suc k ∸ suc m)   ≡⟨ refl                                 ⟩
+  suc (m + (suc k ∸ suc m)) ≡⟨ refl                                 ⟩
+  suc (m + (k ∸ m))         ≡⟨ cong suc (∸-lemma (pred-≤-pred m≤k)) ⟩
+  suc k                     ∎
 ```
 
+
 ```agda
-  Fin+≃Fin⊎Fin : (m n : ℕ) → ⟦ Fin (m + n) ⟧ ≡ ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
-  Fin+≃Fin⊎Fin m n = isoToPath (iso f g sec-f-g ret-f-g)
-    where
-      f : ⟦ Fin (m + n) ⟧ → ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
-      f (k , k<m+n) with k ≤? m
-      f (k , k<m+n) | inl k<m = inl (k , k<m)
-      f (k , k<m+n) | inr k≥m = inr (k ∸ m , main-lemma m n k k<m+n k≥m)
+Fin+≃Fin⊎Fin : (m n : ℕ) → ⟦ Fin (m + n) ⟧ ≡ ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
+Fin+≃Fin⊎Fin m n = isoToPath (iso f g sec-f-g ret-f-g)
+  where
+    f : ⟦ Fin (m + n) ⟧ → ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
+    f (k , k<m+n) with k ≤? m
+    f (k , k<m+n) | inl k<m = inl (k , k<m)
+    f (k , k<m+n) | inr k≥m = inr (k ∸ m , main-lemma m n k k<m+n k≥m)
 
-      g : ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧ → ⟦ Fin (m + n) ⟧
-      g (inl (k , k<m)) = k     , o<m→o<m+n m n k k<m
-      g (inr (k , k<n)) = m + k , <-k+ k<n
+    g : ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧ → ⟦ Fin (m + n) ⟧
+    g (inl (k , k<m)) = k     , o<m→o<m+n m n k k<m
+    g (inr (k , k<n)) = m + k , <-k+ k<n
 
-      sec-f-g : section f g
-      sec-f-g (inl (k , k<m)) with k ≤? m
-      sec-f-g (inl (k , k<m)) | inl _   = cong inl (Σ≡Prop (λ _ → m≤n-isProp) refl)
-      sec-f-g (inl (k , k<m)) | inr m≤k = rec (¬-<-and-≥ k<m m≤k)
-      sec-f-g (inr (k , k<n)) with (m + k) ≤? m
-      sec-f-g (inr (k , k<n)) | inl p   = rec (¬m+n<m {m} {k} p)
-      sec-f-g (inr (k , k<n)) | inr k≥m = cong inr (Σ≡Prop (λ _ → m≤n-isProp) NTS)
-        where
-          NTS : (m + k) ∸ m ≡ k
-          NTS = subst (λ - → - ∸ m ≡ k) (sym (+-comm m k)) (m+n∸n=m m k)
+    sec-f-g : section f g
+    sec-f-g (inl (k , k<m))
+        with k ≤? m
+    ... | inl _   = cong inl (Σ≡Prop (λ _ → m≤n-isProp) refl)
+    ... | inr m≤k = rec (¬-<-and-≥ k<m m≤k)
+    sec-f-g (inr (k , k<n))
+        with (m + k) ≤? m
+    ... | inl p   = rec (¬m+n<m {m} {k} p)
+    ... | inr k≥m = cong inr (Σ≡Prop (λ _ → m≤n-isProp) NTS)
+      where
+        NTS : (m + k) ∸ m ≡ k
+        NTS = subst (λ - → - ∸ m ≡ k) (sym (+-comm m k)) (m+n∸n=m m k)
 
-      ret-f-g : retract f g
-      ret-f-g (k , k<m+n) with k ≤? m
-      ret-f-g (k , k<m+n) | inl _   = Σ≡Prop (λ _ → m≤n-isProp) refl
-      ret-f-g (k , k<m+n) | inr m≥k = Σ≡Prop (λ _ → m≤n-isProp) (∸-lemma m≥k)
+    ret-f-g : retract f g
+    ret-f-g (k , k<m+n) with k ≤? m
+    ret-f-g (k , k<m+n) | inl _   = Σ≡Prop (λ _ → m≤n-isProp) refl
+    ret-f-g (k , k<m+n) | inr m≥k = Σ≡Prop (λ _ → m≤n-isProp) (∸-lemma m≥k)
 
-  Fin-sum-lemma′ : (m n : ℕ) → Fin (m + n) ≡ (Fin m) ⊍ (Fin n)
-  Fin-sum-lemma′ m n = Σ≡Prop (λ A → isPropIsSet {A = A}) (Fin+≃Fin⊎Fin m n)
+Fin-sum-lemma′ : (m n : ℕ) → Fin (m + n) ≡ (Fin m) ⊍ (Fin n)
+Fin-sum-lemma′ m n = Σ≡Prop (λ A → isPropIsSet {A = A}) (Fin+≃Fin⊎Fin m n)
+```
+
+Let us first define the union of two subsets.
+
+```agda
+module _ (A : Ψ ℓ) where
+
+  _∪ℙ_ : ℙ A → ℙ A → ℙ A
+  _∪ℙ_ U V = λ x → ∥ (x ∈ U) ⊎ (x ∈ V) ∥ , ∥∥-prop _
 
   _∪_ : ⟦ KFin A ⟧ → ⟦ KFin A ⟧ → ⟦ KFin A ⟧
   _∪_ (U , U-kfin) (V , V-kfin) =
