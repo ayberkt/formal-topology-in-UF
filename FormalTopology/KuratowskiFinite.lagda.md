@@ -331,75 +331,138 @@ module _ (A : Ψ ℓ) where
                (h , h-surj)
 ```
 
+## Induction principle of Kuratowski-finite sets ##
 
 ```agda
-{--
-KFin1→isContr : (A : Ψ ℓ) → ⟦ Fin 1 ↠ A ⟧ → isContr ⟦ A ⟧
-KFin1→isContr A (f , f-surj) = f centre , NTS
-  where
-    centre = fst isContrFin1
+  KFin1→isContr : ⟦ Fin 1 ↠ A ⟧ → isContr ⟦ A ⟧
+  KFin1→isContr (f , f-surj) =
+    f centre , λ y → ∥∥-rec (isSet⟦⟧ A (f centre) y) (nts y) (f-surj y)
+    where
+      centre = fst isContrFin1
+      shrink = snd isContrFin1
 
-    NTS : (y : ⟦ A ⟧) → f centre ≡ y
-    NTS y = f centre           ≡⟨ cong f (snd isContrFin1 (fst (f-surj y))) ⟩
-            f (fst (f-surj y)) ≡⟨ snd (f-surj y) ⟩
-            y                  ∎
+      nts : (y : ⟦ A ⟧) → Σ[ i ∈ ⟦ Fin 1 ⟧ ] (f i ≡ y) → f centre ≡ y
+      nts y (i , fi=y)= f centre ≡⟨ cong f (shrink i) ⟩ f i ≡⟨ fi=y ⟩ y ∎
 
-KFin1-lemma : (A : Ψ ℓ) → (f : ⟦ Fin 1 ↠ A ⟧) → (x : ⟦ A ⟧) → x ≡ f $ 𝟎
-KFin1-lemma A f x = x ≡⟨ sym (contr x) ⟩ centre ≡⟨ contr centre ⟩ f $ 𝟎 ∎
-  where
-    centre = fst (KFin1→isContr A f)
-    contr  = snd (KFin1→isContr A f)
+  KFin1-lemma : (f : ⟦ Fin 1 ↠ A ⟧) → (x : ⟦ A ⟧) → x ≡ f $ 𝟎
+  KFin1-lemma f x = x ≡⟨ sym (contr x) ⟩ centre ≡⟨ contr centre ⟩ f $ 𝟎 ∎
+    where
+      centre = fst (KFin1→isContr f)
+      contr  = snd (KFin1→isContr f)
 
-lemma1 : (A : Ψ ℓ) (U : ℙ A)
-       → ⟦ Fin 1 ↠ (A restricted-to U) ⟧
-       → Σ[ y ∈ fst A ] U ≡ fst (η A y)
-lemma1 A U f =
-  fst (f $ 𝟎) , ⊆-extensionality U (single A (fst (f $ 𝟎))) (down , up)
-  where
-    U-contr : isContr ⟦ A restricted-to U ⟧
-    U-contr = KFin1→isContr (A restricted-to U) f
+module _ (A : Ψ ℓ) where
 
-    centre = fst U-contr
+  lemma1 : (U : ℙ A)
+        → ⟦ Fin 1 ↠ (A restricted-to U) ⟧
+        → Σ[ y ∈ ⟦ A ⟧ ] U ≡ fst (η A y)
+  lemma1 U f =
+    fst (f $ 𝟎) , ⊆-extensionality U (single A (fst (f $ 𝟎))) (down , up)
+    where
+      U-contr : isContr ⟦ A restricted-to U ⟧
+      U-contr = KFin1→isContr (A restricted-to U) f
 
-    down : U ⊆ single A (fst (f $ 𝟎))
-    down x x∈U =
-      fst (PathΣ→ΣPathTransport _ _ (sym (KFin1-lemma (A restricted-to U) f (x , x∈U))))
+      centre = fst U-contr
 
-    up : single A (fst (f $ 𝟎)) ⊆ U
-    up x p = subst ([_] ∘ U) p (snd (f $ 𝟎))
+      down : U ⊆ single A (fst (f $ 𝟎))
+      down x x∈U = λ i → fst (KFin1-lemma (A restricted-to U) f (x , x∈U) (~ i))
 
-lemma2 : (A : Ψ ℓ) → (U : ⟦ KFin A ⟧)
-       → (f : ⟦ Fin 1 ↠ (A restricted-to (fst U)) ⟧)
-       → U ≡ η A (fst (f $ 𝟎))
-lemma2 A U f = KFin-eq A U (η A _) (snd (lemma1 A (fst U) f))
+      up : single A (fst (f $ 𝟎)) ⊆ U
+      up x p = subst ([_] ∘ U) p (snd (f $ 𝟎))
+
+  lemma2 : (U : ⟦ KFin A ⟧)
+         → (f : ⟦ Fin 1 ↠ (A restricted-to (fst U)) ⟧)
+         → U ≡ η A (fst (f $ 𝟎))
+  lemma2 U f = KFin-eq A U (η A _) (snd (lemma1 (fst U) f))
+
+  lemma3 : (U : ⟦ KFin A ⟧)
+         → (f : ⟦ Fin 0 ↠ (A restricted-to (fst U)) ⟧)
+         → U ≡ ∅ A
+  lemma3 U (f , f-surj) =
+    KFin-eq A U (∅ A) (⊆-extensionality (fst U) (fst (∅ A)) (NTS₀ , NTS₁))
+    where
+      NTS₀ : fst U ⊆ fst (∅ A)
+      NTS₀ x x∈U =
+        ∥∥-rec (isProp[] (fst (∅ A) x)) (rec ∘ ¬Fin0 ∘ fst) (f-surj (x , x∈U))
+
+      NTS₁ : fst (∅ A) ⊆ fst U
+      NTS₁ x x∈∅ = rec (∅-uninhabited A (x , x∈∅))
+
+  _+1 : {n : ℕ} → ⟦ Fin n ⟧ → ⟦ Fin (suc n) ⟧
+  (k , k<n) +1 = k , suc-≤-suc (<-weaken k<n)
+
+  K-ind-lemma : (P : ℙ (KFin A))
+              → [ P (∅ A) ]
+              → ((x : fst A) → [ P (η A x) ])
+              → [ ∀[ U ∶ ⟦ KFin A ⟧ ] ∀[ V ∶ ⟦ KFin A ⟧ ] (P U ⇒ P V ⇒ P (_∪_ A U V)) ]
+              → (U : ℙ A)
+              → (n : ℕ)
+              → (f : ⟦ Fin n ↠ (A restricted-to U) ⟧)
+              → [ P (U , ∣ n , f  ∣) ]
+  K-ind-lemma P ε σ ι U zero          f = subst (λ - → [ P - ])  (sym (lemma3 _ f)) ε
+  K-ind-lemma P ε σ ι U (suc zero)    f = subst (λ - → [ P - ]) (sym (lemma2 _ f) ) (σ (fst (f $ 𝟎)))
+  K-ind-lemma P ε σ ι U (suc (suc n)) f = subst (λ - → [ P - ]) (sym U=x∪U′) (ι (η A hd) U′ (σ hd) (K-ind-lemma P ε σ ι U′s (suc n) (h , h-surj) ))
+    where
+      U′s : ℙ A
+      U′s x = ∥ Σ[ k ∈ ⟦ Fin (suc n) ⟧ ] fst (f $ (k +1)) ≡ x ∥ , ∥∥-prop _
+
+      h : ⟦ Fin (suc n) ⟧ → ⟦ A restricted-to U′s ⟧
+      h k = (fst (f $ (k +1))) , ∣ k , refl ∣
+
+      h-surj : [ isSurjective (Fin (suc n)) (A restricted-to U′s) h ]
+      h-surj (x , x∈U′) = ∥∥-rec (∥∥-prop (Σ[ _ ∈ _ ] _)) rem x∈U′
+        where
+          rem : Σ-syntax ⟦ Fin (suc n) ⟧ (λ k → fst (f $ (k +1)) ≡ x) → ∥ Σ-syntax ⟦ Fin (suc n) ⟧ (λ z → h z ≡ (x , x∈U′)) ∥
+          rem (k , fk=x) = ∣ k , Σ≡Prop (isProp[] ∘ U′s) fk=x ∣
 
 
-lemma3 : (A : Ψ ℓ) → (U : ⟦ KFin A ⟧)
-       → (f : ⟦ Fin 0 ↠ (A restricted-to (fst U)) ⟧)
-       → U ≡ ∅ A
-lemma3 A U f =
-  KFin-eq A U (∅ A) (⊆-extensionality (fst U) (fst (∅ A)) (NTS₀ , NTS₁))
-  where
-    NTS₀ : fst U ⊆ fst (∅ A)
-    NTS₀ x x∈U = rec (¬Fin0 (fst (snd f (x , x∈U))))
+      U′ : ⟦ KFin A ⟧
+      U′ = U′s , ∣ suc n , h , h-surj ∣
 
-    NTS₁ : fst (∅ A) ⊆ fst U
-    NTS₁ x x∈∅ = rec (∅-uninhabited A (x , x∈∅))
+      hd : ⟦ A ⟧
+      hd = fst (f $ (suc n , ≤-refl))
 
--- K-ind : (A : Ψ ℓ) (P : ℙ (KFin A))
---       → [ P (∅ A) ]
---       → ((x : fst A) → [ P (η A x) ])
---       → [ ∀[ U ∶ ⟦ KFin A ⟧ ] ∀[ V ∶ ⟦ KFin A ⟧ ] (P U ⇒ P V ⇒ P {!U ∪ V!}) ]
---       → (U : ⟦ KFin A ⟧) → [ P U ]
--- K-ind A P ε σ ι (U , p) = ∥∥-rec (isProp[] (P (U , p))) (uncurry NTS) p
---   where
---     NTS : (n : ℕ) → ⟦ Fin n ↠ (A restricted-to U) ⟧ → [ P (U , p) ]
---     NTS zero          f = subst (λ - → [ P - ])  (sym (lemma3 A (U , p) f)) ε
---     NTS 1             f = subst (λ - → [ P - ]) (sym (lemma2 A (U , p) f) ) (σ (fst (f $ 𝟎)))
---     NTS (suc (suc n)) f = {!!}
+      U⊆x∪U′ : U ⊆ fst (_∪_ A (η A hd) U′)
+      U⊆x∪U′ x x∈U = ∥∥-rec (∥∥-prop _) rem (snd f (x , x∈U))
+        where
+          rem : Σ[ i ∈ ⟦ Fin (suc (suc n)) ⟧ ] f $ i ≡ (x , x∈U) → ∥ (x ∈ fst (η A hd)) ⊎ (x ∈ fst U′) ∥
+          rem ((k , k<suc-suc-n) , fk=x) =
+            case k ≟ suc n of λ
+              { (lt k<suc-n) →
+                  let
+                    rem₀ : fst (f $ ((k , k<suc-n) +1)) ≡ x
+                    rem₀ = fst (f $ ((k , k<suc-n) +1)) ≡⟨ cong (λ - → fst (f $ -)) (Σ≡Prop (λ _ → m≤n-isProp) refl) ⟩
+                            fst (f $ (k , k<suc-suc-n))  ≡⟨ (λ i → fst (fk=x i)) ⟩
+                            _ ∎
+                  in
+                    ∣ inr ∣ (k , k<suc-n) , rem₀ ∣ ∣
+              ; (eq k=suc-n) → let foo = fst (PathΣ→ΣPathTransport _ _ fk=x) in ∣ inl (subst (λ - → fst (fst f -) ≡ x) (Σ≡Prop (λ _ → m≤n-isProp) k=suc-n) foo) ∣
+              ; (gt k>suc-n) → rec (¬-<-and-≥ k>suc-n (pred-≤-pred k<suc-suc-n))
+              }
 
--- --}
--- --}
+      x∪U′⊆U : fst (_∪_ A (η A hd) U′) ⊆ U
+      x∪U′⊆U x p = ∥∥-rec (isProp[] (U x)) remI p
+        where
+          remI : (x ∈ fst (η A hd)) ⊎ (x ∈ fst U′) → [ U x ]
+          remI (inl x∈η-hd) = subst (λ - → [ U - ]) x∈η-hd (snd (f $ (suc n , ≤-refl)))
+          remI (inr x∈U′) = ∥∥-rec (isProp[] (U x)) remII x∈U′
+            where
+              remII : Σ[ k ∈ ⟦ Fin (suc n) ⟧ ] fst (f $ (k +1)) ≡ x → [ U x ]
+              remII (k , fk=x) = subst (λ - → [ U - ]) fk=x (snd (f $ (k +1)))
+
+      U=x∪U′ : (U , ∣ suc (suc n) , f ∣) ≡ _∪_ A (η A hd) U′
+      U=x∪U′ = Σ≡Prop (isProp[] ∘ isKFin A) (⊆-extensionality U _ (U⊆x∪U′ , x∪U′⊆U))
+
+  K-ind : (P : ℙ (KFin A))
+        → [ P (∅ A) ]
+        → ((x : fst A) → [ P (η A x) ])
+        → [ ∀[ U ∶ ⟦ KFin A ⟧ ] ∀[ V ∶ ⟦ KFin A ⟧ ] (P U ⇒ P V ⇒ P (_∪_ A U V)) ]
+        → (U : ⟦ KFin A ⟧) → [ P U ]
+  K-ind P ε σ ι (U , p) =
+    ∥∥-rec (isProp[] (P (U , p))) remk p
+    where
+      remk : Σ-syntax ℕ (λ n → ⟦ Fin n ↠ (A restricted-to U) ⟧) → [ P (U , p) ]
+      remk (n , f) =
+        subst (λ - → [ P - ]) (Σ≡Prop (λ z → isProp[] (isKFin A z)) refl) (K-ind-lemma P ε σ ι U n f)
 ```
 
 [0]: https://ncatlab.org/nlab/show/finite+set#Constructivist
