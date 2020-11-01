@@ -287,25 +287,43 @@ It's quite hard to come up with a descriptive name for this one...
   _∪_ (U , U-kfin) (V , V-kfin) =
     (U ∪ℙ V) , ∥∥-rec (isProp[] (isKFin A (U ∪ℙ V))) NTS (∥∥-× U-kfin V-kfin)
     where
-      NTS : (Σ[ m ∈ ℕ ] ⟦ Fin m ↠ (A restricted-to U) ⟧) × (Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (A restricted-to V) ⟧) → [ isKFin A (U ∪ℙ V) ]
-      NTS ((m , f) , (n , g)) = ∣ (m + n) , subst (λ - → ⟦ - ↠ (A restricted-to (U ∪ℙ V)) ⟧) (sym (Fin-sum-lemma′ m n)) (h , h-surj) ∣
+      NTS : (Σ[ m ∈ ℕ ] ⟦ Fin m ↠ (A restricted-to U) ⟧)
+          × (Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (A restricted-to V) ⟧)
+          → [ isKFin A (U ∪ℙ V) ]
+      NTS ((m , f) , (n , g)) = ∣ (m + n) , Fin-m+n↠U ∣
         where
+          f-surj = snd f
+          g-surj = snd g
+
           h : ⟦ Fin m ⊍ Fin n ⟧ → ⟦ A restricted-to (U ∪ℙ V) ⟧
           h (inl (k , k<m)) = let (x , x∈U) = f $ (k , k<m) in x , ∣ inl x∈U ∣
           h (inr (k , k<n)) = let (y , y∈V) = g $ (k , k<n) in y , ∣ inr y∈V ∣
 
           h-surj : [ isSurjective (Fin m ⊍ Fin n) (A restricted-to (U ∪ℙ V)) h ]
-          h-surj (x , ∣x∈U∪V∣) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem ∣x∈U∪V∣ 
+          h-surj (x , ∣x∈U∪V∣) =
+            ∥∥-rec (∥∥-prop (Σ[ _ ∈ _ ] _)) rem ∣x∈U∪V∣
             where
-              rem : (x ∈ U) ⊎ (x ∈ V) → ∥ Σ[ k ∈ ⟦ Fin m ⊍ Fin n ⟧ ] h k ≡ (x , ∣x∈U∪V∣) ∥
-              rem (inl x∈U) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem₀ (snd f (x , x∈U))
+              rem : (x ∈ U) ⊎ (x ∈ V)
+                  → ∥ Σ[ k ∈ ⟦ Fin m ⊍ Fin n ⟧ ] h k ≡ (x , ∣x∈U∪V∣) ∥
+              rem (inl x∈U) =
+                ∥∥-rec (∥∥-prop (Σ[ _ ∈ _ ] _)) rem′ (f-surj (x , x∈U))
                 where
-                  rem₀ : Σ-syntax ⟦ Fin m ⟧ (λ x₁ → fst f x₁ ≡ (x , x∈U)) → ∥ Σ-syntax ⟦ Fin m ⊍ Fin n ⟧ (λ k → h k ≡ (x , ∣x∈U∪V∣)) ∥
-                  rem₀ ((k , k<m) , fk=x) = ∣ inl (k , k<m) , Σ≡Prop (λ z → isProp[] ((U ∪ℙ V) z) ) (λ i → fst (fk=x i)) ∣
-              rem (inr x∈V) = ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem₁ (snd g (x , x∈V))
+                  rem′ : _
+                  rem′ (k , fk=x) =
+                    ∣ inl k , Σ≡Prop (isProp[] ∘ U ∪ℙ V) (λ i → fst (fk=x i)) ∣
+              rem (inr x∈V) =
+                ∥∥-rec (∥∥-prop (Σ-syntax _ _)) rem′ (g-surj (x , x∈V))
                 where
-                  rem₁ : Σ-syntax ⟦ Fin n ⟧ (λ x₁ → fst g x₁ ≡ (x , x∈V)) → ∥ Σ-syntax ⟦ Fin m ⊍ Fin n ⟧ (λ k → h k ≡ (x , ∣x∈U∪V∣)) ∥
-                  rem₁ ((k , k<n) , gk=x) = ∣ inr (k , k<n) , Σ≡Prop (λ z → isProp[] ((U ∪ℙ V) z)) (λ i → fst (gk=x i)) ∣
+                  rem′ : _
+                  rem′ (k , gk=x) =
+                    ∣ inr k , Σ≡Prop (isProp[] ∘ U ∪ℙ V) (λ i → fst (gk=x i)) ∣
+
+          Fin-m+n↠U : ⟦ Fin (m + n) ↠ (A restricted-to (U ∪ℙ V)) ⟧
+          Fin-m+n↠U =
+             subst
+               (λ - → ⟦ - ↠ (A restricted-to (U ∪ℙ V)) ⟧)
+               (sym (Fin-sum-lemma′ m n))
+               (h , h-surj)
 ```
 
 
