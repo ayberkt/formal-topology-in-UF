@@ -4,8 +4,6 @@
 /* See https://hub.darcs.net/divip/AgdaTutorial/browse/LICENSE for their     */
 /* license.                                                                  */
 
-@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
-
 /* Aspects. */
 .Comment       { color: #B22222 }
 .Keyword       { color: #CD6600 }
@@ -40,7 +38,7 @@
 a { text-decoration: none }
 a[href]:hover { background-color: #B4EEB4 }
 
-
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
 
 /* padding */
 
