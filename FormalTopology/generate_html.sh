@@ -10,5 +10,10 @@ cd html
 
 for f in `ls *.md`; do
     echo "Compiling Markdown: $f..."
-    pandoc $f --css Agda.css -o "$(basename --suffix='.md' $f).html"
+    if [ $f == "KuratowskiFinite.md" ]; then
+        echo "Handling the KuratowskiFinite module..."
+        pandoc $f --css Agda.css --toc -o "$(basename --suffix='.md' $f).html"
+    else
+        pandoc $f --css Agda.css -o "$(basename --suffix='.md' $f).html"
+    fi
 done
