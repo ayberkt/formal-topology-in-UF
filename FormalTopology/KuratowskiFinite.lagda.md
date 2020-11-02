@@ -358,7 +358,7 @@ to show that _all_ Kuratowski-finite sets satisfy some predicate $P$, it
 suffices to show
 
   1. $∅$ satisfies P;
-  2. $\{ x }\$ satisfies $P$, for every $x$; and
+  2. $\left\{ x \right\}$ satisfies $P$, for every $x$; and
   3. given two Kuratowski-finite sets $U$ and $V$ satisfying $P$,
      the union $U ∪ V$ satisfies $P$.
 
