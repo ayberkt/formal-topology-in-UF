@@ -259,6 +259,10 @@ It's quite hard to come up with a descriptive name for this one...
   suc k                     ∎
 ```
 
+### `Fin (m + n) ≡ Fin m ⊎ Fin n` ###
+
+The following fact is crucial for the definition of union for Kuratowski-finite
+sets.
 
 ```agda
 Fin+≃Fin⊎Fin : (m n : ℕ) → ⟦ Fin (m + n) ⟧ ≡ ⟦ Fin m ⟧ ⊎ ⟦ Fin n ⟧
