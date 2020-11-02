@@ -8,7 +8,8 @@ import Cubical.Data.Sigma                     as DΣ
 import Cubical.Data.Sum                       as DS
 import Cubical.Foundations.Prelude            as FP
 import Cubical.Foundations.Equiv              as FE
-import Cubical.Foundations.Logic              as FL
+import Cubical.Functions.Logic                as FL
+import Cubical.Foundations.Structure          as FS
 import Cubical.Foundations.HLevels            as FH
 import Cubical.Foundations.Isomorphism        as FI
 import Cubical.Foundations.Equiv.HalfAdjoint  as HAE
@@ -27,8 +28,9 @@ open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
                            isPropIsEquiv)
-open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; [_]; isProp[];
-                           ∃[∶]-syntax; ∀[∶]-syntax; ¬_)
+open FL  public using     ( _⇔_ ; _⇒_ ; ⇔toPath ; _⊓_ ; ∃[∶]-syntax; ∀[∶]-syntax; ¬_)
+                renaming  (isProp⟨⟩ to isProp[])
+open FS  public using     () renaming (⟨_⟩ to [_])
 open FH public using      (hProp; isSetHProp; isPropIsSet; isPropΣ; isOfHLevel;
                            isOfHLevelΠ; isOfHLevelΣ; isOfHLevelSuc; isSetΣ;
                            isSetΠ; isSetΠ2; isPropΠ; isPropΠ2; isPropΠ3)

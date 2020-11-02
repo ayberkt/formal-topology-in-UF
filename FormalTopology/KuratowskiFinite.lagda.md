@@ -11,20 +11,35 @@ module KuratowskiFinite where
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
-open import Cubical.Data.Fin renaming (Fin to Fin′)
 open import Cubical.Data.Nat
-open import Cubical.Data.Empty using (rec)
 open import Cubical.Data.Nat.Properties
 open import Cubical.Data.Nat.Order
 open import Cubical.Data.Sigma
-open import Cubical.Data.Sum using (inl; inr; _⊎_)
-open import Cubical.Data.Sum using (isSetSum)
-open import Cubical.Foundations.Logic hiding (inl; inr) renaming (ℙ to ℙ′; powersets-are-sets to isSetℙ′)
-open import Cubical.Foundations.Isomorphism using (isoToPath; iso; section; retract; Iso)
-open import Cubical.Foundations.Equiv       using (equivToIso)
+open import Cubical.Data.Fin
+              renaming (Fin to Fin′)
+open import Cubical.Data.Empty
+              using (rec)
+open import Cubical.Data.Sum
+              using (inl; inr; _⊎_)
+open import Cubical.Data.Sum
+              using (isSetSum)
+open import Cubical.Foundations.Structure
+              using    ()
+              renaming (⟨_⟩ to [_])
+open import Cubical.Functions.Logic
+              renaming (isProp⟨⟩ to isProp[])
+              hiding   (inl; inr) 
+open import Cubical.Foundations.Powerset
+              using (_∈_; _⊆_; ⊆-extensionality)
+              renaming (ℙ to ℙ′; powersets-are-sets to isSetℙ′)
+open import Cubical.Foundations.Isomorphism
+              using (isoToPath; iso; section; retract; Iso)
+open import Cubical.Foundations.Equiv
+              using (equivToIso)
 open import Cubical.Foundations.Function
 open import Cubical.Data.Unit
-open import Basis using (bot; ∥_∥; ∥∥-rec; ∥∥-prop; ∣_∣; ∥∥-×)
+open import Basis
+              using (bot; ∥_∥; ∥∥-rec; ∥∥-prop; ∣_∣; ∥∥-×)
 
 private
   variable
