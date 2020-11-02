@@ -333,6 +333,20 @@ module _ (A : Ψ ℓ) where
 
 ## Induction principle of Kuratowski-finite sets ##
 
+We prove in this section the induction principle of Kuratowski-finite sets:
+
+to show that _all_ Kuratowski-finite sets satisfy some predicate $P$, it
+suffices to show
+
+  1. $∅$ satisfies P;
+  2. $\{ x }\$ satisfies $P$, for every $x$; and
+  3. given two Kuratowski-finite sets $U$ and $V$ satisfying $P$,
+     the union $U ∪ V$ satisfies $P$.
+
+The proof of this induction principle is given at the very end of this section.
+
+If a surjection exists from `Fin 1` to `A`, `A` is contractible.
+
 ```agda
   KFin1→isContr : ⟦ Fin 1 ↠ A ⟧ → isContr ⟦ A ⟧
   KFin1→isContr (f , f-surj) =
@@ -349,7 +363,11 @@ module _ (A : Ψ ℓ) where
     where
       centre = fst (KFin1→isContr f)
       contr  = snd (KFin1→isContr f)
+```
 
+Some more lemmata we will need.
+
+```agda
 module _ (A : Ψ ℓ) where
 
   lemma1 : (U : ℙ A)
@@ -389,7 +407,12 @@ module _ (A : Ψ ℓ) where
 
   _+1 : {n : ℕ} → ⟦ Fin n ⟧ → ⟦ Fin (suc n) ⟧
   (k , k<n) +1 = k , suc-≤-suc (<-weaken k<n)
+```
 
+This is the real content of the proof which amounts taking a Kuratowski-finite
+set $U$ of size `n ≥ 2` and decomposing it as $U = \{ x \} ∪ U′$.
+
+```agda
   K-ind-lemma : (P : ℙ (KFin A))
               → [ P (∅ A) ]
               → ((x : fst A) → [ P (η A x) ])
@@ -411,9 +434,8 @@ module _ (A : Ψ ℓ) where
       h-surj : [ isSurjective (Fin (suc n)) (A restricted-to U′s) h ]
       h-surj (x , x∈U′) = ∥∥-rec (∥∥-prop (Σ[ _ ∈ _ ] _)) rem x∈U′
         where
-          rem : Σ-syntax ⟦ Fin (suc n) ⟧ (λ k → fst (f $ (k +1)) ≡ x) → ∥ Σ-syntax ⟦ Fin (suc n) ⟧ (λ z → h z ≡ (x , x∈U′)) ∥
+          rem : _
           rem (k , fk=x) = ∣ k , Σ≡Prop (isProp[] ∘ U′s) fk=x ∣
-
 
       U′ : ⟦ KFin A ⟧
       U′ = U′s , ∣ suc n , h , h-surj ∣
@@ -435,34 +457,49 @@ module _ (A : Ψ ℓ) where
                             _ ∎
                   in
                     ∣ inr ∣ (k , k<suc-n) , rem₀ ∣ ∣
-              ; (eq k=suc-n) → let foo = fst (PathΣ→ΣPathTransport _ _ fk=x) in ∣ inl (subst (λ - → fst (fst f -) ≡ x) (Σ≡Prop (λ _ → m≤n-isProp) k=suc-n) foo) ∣
+              ; (eq k=suc-n) →
+                  let
+                    fk=x    : fst (f $ (k , _)) ≡ x
+                    fk=x    = fst (PathΣ→ΣPathTransport _ _ fk=x)
+                    k=suc-n : (k , _) ≡ (suc n , _)
+                    k=suc-n = (Σ≡Prop (λ _ → m≤n-isProp) k=suc-n)
+                  in
+                    ∣ inl (subst (λ - → fst (fst f -) ≡ x) k=suc-n fk=x) ∣
               ; (gt k>suc-n) → rec (¬-<-and-≥ k>suc-n (pred-≤-pred k<suc-suc-n))
               }
 
       x∪U′⊆U : fst (_∪_ A (η A hd) U′) ⊆ U
-      x∪U′⊆U x p = ∥∥-rec (isProp[] (U x)) remI p
+      x∪U′⊆U x p = ∥∥-rec (isProp[] (U x)) rem₀ p
         where
-          remI : (x ∈ fst (η A hd)) ⊎ (x ∈ fst U′) → [ U x ]
-          remI (inl x∈η-hd) = subst (λ - → [ U - ]) x∈η-hd (snd (f $ (suc n , ≤-refl)))
-          remI (inr x∈U′) = ∥∥-rec (isProp[] (U x)) remII x∈U′
+          rem₀ : (x ∈ fst (η A hd)) ⊎ (x ∈ fst U′) → [ U x ]
+          rem₀ (inl x∈η-hd) = subst (λ - → [ U - ]) x∈η-hd (snd (f $ (suc n , ≤-refl)))
+          rem₀ (inr x∈U′) = ∥∥-rec (isProp[] (U x)) rem₁ x∈U′
             where
-              remII : Σ[ k ∈ ⟦ Fin (suc n) ⟧ ] fst (f $ (k +1)) ≡ x → [ U x ]
-              remII (k , fk=x) = subst (λ - → [ U - ]) fk=x (snd (f $ (k +1)))
+              rem₁ : Σ[ k ∈ ⟦ Fin (suc n) ⟧ ] fst (f $ (k +1)) ≡ x → [ U x ]
+              rem₁ (k , fk=x) = subst (λ - → [ U - ]) fk=x (snd (f $ (k +1)))
 
       U=x∪U′ : (U , ∣ suc (suc n) , f ∣) ≡ _∪_ A (η A hd) U′
-      U=x∪U′ = Σ≡Prop (isProp[] ∘ isKFin A) (⊆-extensionality U _ (U⊆x∪U′ , x∪U′⊆U))
+      U=x∪U′ =
+        Σ≡Prop (isProp[] ∘ isKFin A) (⊆-extensionality U _ (U⊆x∪U′ , x∪U′⊆U))
+```
 
-  K-ind : (P : ℙ (KFin A))
-        → [ P (∅ A) ]
-        → ((x : fst A) → [ P (η A x) ])
-        → [ ∀[ U ∶ ⟦ KFin A ⟧ ] ∀[ V ∶ ⟦ KFin A ⟧ ] (P U ⇒ P V ⇒ P (_∪_ A U V)) ]
-        → (U : ⟦ KFin A ⟧) → [ P U ]
-  K-ind P ε σ ι (U , p) =
-    ∥∥-rec (isProp[] (P (U , p))) remk p
-    where
-      remk : Σ-syntax ℕ (λ n → ⟦ Fin n ↠ (A restricted-to U) ⟧) → [ P (U , p) ]
-      remk (n , f) =
-        subst (λ - → [ P - ]) (Σ≡Prop (λ z → isProp[] (isKFin A z)) refl) (K-ind-lemma P ε σ ι U n f)
+### The proof of the induction principle ###
+
+```agda
+K-ind : (A : Ψ ℓ)
+      → (P : ℙ (KFin A))
+      → [ P (∅ A) ]
+      → ((x : fst A) → [ P (η A x) ])
+      → [ ∀[ U ∶ ⟦ KFin A ⟧ ] ∀[ V ∶ ⟦ KFin A ⟧ ] (P U ⇒ P V ⇒ P (_∪_ A U V)) ]
+      → (U : ⟦ KFin A ⟧) → [ P U ]
+K-ind A P ε σ ι (U , p) =
+  ∥∥-rec (isProp[] (P (U , p))) nts p
+  where
+    nts : Σ-syntax ℕ (λ n → ⟦ Fin n ↠ (A restricted-to U) ⟧) → [ P (U , p) ]
+    nts (n , f) =
+      subst
+        (λ - → [ P - ])
+        (Σ≡Prop (isProp[] ∘ isKFin A) refl) (K-ind-lemma A P ε σ ι U n f)
 ```
 
 [0]: https://ncatlab.org/nlab/show/finite+set#Constructivist
