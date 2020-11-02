@@ -523,4 +523,11 @@ K-ind A P ε σ ι (U , p) =
         (Σ≡Prop (isProp[] ∘ isKFin A) refl) (K-ind-lemma A P ε σ ι U n f)
 ```
 
+# Acknowledgements #
+
+I have benefitted from some discussions at the [Birmingham Agda Club][1],
+particularly, some comments by Tom de Jong ([`@tomdjong`][2]).
+
 [0]: https://ncatlab.org/nlab/show/finite+set#Constructivist
+[1]: https://github.com/ayberkt/birmingham-agda-club
+[2]: https://github.com/tomdjong
