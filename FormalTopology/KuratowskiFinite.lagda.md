@@ -28,7 +28,7 @@ open import Cubical.Foundations.Structure
               renaming (⟨_⟩ to [_])
 open import Cubical.Functions.Logic
               renaming (isProp⟨⟩ to isProp[])
-              hiding   (inl; inr) 
+              hiding   (inl; inr)
 open import Cubical.Foundations.Powerset
               using (_∈_; _⊆_; ⊆-extensionality)
               renaming (ℙ to ℙ′; powersets-are-sets to isSetℙ′)
@@ -47,7 +47,7 @@ private
 ```
 -->
 
-## Preliminaries ##
+# Preliminaries #
 
 `ψ ℓ` denotes the type of h-set at level `ℓ`. Given an h-set `A`, we denote by
 `⟦ A ⟧` its underlying type and by `isSet⟦⟧ A` the proof that is is an h-set.
@@ -118,7 +118,7 @@ B`.
 _$_ = fst
 ```
 
-## Definition of Kuratowski-finiteness ##
+# Definition of Kuratowski-finiteness #
 
 Our definition of [Kuratowski-finite][0] set `A` is: there exists a surjection
 from `Fin n` (for some `n`) to `A`:
@@ -150,7 +150,7 @@ KFin-eq : (A : Ψ ℓ) → (U V : ⟦ KFin A ⟧) → fst U ≡ fst V → U ≡ 
 KFin-eq A U V U=V = Σ≡Prop (isProp[] ∘ isKFin A) U=V
 ```
 
-## Operations on Kuratowski-finite sets ##
+# Operations on Kuratowski-finite sets #
 
 In this section, we assume a fixed h-set `A`.
 
@@ -158,7 +158,7 @@ In this section, we assume a fixed h-set `A`.
 module _ (A : Ψ ℓ) where
 ```
 
-### The empty Kuratowski-finite set ###
+## The empty Kuratowski-finite set ##
 
 ```agda
   ∅ : ⟦ KFin A ⟧
@@ -171,7 +171,7 @@ module _ (A : Ψ ℓ) where
   ∅-uninhabited (_ , ())
 ```
 
-### Singleton Kuratowski-finite set ###
+## Singleton Kuratowski-finite set ##
 
 ```agda
   single : ⟦ A ⟧ → ℙ A
@@ -190,7 +190,7 @@ module _ (A : Ψ ℓ) where
           surj (y , p) = ∣ 𝟎 , Σ≡Prop (isProp[] ∘ single x) p ∣
 ```
 
-### Union of two Kuratowski-finite sets ###
+## Union of two Kuratowski-finite sets ##
 
 Some arithmetic lemmata. It is likely that these have either been proven in
 `cubical` or can be proven more efficiently using other lemmata that have been
@@ -346,7 +346,7 @@ module _ (A : Ψ ℓ) where
                (h , h-surj)
 ```
 
-## Induction principle of Kuratowski-finite sets ##
+# Induction principle of Kuratowski-finite sets #
 
 We prove in this section the induction principle of Kuratowski-finite sets:
 
@@ -498,7 +498,7 @@ set $U$ of size `n ≥ 2` and decomposing it as $U = \{ x \} ∪ U′$.
         Σ≡Prop (isProp[] ∘ isKFin A) (⊆-extensionality U _ (U⊆x∪U′ , x∪U′⊆U))
 ```
 
-### The proof of the induction principle ###
+## The proof of the induction principle ##
 
 ```agda
 K-ind : (A : Ψ ℓ)
