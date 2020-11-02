@@ -95,7 +95,8 @@ satisfy a certain predicate, we write down a convenient notation for it.
 
 ```agda
 _restricted-to_ : (A : Ψ ℓ) → ℙ A → Ψ ℓ
-_restricted-to_ {ℓ} (A , A-set) U = (Σ[ x ∈ A ] [ U x ]) , is-set where
+_restricted-to_ {ℓ} (A , A-set) U = (Σ[ x ∈ A ] [ U x ]) , is-set
+  where
     is-set : isSet (Σ[ x ∈ A ] [ U x ])
     is-set = isSetΣ A-set (isProp→isSet ∘ isProp[] ∘ U)
 ```
@@ -107,8 +108,9 @@ _↠_ : Ψ ℓ₀ → Ψ ℓ₁ → Ψ (ℓ-max ℓ₀ ℓ₁)
 A ↠ B = (Σ[ f ∈ (⟦ A ⟧ → ⟦ B ⟧) ] [ isSurjective A B f ]) , ↠-set
   where
     ↠-set : isSet (Σ[ f ∈ (⟦ A ⟧ → ⟦ B ⟧) ] [ isSurjective A B f ])
-    ↠-set = isSetΣ (isSetΠ (λ _ → isSet⟦⟧ B)) λ f →
-              isProp→isSet (isProp[] (isSurjective A B f))
+    ↠-set = isSetΣ
+              (isSetΠ (λ _ → isSet⟦⟧ B))
+              (isProp→isSet ∘ isProp[] ∘ isSurjective A B)
 ```
 
 A more suggestive notation for the underlying function of an inhabitant of `A ↠
