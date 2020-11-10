@@ -729,7 +729,7 @@ module KFinImage (A X : JoinSemilattice ℓ₀ ℓ₁) where
     open KFinImage A X
 
     nts : fst (f ⟨$⟩ (η (carrier-set A) x)) ≡ fst (η (carrier-set X) (f x))
-    nts = ⊆-extensionality _ _ (down , up)  
+    nts = ⊆-extensionality _ _ (down , up)
       where
         down : fst (f ⟨$⟩ η (carrier-set A) x) ⊆ fst (η (carrier-set X) (f x))
         down y p = ∥∥-rec (isProp[] (fst (η (carrier-set X) (f x)) y)) rem p
@@ -839,7 +839,7 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
             rem x x∈U = x ⊑⟨ ⋁KF-upper A U x x∈U ⟩ (⋁KF[ A ] U) ⊑⟨ rem₁ ⟩ (⋁KF[ A ] (carrier-set A ∪ U) V) ■
               where
                 rem₀ : [ isUB A (⋁KF[ A ] (_∪_ (carrier-set A) U) V) U ]
-                rem₀ y y∈U = ⋁KF-upper A (_∪_ (carrier-set A) U V) y ∣ inl y∈U ∣ 
+                rem₀ y y∈U = ⋁KF-upper A (_∪_ (carrier-set A) U V) y ∣ inl y∈U ∣
 
                 rem₁ : [ (⋁KF[ A ] U) ⊑[ P ] (⋁KF[ A ] (carrier-set A ∪ U) V) ]
                 rem₁ = ⋁KF-least A U (⋁KF[ A ] (carrier-set A ∪ U) V) rem₀
@@ -851,7 +851,7 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
             rem x x∈V = x ⊑⟨ ⋁KF-upper A V x x∈V ⟩ (⋁KF[ A ] V) ⊑⟨ rem₁ ⟩ (⋁KF[ A ] (carrier-set A ∪ U) V) ■
               where
                 rem₀ : [ isUB A (⋁KF[ A ] (_∪_ (carrier-set A) U) V) V ]
-                rem₀ y y∈V = ⋁KF-upper A (_∪_ (carrier-set A) U V) y ∣ inr y∈V ∣ 
+                rem₀ y y∈V = ⋁KF-upper A (_∪_ (carrier-set A) U V) y ∣ inr y∈V ∣
 
                 rem₁ : [ (⋁KF[ A ] V) ⊑[ P ] (⋁KF[ A ] (carrier-set A ∪ U) V) ]
                 rem₁ = ⋁KF-least A V (⋁KF[ A ] (carrier-set A ∪ U) V) rem₀
