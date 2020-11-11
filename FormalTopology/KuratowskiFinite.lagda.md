@@ -191,6 +191,12 @@ module _ (A : Ψ ℓ) where
         where
           surj : [ isSurjective (Fin 1) ⁅x⁆ (λ _ → x , refl) ]
           surj (y , p) = ∣ 𝟎 , Σ≡Prop (isProp[] ∘ single x) p ∣
+
+  η-inj : (x y : ⟦ A ⟧) → η x ≡ η y → x ≡ y
+  η-inj x y ηx=ηy = y∈η-x
+    where
+      y∈η-x : y ∈ fst (η x)
+      y∈η-x = subst (λ - → y ∈ fst -) (sym ηx=ηy) refl
 ```
 
 ## Union of two Kuratowski-finite sets ##
