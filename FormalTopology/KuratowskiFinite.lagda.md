@@ -44,7 +44,7 @@ open import Basis
 
 private
   variable
-    ℓ ℓ₀ ℓ₁ ℓ′ : Level
+    ℓ ℓ₀ ℓ₁ ℓ′ ℓ₀′ ℓ₁′ : Level
 ```
 -->
 
