@@ -633,7 +633,6 @@ open JoinSemilatticeNotation
 ```
 
 ```agda
-
 module KFinImage (A X : JoinSemilattice ℓ₀ ℓ₁) where
 
   _⟨$⟩_ : (f : carrier A → carrier X) → ⟦ KFin (carrier-set A) ⟧ → ⟦ KFin (carrier-set X) ⟧
@@ -659,6 +658,12 @@ module KFinImage (A X : JoinSemilattice ℓ₀ ℓ₁) where
                     where
                       bar : Σ-syntax ⟦ Fin n ⟧ (λ x₁ → g x₁ ≡ (x , x∈U)) → ∥ Σ-syntax ⟦ Fin n ⟧ (λ x₁ → h x₁ ≡ (y , y∈V)) ∥
                       bar (i , gi=x) = ∣ i , Σ≡Prop (isProp[] ∘ V) (subst (λ - → h i .fst ≡ -) fx=y (cong f λ j → fst (gi=x j))) ∣
+
+  image-syntax : (f : carrier A → carrier X)
+               → ⟦ KFin (carrier-set A) ⟧ → ⟦ KFin (carrier-set X) ⟧
+  image-syntax = _⟨$⟩_
+
+  syntax image-syntax (λ x → e) U = ⁅ e ∣ x ∈ U ⁆
 ```
 
 ```agda
@@ -792,6 +797,12 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
 ```
 
 ```agda
+module Main (A : JoinSemilattice ℓ₀ ℓ₀) where
+
+  open KFinSemilattice A
+```
+
+```agda
 ⋁KF-upper : (A : JoinSemilattice ℓ₀ ℓ₁)
           → (U : ⟦ KFin (carrier-set A) ⟧) → [ isUB A (⋁KF[ A ] U) U ]
 ⋁KF-upper A = fst ∘ snd ∘ KFin-has-join A
@@ -855,6 +866,49 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
 
                 rem₁ : [ (⋁KF[ A ] V) ⊑[ P ] (⋁KF[ A ] (carrier-set A ∪ U) V) ]
                 rem₁ = ⋁KF-least A V (⋁KF[ A ] (carrier-set A ∪ U) V) rem₀
+```
+
+```agda
+open JSMap
+
+resp-⋁ : (A X : JoinSemilattice ℓ₀ ℓ₁)
+       → (f : carrier A → carrier X)
+       → [ isJoinSemilatticeHomomorphism A X f ]
+       → (U : ⟦ KFin (carrier-set A) ⟧)
+       → let open KFinImage A X
+         in f (⋁KF[ A ] U) ≡ ⋁KF[ X ] (f ⟨$⟩ U)
+resp-⋁ A X f f-hom = K-ind (carrier-set A) P φ ψ ϑ
+  where
+    open KFinImage A X
+    open JoinSemilatticeNotation X using    ()
+                                   renaming (𝟎 to 𝟎-X; _∨_ to _∨X_)
+    open JoinSemilatticeNotation A using    ()
+                                   renaming (carrier to ∣A∣; 𝟎 to 𝟎-A;
+                                             _∨_ to _∨A_)
+
+    P : ⟦ KFin (carrier-set A) ⟧ → hProp _
+    P U = (f (⋁KF[ A ] U) ≡ ⋁KF[ X ] (f ⟨$⟩ U)) , carrier-is-set (pos X) _ _
+
+    φ : [ P (∅ (carrier-set A)) ]
+    φ = f (⋁KF[ A ] ∅ (carrier-set A))      ≡⟨ cong f (⋁-∅-lemma A) ⟩
+        f 𝟎-A                               ≡⟨ fst f-hom            ⟩
+        𝟎-X                                 ≡⟨ sym (⋁-∅-lemma X)    ⟩
+        ⋁KF[ X ] (f ⟨$⟩ ∅ (carrier-set A))  ∎
+
+    ψ : (x : ∣A∣) → [ P (η (carrier-set A) x) ]
+    ψ x = f (⋁KF[ A ] η (carrier-set A) x)     ≡⟨ cong f (⋁-η-lemma A x)  ⟩
+          f x                                  ≡⟨ sym (⋁-η-lemma X (f x)) ⟩
+          ⋁KF[ X ] (f ⟨$⟩ η (carrier-set A) x) ∎
+
+    ϑ : [ ∀[ U ] ∀[ V ] P U ⇒ P V ⇒ P (_∪_ (carrier-set A) U V) ]
+    ϑ U V P-U P-V =
+      f (⋁KF[ A ] _∪_ (carrier-set A) U V)               ≡⟨ cong f (⋁-∪-lemma A U V) ⟩
+      f ((⋁KF[ A ] U) ∨A (⋁KF[ A ] V))                   ≡⟨ snd f-hom _ _ ⟩
+      f (⋁KF[ A ] U)  ∨X f (⋁KF[ A ] V)                  ≡⟨ cong (λ - → - ∨X _) P-U ⟩
+      (⋁KF[ X ] (f ⟨$⟩ U))  ∨X f (⋁KF[ A ] V)            ≡⟨ cong (λ - → _ ∨X -) P-V ⟩
+      (⋁KF[ X ] (f ⟨$⟩ U))  ∨X (⋁KF[ X ] (f ⟨$⟩ V))      ≡⟨ sym (⋁-∪-lemma X (f ⟨$⟩ U) (f ⟨$⟩ V))  ⟩
+      ⋁KF[ X ] (_∪_ (carrier-set X) (f ⟨$⟩ U)) (f ⟨$⟩ V) ≡⟨ sym (cong (λ - → ⋁KF[ X ] -) (⟨$⟩-∪-lemma A X f U V)) ⟩
+      ⋁KF[ X ] (f ⟨$⟩ _∪_ (carrier-set A) U V)           ∎
 ```
 
 ```agda
