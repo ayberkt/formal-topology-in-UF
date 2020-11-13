@@ -277,6 +277,41 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
     where
       NTS = λ w w⊑y w⊑x → ⊓[_]-greatest x y w w⊑x w⊑y
 
+  ⊓[_]-assoc : (x y z : ∣ F ∣F) → (x ⊓[ F ] y) ⊓[ F ] z ≡ x ⊓[ F ] (y ⊓[ F ] z)
+  ⊓[_]-assoc x y z = ⊑[ pos F ]-antisym _ _ down up
+    where
+      open PosetReasoning (pos F)
+
+      nts₀ : [ (x ⊓[ F ] y) ⊓[ F ] z ⊑[ pos F ] x ]
+      nts₀ = (x ⊓[ F ] y) ⊓[ F ] z ⊑⟨ ⊓[_]-lower₀ _ _ ⟩
+             x ⊓[ F ] y            ⊑⟨ ⊓[_]-lower₀ _ _ ⟩
+             x                     ■
+
+      nts₁ : [ (x ⊓[ F ] y) ⊓[ F ] z ⊑[ pos F ] y ]
+      nts₁ = (x ⊓[ F ] y) ⊓[ F ] z ⊑⟨ ⊓[_]-lower₀ _ _ ⟩
+             x ⊓[ F ] y            ⊑⟨ ⊓[_]-lower₁ _ _ ⟩
+             y                     ■
+
+      down : [ (x ⊓[ F ] y) ⊓[ F ] z ⊑[ pos F ] x ⊓[ F ] (y ⊓[ F ] z) ]
+      down =
+        ⊓[_]-greatest _ _ _ nts₀ (⊓[_]-greatest _ _ _ nts₁ (⊓[_]-lower₁ _ _))
+
+      rem : [ x ⊓[ F ] (y ⊓[ F ] z) ⊑[ pos F ] y ]
+      rem = x ⊓[ F ] (y ⊓[ F ] z)     ⊑⟨ ⊓[_]-lower₁ _ _ ⟩
+            y ⊓[ F ] z                ⊑⟨ ⊓[_]-lower₀ _ _ ⟩
+            y                         ■
+
+      nts₂ : [ x ⊓[ F ] (y ⊓[ F ] z) ⊑[ pos F ] x ⊓[ F ] y ]
+      nts₂ = ⊓[_]-greatest _ _ _ (⊓[_]-lower₀ _ _) rem
+
+      nts₃ : [ x ⊓[ F ] (y ⊓[ F ] z) ⊑[ pos F ] z ]
+      nts₃ = x ⊓[ F ] (y ⊓[ F ] z) ⊑⟨ ⊓[_]-lower₁ _ _ ⟩
+             y ⊓[ F ] z            ⊑⟨ ⊓[_]-lower₁ _ _ ⟩
+             z                     ■
+
+      up : [ x ⊓[ F ] (y ⊓[ F ] z) ⊑[ pos F ] (x ⊓[ F ] y) ⊓[ F ] z ]
+      up = ⊓[_]-greatest _ _ _ nts₂ nts₃
+
   family-iff : {U V : Fam ℓ₂ ∣ F ∣F}
              → ((x : ∣ F ∣F) → (x ε U → x ε V) × (x ε V → x ε U))
              → ⋁[ F ] U ≡ ⋁[ F ] V
@@ -362,6 +397,27 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
             subst
               (λ - → x ε (_ , -))
               (funExt (λ { (j′ , i′) → comm (U $ i′) (V $ j′) })) ((j , i) , eq)
+
+  cright : (x : ∣ F ∣F) {y y′ : ∣ F ∣F}
+         → [ y ⊑[ pos F ] y′ ] → [ x ⊓[ F ] y ⊑[ pos F ] x ⊓[ F ] y′ ]
+  cright x {y = y} {y′} y⊑y′ =
+    ⊓[_]-greatest x y′ (x ⊓[ F ] y) (⊓[_]-lower₀ x y) x⊓y⊑y′ 
+    where
+      open PosetReasoning (pos F)
+
+      x⊓y⊑y′ : [ x ⊓[ F ] y ⊑[ pos F ] y′ ]
+      x⊓y⊑y′ = x ⊓[ F ] y ⊑⟨ ⊓[_]-lower₁ x y ⟩ y ⊑⟨ y⊑y′ ⟩ y′ ■
+
+  cleft : (y : ∣ F ∣F) {x x′ : ∣ F ∣F}
+         → [ x ⊑[ pos F ] x′ ] → [ x ⊓[ F ] y ⊑[ pos F ] x′ ⊓[ F ] y ]
+  cleft y {x = x} {x′} x⊑x′ =
+    ⊓[_]-greatest x′ y (x ⊓[ F ] y) x⊓y⊑x′ (⊓[_]-lower₁ x y)
+    where
+      open PosetReasoning (pos F)
+
+      x⊓y⊑x′ : [ x ⊓[ F ] y ⊑[ pos F ] x′ ]
+      x⊓y⊑x′ = x ⊓[ F ] y ⊑⟨ ⊓[_]-lower₀ x y ⟩ x ⊑⟨ x⊑x′ ⟩ x′ ■
+
 
 isRawFrameHomo : (M : Σ[ A ∈ Type ℓ₀  ] RawFrameStr ℓ₁  ℓ₂ A)
                  (N : Σ[ B ∈ Type ℓ₀′ ] RawFrameStr ℓ₁′ ℓ₂ B)
