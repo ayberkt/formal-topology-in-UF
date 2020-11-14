@@ -1009,13 +1009,26 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
         Σ≡Prop (λ p → isPropΣ (isProp[] (isJoinSemilatticeHomomorphism KFinJS X p)) λ _ → isSetΠ (λ _ → carrier-is-set P) f (p ∘ η ∣A∣)) (funExt ext-eq)
         where
           ext-eq : (U : ⟦ KFin ℓ₀ ∣A∣ ⟧) → f⁻ U ≡ g⁻ U
-          ext-eq U = f⁻ U                                    ≡⟨ refl                             ⟩
-                     ⋁X (f ⟨$⟩ U)                            ≡⟨ cong (λ - → ⋁X (- ⟨$⟩ U)) f=g⁻∘η ⟩
-                     ⋁X ((g⁻ ∘ η (carrier-set A)) ⟨$⟩ U)     ≡⟨ {!!} ⟩
-                     ⋁X ({!!} (η (carrier-set A) ⟨K⟩ U))   ≡⟨ {!!} ⟩
-                     g⁻ U                                    ∎
+          ext-eq U = f⁻ U                                          ≡⟨ refl                             ⟩
+                     ⋁X (f ⟨$⟩ U)                                  ≡⟨ cong (λ - → ⋁X (- ⟨$⟩ U)) f=g⁻∘η ⟩
+                     ⋁X ((g⁻ ∘ η (carrier-set A)) ⟨$⟩ U)           ≡⟨ {!!} ⟩
+                     {!!}                                          ≡⟨ sym (resp-⋁ {!!} X {!g⁻!} {!g⁻-hom!} {!(η (carrier-set A) ⟨K⟩ U)!}) ⟩
+                     g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))  ≡⟨ cong g⁻ (sym (main U)) ⟩
+                     g⁻ U                                          ∎
             where
               open KFinImage KFinJS X using () renaming (_⟨$⟩_ to _⟨X⟩_)
+
+              nts : [ isUB X (g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))) ((g⁻ ∘ (η (carrier-set A))) ⟨$⟩ U) ]
+              nts x x-mem = ∥∥-rec (isProp[] (rel P x _)) rem x-mem
+                where
+                  rem : Σ-syntax carrier-A (λ x₁ → [ fst U x₁ ] × ((g⁻ ∘ η (carrier-set A)) x₁ ≡ x)) → [ rel P x (g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))) ]
+                  rem (y , y∈U , p) = {!!}
+
+              below : [ (⋁X ((λ x → g⁻ (η (carrier-set A) x)) ⟨$⟩ U)) ⊑[ P ] (g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))) ]
+              below = ⋁KF-least X ((λ x → g⁻ (η (carrier-set A) x)) ⟨$⟩ U) (g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))) nts
+
+              above : [ (g⁻ (⋁KF[ KFinJS ] (η (carrier-set A) ⟨K⟩ U))) ⊑[ P ] (⋁X ((λ x → g⁻ (η (carrier-set A) x)) ⟨$⟩ U))  ]
+              above = {!!}
 
 -- --}
 ```
