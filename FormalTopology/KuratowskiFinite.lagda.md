@@ -762,13 +762,13 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
     nts₁ x = ∥∥-rec (isProp[] (fst (f ⟨$⟩ _∪_ AΨ U V) x)) rem where
       rem : [ fst (f ⟨$⟩ U) x ] ⊎ [ fst (f ⟨$⟩ V) x ] → [ fst (f ⟨$⟩ U∪V) x ]
       rem (inl x∈f⟨$⟩U) = ∥∥-rec (isProp[] (fst (f ⟨$⟩ U∪V) x)) foo x∈f⟨$⟩U
-                          where
-                            foo : Σ-syntax (carrier A) (λ x₁ → [ fst U x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ U∪V) x ]
-                            foo (y , y∈U , fy=x) = ∣ y , ∣ inl y∈U ∣ , fy=x ∣
+        where
+          foo : _
+          foo (y , y∈U , fy=x) = ∣ y , ∣ inl y∈U ∣ , fy=x ∣
       rem (inr x∈f⟨$⟩V) = ∥∥-rec (isProp[] ((fst (f ⟨$⟩ U∪V) x))) bar x∈f⟨$⟩V
-                          where
-                            bar : Σ-syntax (carrier A) (λ x₁ → [ fst V x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ U∪V) x ]
-                            bar (y , y∈V , fy=x) = ∣ y , ∣ inr y∈V ∣ , fy=x ∣
+        where
+          bar : Σ-syntax (carrier A) (λ x₁ → [ fst V x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ U∪V) x ]
+          bar (y , y∈V , fy=x) = ∣ y , ∣ inr y∈V ∣ , fy=x ∣
 
     abstract
       nts : fst (f ⟨$⟩ (_∪_ AΨ U V)) ≡ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V))
@@ -781,32 +781,36 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
             → (x : carrier A)
             → let open KFinImage A X
               in f ⟨$⟩ (η (cset A) x) ≡ η (cset X) (f x)
-η-⟨$⟩-lemma A X f x = Σ≡Prop (isProp[] ∘ isKFin (cset X)) nts
-  where
-    open KFinImage A X
+η-⟨$⟩-lemma A X f x = Σ≡Prop (isProp[] ∘ isKFin (cset X)) nts where
+  open KFinImage A X
 
-    abstract
-      nts : fst (f ⟨$⟩ (η (cset A) x)) ≡ fst (η (cset X) (f x))
-      nts = ⊆-extensionality _ _ (down , up)
-        where
-          down : fst (f ⟨$⟩ η (cset A) x) ⊆ fst (η (cset X) (f x))
-          down y p = ∥∥-rec (isProp[] (fst (η (cset X) (f x)) y)) rem p
-            where
-              rem : Σ-syntax (carrier A) (λ x₁ → [ fst (η (cset A) x) x₁ ] × (f x₁ ≡ y)) → [ fst (η (cset X) (f x)) y ]
-              rem (z , x=z , fz=y) = subst (λ - → [ fst (η (cset X) (f x)) - ]) fz=y (cong f x=z)
+  abstract
+    nts : fst (f ⟨$⟩ (η (cset A) x)) ≡ fst (η (cset X) (f x))
+    nts = ⊆-extensionality _ _ (down , up) where
 
-          up : fst (η (cset X) (f x)) ⊆ fst (f ⟨$⟩ η (cset A) x)
-          up y fx=y = ∣ x , refl , fx=y ∣
+      down : fst (f ⟨$⟩ η (cset A) x) ⊆ fst (η (cset X) (f x))
+      down y p = ∥∥-rec (isProp[] (fst (η (cset X) (f x)) y)) rem p where
+
+        rem : Σ-syntax (carrier A) (λ x₁ → [ fst (η (cset A) x) x₁ ] × (f x₁ ≡ y)) → [ fst (η (cset X) (f x)) y ]
+        rem (z , x=z , fz=y) = subst (λ - → [ fst (η (cset X) (f x)) - ]) fz=y (cong f x=z)
+
+      up : fst (η (cset X) (f x)) ⊆ fst (f ⟨$⟩ η (cset A) x)
+      up y fx=y = ∣ x , refl , fx=y ∣
 ```
 
 ```agda
 module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
 
   open JoinSemilatticeNotation A using    ()
-                                 renaming (𝟎 to 𝟎-A; pos to pos-A; carrier to carrier-A; 𝟎-bottom to 𝟎-A-bottom; _∨_ to _∨A_; ∨-least to ∨A-least)
+                                 renaming ( 𝟎        to 𝟎-A
+                                          ; pos      to pos-A
+                                          ; carrier  to carrier-A
+                                          ; 𝟎-bottom to 𝟎-A-bottom
+                                          ; _∨_      to _∨A_
+                                          ; ∨-least  to ∨A-least )
 
   ∣A∣ : Ψ ℓ₀
-  ∣A∣ = carrier-A , carrier-is-set pos-A
+  ∣A∣ = cset A
 
   KFinPoset : PosetStr ℓ₀ ⟦ KFin ℓ₀ ∣A∣ ⟧
   KFinPoset = _⊑_ , isSet⟦⟧ (KFin ℓ₀ ∣A∣) , ⊑-refl , ⊑-trans , ⊑-antisym
@@ -834,21 +838,23 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
         ∅-bottom : [ isBottom (⟦ KFin ℓ₀ ∣A∣ ⟧ , KFinPoset) (∅ ∣A∣ ℓ₀) ]
         ∅-bottom U x ()
 
-        ∪-join : [ ∀[ U ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ] ∀[ V ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ] isJoinOf (_ , KFinPoset) (_∪_ ∣A∣ U V) U V ]
-        ∪-join U V = (U⊆U∪V , V⊆U∪V) , least
-          where
-            U⊆U∪V : [ U ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
-            U⊆U∪V x x∈U = ∣ inl x∈U ∣
+        ∪-join : [ ∀[ U ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ]
+                   ∀[ V ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ]
+                     isJoinOf (_ , KFinPoset) (_∪_ ∣A∣ U V) U V ]
+        ∪-join U V = (U⊆U∪V , V⊆U∪V) , least where
 
-            V⊆U∪V : [ V ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
-            V⊆U∪V x x∈V = ∣ inr x∈V ∣
+          U⊆U∪V : [ U ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
+          U⊆U∪V x x∈U = ∣ inl x∈U ∣
 
-            least : _
-            least W (U⊆W , V⊆W) x x∈U∪V = ∥∥-rec (isProp[] (fst W x)) nts x∈U∪V
-              where
-                nts : (x ∈ fst U) ⊎ (x ∈ fst V) → [ fst W x ]
-                nts (inl x∈U) = U⊆W x x∈U
-                nts (inr x∈V) = V⊆W x x∈V
+          V⊆U∪V : [ V ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
+          V⊆U∪V x x∈V = ∣ inr x∈V ∣
+
+          least : _
+          least W (U⊆W , V⊆W) x = ∥∥-rec (isProp[] (fst W x)) nts where
+
+            nts : (x ∈ fst U) ⊎ (x ∈ fst V) → [ fst W x ]
+            nts (inl x∈U) = U⊆W x x∈U
+            nts (inr x∈V) = V⊆W x x∈V
 ```
 
 ```
