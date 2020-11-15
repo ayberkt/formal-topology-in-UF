@@ -748,28 +748,27 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
     nts₀ : (x : ∣X∣)
          → [ fst (f ⟨$⟩ (_∪_ AΨ U V)) x ]
          → [ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V)) x ]
-    nts₀ x = ∥∥-rec (isProp[] (fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V)) x)) rem
-      where
-        rem : Σ[ y ∈ carrier A ] [ fst U∪V y ] × (f y ≡ x)
-            → [ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V)) x ]
-        rem (y , p , q) = ∥∥-rec (isProp[] (fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x)) rem₀ p
-          where
-            rem₀ : (y ∈ fst U) ⊎ (y ∈ fst V) → [ fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x ]
-            rem₀ (inl y∈U) = ∣ inl (subst ([_] ∘ fst (f ⟨$⟩ U)) q ∣ y , y∈U , refl ∣) ∣
-            rem₀ (inr y∈V) = ∣ inr (subst ([_] ∘ fst (f ⟨$⟩ V)) q ∣ y , y∈V , refl ∣) ∣
+    nts₀ x = ∥∥-rec (isProp[] (fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x)) rem where
+
+      rem : Σ[ y ∈ ∣A∣ ] [ fst U∪V y ] × (f y ≡ x)
+          → [ fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x ]
+      rem (y , p , q) = ∥∥-rec (isProp[] (fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x)) rem₀ p
+        where
+          rem₀ : (y ∈ fst U) ⊎ (y ∈ fst V) → [ fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x ]
+          rem₀ (inl y∈U) = ∣ inl (subst ([_] ∘ fst (f ⟨$⟩ U)) q ∣ y , y∈U , refl ∣) ∣
+          rem₀ (inr y∈V) = ∣ inr (subst ([_] ∘ fst (f ⟨$⟩ V)) q ∣ y , y∈V , refl ∣) ∣
 
     nts₁ : ∀ x → [ fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x ] → [ fst (f ⟨$⟩ U∪V) x ]
-    nts₁ x x-mem = ∥∥-rec (isProp[] (fst (f ⟨$⟩ _∪_ AΨ U V) x)) rem x-mem
-      where
-        rem : [ fst (f ⟨$⟩ U) x ] ⊎ [ fst (f ⟨$⟩ V) x ] → [ fst (f ⟨$⟩ (cset A ∪ U) V) x ]
-        rem (inl x∈f⟨$⟩U) = ∥∥-rec (isProp[] (fst (f ⟨$⟩ (cset A ∪ U) V) x)) foo x∈f⟨$⟩U
-                            where
-                              foo : Σ-syntax (carrier A) (λ x₁ → [ fst U x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ (cset A ∪ U) V) x ]
-                              foo (y , y∈U , fy=x) = ∣ y , ∣ inl y∈U ∣ , fy=x ∣
-        rem (inr x∈f⟨$⟩V) = ∥∥-rec (isProp[] ((fst (f ⟨$⟩ (cset A ∪ U) V) x))) bar x∈f⟨$⟩V
-                            where
-                              bar : Σ-syntax (carrier A) (λ x₁ → [ fst V x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ (cset A ∪ U) V) x ]
-                              bar (y , y∈V , fy=x) = ∣ y , ∣ inr y∈V ∣ , fy=x ∣
+    nts₁ x = ∥∥-rec (isProp[] (fst (f ⟨$⟩ _∪_ AΨ U V) x)) rem where
+      rem : [ fst (f ⟨$⟩ U) x ] ⊎ [ fst (f ⟨$⟩ V) x ] → [ fst (f ⟨$⟩ U∪V) x ]
+      rem (inl x∈f⟨$⟩U) = ∥∥-rec (isProp[] (fst (f ⟨$⟩ U∪V) x)) foo x∈f⟨$⟩U
+                          where
+                            foo : Σ-syntax (carrier A) (λ x₁ → [ fst U x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ U∪V) x ]
+                            foo (y , y∈U , fy=x) = ∣ y , ∣ inl y∈U ∣ , fy=x ∣
+      rem (inr x∈f⟨$⟩V) = ∥∥-rec (isProp[] ((fst (f ⟨$⟩ U∪V) x))) bar x∈f⟨$⟩V
+                          where
+                            bar : Σ-syntax (carrier A) (λ x₁ → [ fst V x₁ ] × (f x₁ ≡ x)) → [ fst (f ⟨$⟩ U∪V) x ]
+                            bar (y , y∈V , fy=x) = ∣ y , ∣ inr y∈V ∣ , fy=x ∣
 
     abstract
       nts : fst (f ⟨$⟩ (_∪_ AΨ U V)) ≡ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V))
