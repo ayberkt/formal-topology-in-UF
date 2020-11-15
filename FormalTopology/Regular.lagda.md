@@ -92,14 +92,6 @@ module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
 ## Alternative characterisation
 
-Another way of characterising regularity is this: a locale *L* is called regular iff each
-of its elements can be written as the join of a _clopen_ family. Before looking at this
-though, let us first discuss how we can express clopen-ness.
-
-We say that some open *x* ∈ *L* is clopen iff it has a complement. This can be motivated
-by the fact that a set is clopen iff its boundary is empty i.e. it satisfies LEM. Now
-we can write down the alternative characterisation we mentioned.
-
 ```agda
 hasClopenBasis : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ-max ℓ₀ (ℓ-suc ℓ₂))
 hasClopenBasis {ℓ₂ = ℓ₂} F =
