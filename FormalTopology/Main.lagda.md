@@ -18,4 +18,5 @@ open import CantorSpace
 open import Sierpinski
 open import GaloisConnection
 open import Regular
+open import KuratowskiFinite
 ```
