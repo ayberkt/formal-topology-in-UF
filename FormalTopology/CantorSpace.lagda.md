@@ -10,7 +10,7 @@ open import Cubical.Data.Bool.Base    using (true; false; _≟_; not) renaming (
 open import Cubical.Data.List         using (List; _∷_; []; foldr; length)    renaming (_++_ to _^_)
 open import Cubical.Data.Nat          using (ℕ; predℕ)
 open import Cubical.Relation.Nullary  using (Dec; yes; no)
-open import Cubical.Foundations.Logic using (_⊔_)
+open import Cubical.Functions.Logic   using (_⊔_)
 open import Frame
 open import Nucleus
 open import CoverFormsNucleus
@@ -414,15 +414,15 @@ comp-∨ xs =
 ```agda
 cantor-regular : [ isRegular cantor-frame ]
 cantor-regular =
-  regularity-lemma cantor-frame cantor-has-clopen-basis
-  where
-    cantor-has-clopen-basis : hasClopenBasis cantor-frame
+  isZeroDimensional→isRegular cantor-frame cantor-has-clopen-basis where
+
+    cantor-has-clopen-basis : isZeroDimensional cantor-frame
     cantor-has-clopen-basis 𝔘 = ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ , comps , main-lemma cantor 𝔘
       where
         comps : (U : ∣ cantor-frame ∣F)
               → U ε ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ → hasComplement cantor-frame U
-        comps U ((xs , xs∈U) , eq) = subst (λ - → hasComplement cantor-frame -) eq NTS
+        comps U ((xs , xs∈U) , eq) = subst (hasComplement cantor-frame) eq nts
           where
-            NTS : hasComplement cantor-frame (η xs)
-            NTS = (xs ^*) , (comp-∧ xs) , (comp-∨ xs)
+            nts : hasComplement cantor-frame (η xs)
+            nts = (xs ^*) , (comp-∧ xs) , (comp-∨ xs)
 ```
