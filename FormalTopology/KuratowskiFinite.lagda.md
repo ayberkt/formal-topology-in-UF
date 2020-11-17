@@ -11,6 +11,7 @@ module KuratowskiFinite where
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
+open import Cubical.Foundations.Univalence using (EquivJ)
 open import Cubical.Data.Nat
 open import Cubical.Data.Nat.Properties
 open import Cubical.Data.Nat.Order
@@ -44,7 +45,7 @@ open import Basis
 
 private
   variable
-    ℓ ℓ₀ ℓ₁ ℓ′ ℓ₀′ ℓ₁′ : Level
+    ℓ ℓ₀ ℓ₁ ℓ′ ℓ₀′ ℓ₁′ ℓ₂ : Level
 ```
 -->
 
@@ -54,28 +55,64 @@ private
 `⟦ A ⟧` its underlying type and by `isSet⟦⟧ A` the proof that is is an h-set.
 
 ```agda
-Ψ : (ℓ : Level) → Type (ℓ-suc ℓ)
-Ψ ℓ = Σ[ A ∈ Type ℓ ] isSet A
+HSet : (ℓ : Level) → Type (ℓ-suc ℓ)
+HSet ℓ = Σ[ A ∈ Type ℓ ] isSet A
 
-⟦_⟧ : Ψ ℓ → Type ℓ
+⟦_⟧ : HSet ℓ → Type ℓ
 ⟦ A , _ ⟧ = A
 
-isSet⟦⟧ : (A : Ψ ℓ) → isSet (fst A)
+isSet⟦⟧ : (A : HSet ℓ) → isSet (fst A)
 isSet⟦⟧ (_ , A-set) = A-set
 ```
 
-For convenience, we define some new versions of operators that work on
-inhabitants of `Ψ` directly.
+```agda
+data Nat (ℓ : Level) : Type ℓ where
+  zero : Nat ℓ
+  suc  : Nat ℓ → Nat ℓ
+```
 
 ```agda
-_⊍_ : Ψ ℓ₀ → Ψ ℓ₁ → Ψ (ℓ-max ℓ₀ ℓ₁)
+Natℓ→ℕ : (ℓ : Level) → Nat ℓ → ℕ
+Natℓ→ℕ ℓ zero    = zero
+Natℓ→ℕ ℓ (suc n) = suc (Natℓ→ℕ ℓ n)
+
+ℕ→Natℓ : (ℓ : Level) → ℕ → Nat ℓ
+ℕ→Natℓ ℓ zero    = zero
+ℕ→Natℓ ℓ (suc n) = suc (ℕ→Natℓ ℓ n)
+
+Natℓ≅ℕ : (ℓ : Level) → Iso (Nat ℓ) ℕ
+Iso.fun (Natℓ≅ℕ ℓ) = Natℓ→ℕ ℓ
+Iso.inv (Natℓ≅ℕ ℓ) = ℕ→Natℓ ℓ
+Iso.rightInv (Natℓ≅ℕ ℓ) = sec-f-g where
+                            sec-f-g : _
+                            sec-f-g zero    = refl
+                            sec-f-g (suc b) = cong suc (sec-f-g b)
+Iso.leftInv (Natℓ≅ℕ ℓ) = ret-f-g where
+                             ret-f-g : _
+                             ret-f-g zero    = refl
+                             ret-f-g (suc b) = cong suc (ret-f-g b)
+```
+
+For convenience, we define some new versions of operators that work on
+inhabitants of `HSet` directly.
+
+```agda
+_⊍_ : HSet ℓ₀ → HSet ℓ₁ → HSet (ℓ-max ℓ₀ ℓ₁)
 A ⊍ B = (⟦ A ⟧ ⊎ ⟦ B ⟧) , isSetSum (isSet⟦⟧ A) (isSet⟦⟧ B)
 
-ℙ : Ψ ℓ → Type (ℓ-suc ℓ)
+ℙ : HSet ℓ → Type (ℓ-suc ℓ)
 ℙ (A , _) = ℙ′ A
 
-Fin : ℕ → Ψ ℓ-zero
+Fin : ℕ → HSet ℓ-zero
 Fin n = Fin′ n , isSetFin
+
+Finn : (ℓ : Level) → ℕ → HSet ℓ
+Finn ℓ n =
+  (Σ[ n ∈ Nat ℓ ] ⟦ Fin (Natℓ→ℕ ℓ n) ⟧) , isSetΣ nts λ n → isSet⟦⟧ (Fin (Natℓ→ℕ ℓ n))
+  where
+    abstract
+      nts : isSet (Nat ℓ)
+      nts = {!!}
 
 𝟎 : ⟦ Fin 1 ⟧
 𝟎 = 0 , (0 , refl)
@@ -84,34 +121,37 @@ Fin n = Fin′ n , isSetFin
 Definition of surjectivity.
 
 ```agda
-isSurjective : (A : Ψ ℓ₀) (B : Ψ ℓ₁) → (⟦ A ⟧ → ⟦ B ⟧) → hProp (ℓ-max ℓ₀ ℓ₁)
+isSurjective : (A : HSet ℓ₀) (B : HSet ℓ₁) → (⟦ A ⟧ → ⟦ B ⟧) → hProp (ℓ-max ℓ₀ ℓ₁)
 isSurjective A B f = ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥) , is-prop
   where
-    is-prop : isProp ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥)
-    is-prop = isPropΠ λ y → ∥∥-prop (Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y)
+    abstract
+      is-prop : isProp ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥)
+      is-prop = isPropΠ λ y → ∥∥-prop (Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y)
 ```
 
 As we will talk about *subsets* i.e. subsets of inhabitants of a type that
 satisfy a certain predicate, we write down a convenient notation for it.
 
 ```agda
-_restricted-to_ : (A : Ψ ℓ) → (⟦ A ⟧ → hProp ℓ′) → Ψ (ℓ-max ℓ ℓ′)
+_restricted-to_ : (A : HSet ℓ) → (⟦ A ⟧ → hProp ℓ′) → HSet (ℓ-max ℓ ℓ′)
 _restricted-to_ (A , A-set) U = (Σ[ x ∈ A ] [ U x ]) , is-set
   where
-    is-set : isSet (Σ[ x ∈ A ] [ U x ])
-    is-set = isSetΣ A-set (isProp→isSet ∘ isProp[] ∘ U)
+    abstract
+      is-set : isSet (Σ[ x ∈ A ] [ U x ])
+      is-set = isSetΣ A-set (isProp→isSet ∘ isProp[] ∘ U)
 ```
 
 `A ↠ B` denotes the type of surjections from `A` to `B`.
 
 ```agda
-_↠_ : Ψ ℓ₀ → Ψ ℓ₁ → Ψ (ℓ-max ℓ₀ ℓ₁)
+_↠_ : HSet ℓ₀ → HSet ℓ₁ → HSet (ℓ-max ℓ₀ ℓ₁)
 A ↠ B = (Σ[ f ∈ (⟦ A ⟧ → ⟦ B ⟧) ] [ isSurjective A B f ]) , ↠-set
   where
-    ↠-set : isSet (Σ[ f ∈ (⟦ A ⟧ → ⟦ B ⟧) ] [ isSurjective A B f ])
-    ↠-set = isSetΣ
-              (isSetΠ (λ _ → isSet⟦⟧ B))
-              (isProp→isSet ∘ isProp[] ∘ isSurjective A B)
+    abstract
+      ↠-set : isSet (Σ[ f ∈ (⟦ A ⟧ → ⟦ B ⟧) ] [ isSurjective A B f ])
+      ↠-set = isSetΣ
+                (isSetΠ (λ _ → isSet⟦⟧ B))
+                (isProp→isSet ∘ isProp[] ∘ isSurjective A B)
 ```
 
 A more suggestive notation for the underlying function of an inhabitant of `A ↠
@@ -127,18 +167,18 @@ Our definition of [Kuratowski-finite][0] set `A` is: there exists a surjection
 from `Fin n` (for some `n`) to `A`:
 
 ```agda
-isKFin : (A : Ψ ℓ) → (⟦ A ⟧ → hProp ℓ′) → hProp (ℓ-max ℓ ℓ′)
+isKFin : (A : HSet ℓ) → (⟦ A ⟧ → hProp ℓ′) → hProp (ℓ-max ℓ ℓ′)
 isKFin A U =
   ∥ Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (A restricted-to U) ⟧ ∥ , ∥∥-prop _
 
-isKFin-set : (A : Ψ ℓ) → (U : ⟦ A ⟧ → hProp ℓ′) → isSet [ isKFin A U ]
-isKFin-set A U = isProp→isSet (isProp[] (isKFin A U))
+isKFin-set : (A : HSet ℓ) → (U : ⟦ A ⟧ → hProp ℓ′) → isSet [ isKFin A U ]
+isKFin-set A = isProp→isSet ∘ isProp[] ∘ isKFin A
 ```
 
 The h-set of Kuratowski-finite sets is defined as:
 
 ```agda
-KFin : (ℓ′ : Level) → Ψ ℓ → Ψ (ℓ-max ℓ (ℓ-suc ℓ′))
+KFin : (ℓ′ : Level) → HSet ℓ → HSet (ℓ-max ℓ (ℓ-suc ℓ′))
 KFin ℓ′ A = (Σ[ U ∈ (⟦ A ⟧ → hProp ℓ′) ] [ isKFin A U ]) , is-set
   where
     is-set : isSet (Σ[ U ∈ (⟦ A ⟧ → hProp ℓ′) ] [ isKFin A U ])
@@ -149,7 +189,7 @@ The following is nothing but a convenient notation for the irrelevance
 of Kuratowski-finiteness proof to the equality.
 
 ```agda
-KFin-eq : (A : Ψ ℓ) → (U V : ⟦ KFin ℓ′ A ⟧) → fst U ≡ fst V → U ≡ V
+KFin-eq : (A : HSet ℓ) → (U V : ⟦ KFin ℓ′ A ⟧) → fst U ≡ fst V → U ≡ V
 KFin-eq A U V U=V = Σ≡Prop (isProp[] ∘ isKFin A) U=V
 ```
 
@@ -158,7 +198,7 @@ KFin-eq A U V U=V = Σ≡Prop (isProp[] ∘ isKFin A) U=V
 In this section, we assume a fixed h-set `A`.
 
 ```agda
-module _ (A : Ψ ℓ) where
+module _ (A : HSet ℓ) where
 ```
 
 ## The empty Kuratowski-finite set ##
@@ -177,26 +217,26 @@ module _ (A : Ψ ℓ) where
 ## Singleton Kuratowski-finite set ##
 
 ```agda
-  single : ⟦ A ⟧ → ℙ A
+  single : ⟦ A ⟧ → ⟦ A ⟧ → hProp ℓ
   single x = λ y → (x ≡ y) , isSet⟦⟧ A x y
 
   η : ⟦ A ⟧ → ⟦ KFin ℓ A ⟧
   η x =  single x , ∣ 1 , f ∣
     where
-      ⁅x⁆ : Ψ ℓ
+      ⁅x⁆ : HSet ℓ
       ⁅x⁆ = A restricted-to (single x)
 
       f : ⟦ Fin 1 ↠ ⁅x⁆ ⟧
-      f = (λ _ → x , refl) , surj
-        where
-          surj : [ isSurjective (Fin 1) ⁅x⁆ (λ _ → x , refl) ]
-          surj (y , p) = ∣ 𝟎 , Σ≡Prop (isProp[] ∘ single x) p ∣
+      f = (λ _ → x , refl) , surj where
+
+        surj : [ isSurjective (Fin 1) ⁅x⁆ (λ _ → x , refl) ]
+        surj (y , p) = ∣ 𝟎 , Σ≡Prop (isProp[] ∘ single x) p ∣
 
   η-inj : (x y : ⟦ A ⟧) → η x ≡ η y → x ≡ y
-  η-inj x y ηx=ηy = y∈η-x
-    where
-      y∈η-x : y ∈ fst (η x)
-      y∈η-x = subst (λ - → y ∈ fst -) (sym ηx=ηy) refl
+  η-inj x y ηx=ηy = y∈η-x where
+
+    y∈η-x : y ∈ fst (η x)
+    y∈η-x = subst (λ - → y ∈ fst -) (sym ηx=ηy) refl
 ```
 
 ## Union of two Kuratowski-finite sets ##
@@ -311,10 +351,62 @@ Fin-sum-lemma′ m n = Σ≡Prop (λ A → isPropIsSet {A = A}) (Fin+≃Fin⊎Fi
 Let us first define the union of two subsets.
 
 ```agda
-module _ (A : Ψ ℓ) where
+module _ (A : HSet ℓ) where
 
   _∪ℙ_ : (⟦ A ⟧ → hProp ℓ₀) → (⟦ A ⟧ → hProp ℓ₁) → ⟦ A ⟧ → hProp (ℓ-max ℓ₀ ℓ₁)
   _∪ℙ_ U V = λ x → ∥ [ U x ] ⊎ [ V x ] ∥ , ∥∥-prop ([ U x ] ⊎ [ V x ])
+
+  ∪ℙ-comm : (U : ⟦ A ⟧ → hProp ℓ₀) → (V : ⟦ A ⟧ → hProp ℓ₁)
+          → (U ∪ℙ V) ≡ (V ∪ℙ U)
+  ∪ℙ-comm U V = funExt (λ x → ⇔toPath (forward x) (backward x)) where
+
+    forward : (x : ⟦ A ⟧) → [ (U ∪ℙ V) x ⇒ (V ∪ℙ U) x ]
+    forward x x∈U∪V = ∥∥-rec (isProp[] ((V ∪ℙ U) x)) nts x∈U∪V where
+
+      nts : [ U x ] ⊎ [ V x ] → [ (V ∪ℙ U) x ]
+      nts = λ { (inl x∈U) → ∣ inr x∈U ∣ ; (inr x∈V) → ∣ inl x∈V ∣ }
+
+    backward : (x : ⟦ A ⟧) → [ (V ∪ℙ U) x ⇒ (U ∪ℙ V) x ]
+    backward x = ∥∥-rec (isProp[] ((U ∪ℙ V) x)) nts where
+
+      nts : [ V x ] ⊎ [ U x ] → [ (U ∪ℙ V) x ]
+      nts = λ { (inl x∈V) → ∣ inr x∈V ∣ ; (inr x∈U) → ∣ inl x∈U ∣ }
+
+  ∪ℙ-assoc : (U : ⟦ A ⟧ → hProp ℓ₀) (V : ⟦ A ⟧ → hProp ℓ₁) (W : ⟦ A ⟧ → hProp ℓ₂)
+           → ((U ∪ℙ V) ∪ℙ W) ≡ U ∪ℙ (V ∪ℙ W)
+  ∪ℙ-assoc U V W = funExt (λ x → ⇔toPath (forward x) (backward x)) where
+    abstract
+      forward : (x : ⟦ A ⟧) → [ ((U ∪ℙ V) ∪ℙ W) x ] → [ (U ∪ℙ (V ∪ℙ W)) x ]
+      forward x = ∥∥-rec (isProp[] ((U ∪ℙ (V ∪ℙ W)) x)) nts where
+
+        nts : [ (U ∪ℙ V) x ] ⊎ [ W x ] → [ (U ∪ℙ (V ∪ℙ W)) x ]
+        nts (inl x∈U∪V) = ∥∥-rec (isProp[] ((U ∪ℙ (V ∪ℙ W)) x)) rem x∈U∪V where
+
+                            rem : [ U x ] ⊎ [ V x ] → [ (U ∪ℙ (V ∪ℙ W)) x ]
+                            rem (inl x∈U) = ∣ inl x∈U ∣
+                            rem (inr x∈V) = ∣ inr ∣ inl x∈V ∣ ∣
+
+        nts (inr x∈W)   = ∣ inr ∣ inr x∈W ∣ ∣
+
+      backward : (x : ⟦ A ⟧) → [ (U ∪ℙ (V ∪ℙ W)) x ] → [ ((U ∪ℙ V) ∪ℙ W) x ]
+      backward x = ∥∥-rec (isProp[] (((U ∪ℙ V) ∪ℙ W) x)) nts where
+
+        nts : [ U x ] ⊎ [ (V ∪ℙ W) x ] → [ ((U ∪ℙ V) ∪ℙ W) x ]
+        nts (inl x∈U)   = ∣ inl ∣ inl x∈U ∣ ∣
+        nts (inr x∈V∪W) = ∥∥-rec (isProp[] (((U ∪ℙ V) ∪ℙ W) x)) rem x∈V∪W where
+
+          rem : [ V x ] ⊎ [ W x ] → [ ((U ∪ℙ V) ∪ℙ W) x ]
+          rem (inl x∈V) = ∣ inl ∣ inr x∈V ∣ ∣
+          rem (inr x∈W) = ∣ inr x∈W ∣
+
+  ∪ℙ-idem : (U : ⟦ A ⟧ → hProp ℓ₀) → U ∪ℙ U ≡ U
+  ∪ℙ-idem U = funExt λ x → ⇔toPath (forward x) (backward x) where
+
+    forward : (x : ⟦ A ⟧) → [ (U ∪ℙ U) x ] → [ U x ]
+    forward x = ∥∥-rec (isProp[] (U x)) λ { (inl x∈U) → x∈U ; (inr x∈U) → x∈U }
+
+    backward : (x : ⟦ A ⟧) → [ U x ] → [ (U ∪ℙ U) x ] 
+    backward x x∈U = ∣ inl x∈U ∣
 
   _∪_ : ⟦ KFin ℓ₀ A ⟧ → ⟦ KFin ℓ₁ A ⟧ → ⟦ KFin (ℓ-max ℓ₀ ℓ₁) A ⟧
   _∪_ (U , U-kfin) (V , V-kfin) =
@@ -395,7 +487,7 @@ If a surjection exists from `Fin 1` to `A`, `A` is contractible.
 Some more lemmata we will need.
 
 ```agda
-module _ (A : Ψ ℓ) where
+module _ (A : HSet ℓ) where
 
   lemma1 : (U : ⟦ A ⟧ → hProp ℓ)
         → ⟦ Fin 1 ↠ (A restricted-to U) ⟧
@@ -451,7 +543,8 @@ set $U$ of size `n ≥ 2` and decomposing it as $U = \{ x \} ∪ U′$.
               → [ P (U , ∣ n , f  ∣) ]
   K-ind-lemma P ε σ ι U zero          f = subst (λ - → [ P - ])  (sym (lemma3 _ f)) ε
   K-ind-lemma P ε σ ι U (suc zero)    f = subst (λ - → [ P - ]) (sym (lemma2 _ f) ) (σ (fst (f $ 𝟎)))
-  K-ind-lemma P ε σ ι U (suc (suc n)) f = subst (λ - → [ P - ]) (sym U=x∪U′) (ι (η A hd) U′ (σ hd) (K-ind-lemma P ε σ ι U′s (suc n) (h , h-surj) ))
+  K-ind-lemma P ε σ ι U (suc (suc n)) f =
+    subst ([_] ∘ P) (sym U=x∪U′) (ι (η A hd) U′ (σ hd) (K-ind-lemma P ε σ ι U′s (suc n) (h , h-surj) ))
     where
       U′s : ℙ A
       U′s x = ∥ Σ[ k ∈ ⟦ Fin (suc n) ⟧ ] fst (f $ (k +1)) ≡ x ∥ , ∥∥-prop _
@@ -514,7 +607,7 @@ set $U$ of size `n ≥ 2` and decomposing it as $U = \{ x \} ∪ U′$.
 ## The proof of the induction principle ##
 
 ```agda
-K-ind : (A : Ψ ℓ)
+K-ind : (A : HSet ℓ)
       → (P : ⟦ KFin ℓ A ⟧ → hProp ℓ′)
       → [ P (∅ A ℓ) ]
       → ((x : fst A) → [ P (η A x) ])
@@ -539,7 +632,7 @@ open import Semilattice
 Shorthand notation of the underlying h-set of a join-semilattice.
 
 ```agda
-cset : (A : JoinSemilattice ℓ₀ ℓ₁) → Ψ ℓ₀
+cset : (A : JoinSemilattice ℓ₀) → HSet ℓ₀
 cset A = carrier , carrier-is-set pos
   where
     open JoinSemilatticeNotation A
@@ -548,26 +641,26 @@ cset A = carrier , carrier-is-set pos
 ## Joins of Kuratowski-finite subsets ##
 
 ```agda
-module _ (A : JoinSemilattice ℓ₀ ℓ₁) where
+module _ (A : JoinSemilattice ℓ₀) where
 
   open JoinSemilatticeNotation A renaming (pos to pos-A; carrier to ∣A∣; 𝟎 to 𝟎-A; _∨_ to _∨A_)
 
   private
-    AΨ = cset A
+    AHSet = cset A
 
-    _⊑_ : ∣A∣ → ∣A∣ → hProp ℓ₁
+    _⊑_ : ∣A∣ → ∣A∣ → hProp ℓ₀
     x ⊑ y = x ⊑[ pos-A ] y
 
-  isUB : (u : ⟦ AΨ ⟧) → ⟦ KFin ℓ′ (cset A) ⟧ → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ′)
+  isUB : (u : ⟦ AHSet ⟧) → ⟦ KFin ℓ′ (cset A) ⟧ → hProp (ℓ-max ℓ₀ ℓ′)
   isUB u (U , _) = ∀[ x ∶ ∣A∣ ] U x ⇒ x ⊑[ pos-A ] u
 
-  isLeastSuch : (u : ⟦ AΨ ⟧) → ⟦ KFin ℓ′ AΨ ⟧ → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ′)
+  isLeastSuch : (u : ⟦ AHSet ⟧) → ⟦ KFin ℓ′ AHSet ⟧ → hProp (ℓ-max ℓ₀ ℓ′)
   isLeastSuch u U = ∀[ z ∶ ∣A∣ ] isUB z U ⇒ u ⊑[ pos-A ] z
 
-  hasAJoin′ : ⟦ KFin ℓ′ (cset A) ⟧ → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ′)
+  hasAJoin′ : ⟦ KFin ℓ′ (cset A) ⟧ → Type (ℓ-max ℓ₀ ℓ′)
   hasAJoin′ U = Σ[ u ∈ ∣A∣ ] [ isUB u U ⊓ isLeastSuch u U ]
 
-  hasAJoin-prop : (U : ⟦ KFin ℓ′ AΨ ⟧) → isProp (hasAJoin′ U)
+  hasAJoin-prop : (U : ⟦ KFin ℓ′ AHSet ⟧) → isProp (hasAJoin′ U)
   hasAJoin-prop U (u , u-ub , u-least) (v , v-ub , v-least) =
     Σ≡Prop (λ u → isProp[] (isUB u U ⊓ isLeastSuch u U)) u=v
     where
@@ -580,41 +673,41 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) where
       u=v : u ≡ v
       u=v = ⊑[ pos-A ]-antisym u v u⊑v v⊑u
 
-  hasAJoin : (⟦ KFin ℓ′ AΨ ⟧) → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ′)
+  hasAJoin : (⟦ KFin ℓ′ AHSet ⟧) → hProp (ℓ-max ℓ₀ ℓ′)
   hasAJoin U = hasAJoin′ U , hasAJoin-prop U
 ```
 
 Every Kuratowski-finite subset of a join-semilattice has a join.
 
 ```agda
-  fin-join : (U : ⟦ KFin ℓ₀ AΨ ⟧) → [ hasAJoin U ]
-  fin-join = K-ind AΨ hasAJoin ∅-case η-case ∪-case where
+  fin-join : (U : ⟦ KFin ℓ₀ AHSet ⟧) → [ hasAJoin U ]
+  fin-join = K-ind AHSet hasAJoin ∅-case η-case ∪-case where
     open PosetReasoning pos-A
 
-    ∅-case : [ hasAJoin (∅ AΨ ℓ₀) ]
+    ∅-case : [ hasAJoin (∅ AHSet ℓ₀) ]
     ∅-case = 𝟎-A , ((λ _ ()) , λ z _ → 𝟎-bottom z)
 
-    η-case : (x : ∣A∣) → [ hasAJoin (η AΨ x) ]
+    η-case : (x : ∣A∣) → [ hasAJoin (η AHSet x) ]
     η-case x = x , ub , least where
       abstract
-        ub : [ isUB x (η AΨ x) ]
+        ub : [ isUB x (η AHSet x) ]
         ub _ p = subst (λ - → [ - ⊑ x ]) p (⊑[ pos-A ]-refl x)
 
-        least : [ isLeastSuch x (η AΨ x) ]
+        least : [ isLeastSuch x (η AHSet x) ]
         least z u-ub = u-ub x refl
 
-    ∪-case : [ ∀[ U ] ∀[ V ] hasAJoin U ⇒ hasAJoin V ⇒ hasAJoin (_∪_ AΨ U V) ]
+    ∪-case : [ ∀[ U ] ∀[ V ] hasAJoin U ⇒ hasAJoin V ⇒ hasAJoin (_∪_ AHSet U V) ]
     ∪-case U V (⋁U , ⋁U-ub , ⋁U-least) (⋁V , ⋁V-ub , ⋁V-least) =
       (⋁U ∨A ⋁V) , ub , least where
       abstract
-        ub : [ isUB (⋁U ∨A ⋁V) (_∪_ AΨ U V) ]
+        ub : [ isUB (⋁U ∨A ⋁V) (_∪_ AHSet U V) ]
         ub x x∈U∪V = ∥∥-rec (isProp[] (x ⊑[ pos-A ] _)) nts x∈U∪V where
 
           nts : (x ∈ fst U) ⊎ (x ∈ fst V) → [ x ⊑[ pos-A ] (⋁U ∨A ⋁V) ]
           nts (inl x∈U) = x ⊑⟨ ⋁U-ub x x∈U ⟩ ⋁U ⊑⟨ fst (∨-upper _ _) ⟩ _ ■
           nts (inr x∈V) = x ⊑⟨ ⋁V-ub x x∈V ⟩ ⋁V ⊑⟨ snd (∨-upper _ _) ⟩ _ ■
 
-        least : [ isLeastSuch (⋁U ∨A ⋁V) (_∪_ AΨ U V) ]
+        least : [ isLeastSuch (⋁U ∨A ⋁V) (_∪_ AHSet U V) ]
         least z z-ub = ∨-least ⋁U ⋁V z (⋁U-least z U⊑z , ⋁V-least z V⊑z) where
 
           U⊑z : [ isUB z U ]
@@ -622,23 +715,24 @@ Every Kuratowski-finite subset of a join-semilattice has a join.
 
           V⊑z : [ isUB z V ]
           V⊑z w w∈V = z-ub w ∣ inr w∈V ∣
+
 ```
 
 ```agda
 open JoinSemilatticeNotation
 
-⋁KF[_]_ : (A : JoinSemilattice ℓ₀ ℓ₁) → (U : ⟦ KFin ℓ₀ (cset A) ⟧) → carrier A
+⋁KF[_]_ : (A : JoinSemilattice ℓ₀) → (U : ⟦ KFin ℓ₀ (cset A) ⟧) → carrier A
 ⋁KF[_]_ A = fst ∘ fin-join A
 ```
 
 ```agda
-⋁KF-upper : (A : JoinSemilattice ℓ₀ ℓ₁)
+⋁KF-upper : (A : JoinSemilattice ℓ₀)
           → (U : ⟦ KFin ℓ₀ (cset A) ⟧) → [ isUB A (⋁KF[ A ] U) U ]
 ⋁KF-upper A = fst ∘ snd ∘ fin-join A
 ```
 
 ```agda
-⋁KF-least : (A : JoinSemilattice ℓ₀ ℓ₁)
+⋁KF-least : (A : JoinSemilattice ℓ₀)
           → (U : ⟦ KFin ℓ₀ (cset A) ⟧)
           → [ isLeastSuch A (⋁KF[ A ] U) U ]
 ⋁KF-least A = snd ∘ snd ∘ fin-join A
@@ -648,26 +742,26 @@ open JoinSemilatticeNotation
 ## Image of a Kuratowski-finite subset ##
 
 ```agda
-module KFinImage (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ₁′) where
+module KFinImage (A : JoinSemilattice ℓ₀) (X : JoinSemilattice ℓ₀′) where
 
   open JoinSemilatticeNotation A using () renaming (carrier to ∣A∣)
   open JoinSemilatticeNotation X using () renaming (carrier to ∣X∣)
 
   private
-    AΨ = cset A
-    XΨ = cset X
+    AHSet = cset A
+    XHSet = cset X
 
   _⟨$⟩_ : (f : ∣A∣ → ∣X∣)
-        → ⟦ KFin ℓ′ AΨ ⟧ → ⟦ KFin (ℓ-max (ℓ-max ℓ₀ ℓ₀′) ℓ′) XΨ ⟧
+        → ⟦ KFin ℓ′ AHSet ⟧ → ⟦ KFin (ℓ-max (ℓ-max ℓ₀ ℓ₀′) ℓ′) XHSet ⟧
   _⟨$⟩_ {ℓ′ = ℓ′} f (U , U-kfin) = V , V-kfin where
 
     V : ⟦ cset X ⟧ → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₀′) ℓ′)
     V y = ∥ Σ[ x ∈ ∣A∣ ] [ U x ] × (f x ≡ y) ∥ , ∥∥-prop _
 
-    V-kfin : [ isKFin XΨ V ]
+    V-kfin : [ isKFin XHSet V ]
     V-kfin = ∥∥-rec (isProp[] (isKFin (cset X) V)) nts U-kfin where
 
-      nts : Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (AΨ restricted-to U) ⟧ → [ isKFin XΨ V ]
+      nts : Σ[ n ∈ ℕ ] ⟦ Fin n ↠ (AHSet restricted-to U) ⟧ → [ isKFin XHSet V ]
       nts (n , g , g-surj) = ∣ n , h , h-surj ∣ where
 
         h : ⟦ Fin n ⟧ → ⟦ cset X restricted-to V ⟧
@@ -684,7 +778,7 @@ module KFinImage (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀
               rem′ (i , gi=x) = ∣ i , Σ≡Prop (isProp[] ∘ V) (subst (λ - → h i .fst ≡ -) fx=y (cong f λ j → fst (gi=x j))) ∣
 
   image-syntax : (f : ∣A∣ → ∣X∣)
-               → ⟦ KFin ℓ′ AΨ ⟧ → ⟦ KFin (ℓ-max (ℓ-max ℓ₀ ℓ₀′) ℓ′) XΨ ⟧
+               → ⟦ KFin ℓ′ AHSet ⟧ → ⟦ KFin (ℓ-max (ℓ-max ℓ₀ ℓ₀′) ℓ′) XHSet ⟧
   image-syntax = _⟨$⟩_
 
   syntax image-syntax (λ x → e) U = ⁅ e ∣ x ∈ U ⁆
@@ -693,7 +787,7 @@ module KFinImage (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀
 ## Some lemmas about joins of Kuratowski-finite subsets ##
 
 ```agda
-module _ (A : JoinSemilattice ℓ₀ ℓ₁) where
+module _ (A : JoinSemilattice ℓ₀) where
 ```
 
 The join of the empty Kuratowski-finite subset is the bottom element.
@@ -702,52 +796,52 @@ The join of the empty Kuratowski-finite subset is the bottom element.
   open JoinSemilatticeNotation A using () renaming (carrier to ∣A∣; 𝟎 to 𝟎-A)
 
   private
-    AΨ = cset A
+    AHSet = cset A
 
-  ⋁-∅-lemma : ⋁KF[ A ] (∅ AΨ ℓ₀) ≡ 𝟎-A
-  ⋁-∅-lemma = ⊑[ pos A ]-antisym (⋁KF[ A ] (∅ AΨ ℓ₀)) 𝟎-A down (𝟎-bottom A _)
+  ⋁-∅-lemma : ⋁KF[ A ] (∅ AHSet ℓ₀) ≡ 𝟎-A
+  ⋁-∅-lemma = ⊑[ pos A ]-antisym (⋁KF[ A ] (∅ AHSet ℓ₀)) 𝟎-A down (𝟎-bottom A _)
     where
       abstract
-        down : [ (⋁KF[ A ] (∅ AΨ ℓ₀)) ⊑[ pos A ] 𝟎-A ]
+        down : [ (⋁KF[ A ] (∅ AHSet ℓ₀)) ⊑[ pos A ] 𝟎-A ]
         down = snd (snd (fin-join A (∅ (cset A) ℓ₀))) 𝟎-A λ _ ()
 ```
 
 The join of the singleton Kuratowski-finite subset is the single element itself.
 
 ```agda
-  ⋁-η-lemma : (x : ∣A∣) → ⋁KF[ A ] (η AΨ x) ≡ x
+  ⋁-η-lemma : (x : ∣A∣) → ⋁KF[ A ] (η AHSet x) ≡ x
   ⋁-η-lemma x = ⊑[ pos A ]-antisym _ _ below above where
     abstract
-      below : [ ⋁KF[ A ] (η AΨ x) ⊑[ pos A ] x ]
-      below = ⋁KF-least A (η AΨ x) x λ _ p →
+      below : [ ⋁KF[ A ] (η AHSet x) ⊑[ pos A ] x ]
+      below = ⋁KF-least A (η AHSet x) x λ _ p →
                 subst (λ - → [ - ⊑[ pos A ] x ]) p (⊑[ pos A ]-refl x)
 
-      above : [ x ⊑[ pos A ] ⋁KF[ A ] (η AΨ x) ]
-      above = ⋁KF-upper A (η AΨ x) x refl
+      above : [ x ⊑[ pos A ] ⋁KF[ A ] (η AHSet x) ]
+      above = ⋁KF-upper A (η AHSet x) x refl
 ```
 
 ```agda
-module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ₁′) where
+module _ (A : JoinSemilattice ℓ₀) (X : JoinSemilattice ℓ₀′) where
 
   open JoinSemilatticeNotation A using () renaming (carrier to ∣A∣; 𝟎 to 𝟎-A)
   open JoinSemilatticeNotation X using () renaming (carrier to ∣X∣; 𝟎 to 𝟎-X)
   open KFinImage A X using (_⟨$⟩_)
 
   private
-    AΨ = cset A
-    XΨ = cset X
+    AHSet = cset A
+    XHSet = cset X
 
   ⟨$⟩-∪-lemma : (f : ∣A∣ → ∣X∣)
               → (U V : ⟦ KFin ℓ₀ (cset A) ⟧)
-              →  f ⟨$⟩ (_∪_ AΨ U V) ≡ _∪_ (cset X) (f ⟨$⟩ U) (f ⟨$⟩ V)
+              →  f ⟨$⟩ (_∪_ AHSet U V) ≡ _∪_ (cset X) (f ⟨$⟩ U) (f ⟨$⟩ V)
   ⟨$⟩-∪-lemma f U V = Σ≡Prop (isProp[] ∘ isKFin (cset X)) nts where
 
-    U∪V  = _∪_ AΨ U V
-    _∪X_ = _∪_ XΨ
+    U∪V  = _∪_ AHSet U V
+    _∪X_ = _∪_ XHSet
 
     nts₀ : (x : ∣X∣)
-         → [ fst (f ⟨$⟩ (_∪_ AΨ U V)) x ]
-         → [ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V)) x ]
+         → [ fst (f ⟨$⟩ (_∪_ AHSet U V)) x ]
+         → [ fst (_∪_ XHSet (f ⟨$⟩ U) (f ⟨$⟩ V)) x ]
     nts₀ x = ∥∥-rec (isProp[] (fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x)) rem where
 
       rem : Σ[ y ∈ ∣A∣ ] [ fst U∪V y ] × (f y ≡ x)
@@ -759,7 +853,7 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
           rem₀ (inr y∈V) = ∣ inr (subst ([_] ∘ fst (f ⟨$⟩ V)) q ∣ y , y∈V , refl ∣) ∣
 
     nts₁ : ∀ x → [ fst ((f ⟨$⟩ U) ∪X (f ⟨$⟩ V)) x ] → [ fst (f ⟨$⟩ U∪V) x ]
-    nts₁ x = ∥∥-rec (isProp[] (fst (f ⟨$⟩ _∪_ AΨ U V) x)) rem where
+    nts₁ x = ∥∥-rec (isProp[] (fst (f ⟨$⟩ _∪_ AHSet U V) x)) rem where
       rem : [ fst (f ⟨$⟩ U) x ] ⊎ [ fst (f ⟨$⟩ V) x ] → [ fst (f ⟨$⟩ U∪V) x ]
       rem (inl x∈f⟨$⟩U) = ∥∥-rec (isProp[] (fst (f ⟨$⟩ U∪V) x)) foo x∈f⟨$⟩U
         where
@@ -771,12 +865,12 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
           bar (y , y∈V , fy=x) = ∣ y , ∣ inr y∈V ∣ , fy=x ∣
 
     abstract
-      nts : fst (f ⟨$⟩ (_∪_ AΨ U V)) ≡ fst (_∪_ XΨ (f ⟨$⟩ U) (f ⟨$⟩ V))
+      nts : fst (f ⟨$⟩ (_∪_ AHSet U V)) ≡ fst (_∪_ XHSet (f ⟨$⟩ U) (f ⟨$⟩ V))
       nts = funExt (λ x → ⇔toPath (nts₀ x) (nts₁ x))
 ```
 
 ```agda
-η-⟨$⟩-lemma : (A X : JoinSemilattice ℓ₀ ℓ₁)
+η-⟨$⟩-lemma : (A X : JoinSemilattice ℓ₀)
             → (f : carrier A → carrier X)
             → (x : carrier A)
             → let open KFinImage A X
@@ -799,7 +893,7 @@ module _ (A : JoinSemilattice ℓ₀ ℓ₁) (X : JoinSemilattice ℓ₀′ ℓ�
 ```
 
 ```agda
-module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
+module KFinSemilattice {ℓ₀ : Level} (A : JoinSemilattice ℓ₀) where
 
   open JoinSemilatticeNotation A using    ()
                                  renaming ( 𝟎        to 𝟎-A
@@ -809,56 +903,47 @@ module KFinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
                                           ; _∨_      to _∨A_
                                           ; ∨-least  to ∨A-least )
 
-  ∣A∣ : Ψ ℓ₀
+  ∣A∣ : HSet ℓ₀
   ∣A∣ = cset A
 
-  KFinPoset : PosetStr ℓ₀ ⟦ KFin ℓ₀ ∣A∣ ⟧
-  KFinPoset = _⊑_ , isSet⟦⟧ (KFin ℓ₀ ∣A∣) , ⊑-refl , ⊑-trans , ⊑-antisym
-    where
-      _⊑_ : ⟦ KFin ℓ₀ ∣A∣ ⟧ → ⟦ KFin ℓ₀ ∣A∣ ⟧ → hProp ℓ₀
-      U ⊑ V = (fst U ⊆ fst V) , ⊆-isProp (fst U) (fst V)
-
-      abstract
-        ⊑-refl : [ isReflexive _⊑_ ]
-        ⊑-refl U x x∈U = x∈U
-
-        ⊑-trans : [ isTransitive _⊑_ ]
-        ⊑-trans U V W U⊑V V⊑W x x∈U = V⊑W x (U⊑V x x∈U)
-
-        ⊑-antisym : [ isAntisym (isSet⟦⟧ (KFin ℓ₀ ∣A∣)) _⊑_ ]
-        ⊑-antisym U V U⊑V V⊑U =
-          Σ≡Prop
-            (isProp[] ∘ isKFin ∣A∣)
-            (⊆-extensionality (fst U) (fst V) (U⊑V , V⊑U))
-
-  KFinJS : JoinSemilattice (ℓ-suc ℓ₀) ℓ₀
-  KFinJS = ⟦ KFin ℓ₀ ∣A∣ ⟧ , (KFinPoset , ∅ ∣A∣ ℓ₀ , _∪_ ∣A∣) , ∅-bottom , ∪-join
+  KFinJS : JoinSemilattice (ℓ-suc ℓ₀)
+  KFinJS =
+    ⟦ KFin ℓ₀ ∣A∣ ⟧ , (∅ ∣A∣ ℓ₀ , _∪_ ∣A∣) , KFin∣A∣-set , ∪-comm , ∪-assoc , ∅-unit , ∪-idem
     where
       abstract
-        ∅-bottom : [ isBottom (⟦ KFin ℓ₀ ∣A∣ ⟧ , KFinPoset) (∅ ∣A∣ ℓ₀) ]
-        ∅-bottom U x ()
+        KFin∣A∣-set : isSet ⟦ KFin ℓ₀ ∣A∣ ⟧
+        KFin∣A∣-set = isSet⟦⟧ (KFin ℓ₀ ∣A∣)
 
-        ∪-join : [ ∀[ U ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ]
-                   ∀[ V ∶ ⟦ KFin ℓ₀ ∣A∣ ⟧ ]
-                     isJoinOf (_ , KFinPoset) (_∪_ ∣A∣ U V) U V ]
-        ∪-join U V = (U⊆U∪V , V⊆U∪V) , least where
+        ∪-comm : [ isCommutative ⟦ KFin ℓ₀ ∣A∣ ⟧ KFin∣A∣-set (_∪_ ∣A∣) ]
+        ∪-comm U V =
+          Σ≡Prop (isProp[] ∘ isKFin ∣A∣) (∪ℙ-comm ∣A∣ (fst U) (fst V))
 
-          U⊆U∪V : [ U ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
-          U⊆U∪V x x∈U = ∣ inl x∈U ∣
+        ∪-assoc : [ isAssoc ⟦ KFin ℓ₀ ∣A∣ ⟧ KFin∣A∣-set (_∪_ ∣A∣) ]
+        ∪-assoc U V W =
+          Σ≡Prop (isProp[] ∘ isKFin ∣A∣) (∪ℙ-assoc ∣A∣ (fst U) (fst V) (fst W))
 
-          V⊆U∪V : [ V ⊑[ (_ , KFinPoset) ] ((∣A∣ ∪ U) V) ]
-          V⊆U∪V x x∈V = ∣ inr x∈V ∣
+        ∅-unit : [ isUnit KFin∣A∣-set (∅ ∣A∣ ℓ₀) (_∪_ ∣A∣) ]
+        ∅-unit U = Σ≡Prop (isProp[] ∘ isKFin ∣A∣) nts  where
 
-          least : _
-          least W (U⊆W , V⊆W) x = ∥∥-rec (isProp[] (fst W x)) nts where
+          nts₀ : fst ((∣A∣ ∪ ∅ ∣A∣ ℓ₀) U) ⊆ fst U
+          nts₀ x = ∥∥-rec (isProp[] (fst U x)) rem where
 
-            nts : (x ∈ fst U) ⊎ (x ∈ fst V) → [ fst W x ]
-            nts (inl x∈U) = U⊆W x x∈U
-            nts (inr x∈V) = V⊆W x x∈V
+            rem : [ fst (∅ ∣A∣ ℓ₀) x ] ⊎ [ fst U x ] → [ fst U x ]
+            rem (inr x∈U) = x∈U
+            rem (inl ())
+
+          nts₁ : fst U ⊆ fst ((∣A∣ ∪ ∅ ∣A∣ ℓ₀) U)
+          nts₁ x x∈U = ∣ inr x∈U ∣
+
+          nts : fst ((∣A∣ ∪ ∅ ∣A∣ ℓ₀) U) ≡ fst U
+          nts = ⊆-extensionality _ _ (nts₀ , nts₁)
+
+        ∪-idem : [ isIdempotent KFin∣A∣-set (_∪_ ∣A∣) ]
+        ∪-idem U = Σ≡Prop (isProp[] ∘ isKFin ∣A∣) (∪ℙ-idem ∣A∣ (fst U)) 
 ```
 
 ```
-⋁-∪-lemma : (A : JoinSemilattice ℓ₀ ℓ₁)
+⋁-∪-lemma : (A : JoinSemilattice ℓ₀)
           → (U V : ⟦ KFin ℓ₀ (cset A) ⟧)
           → let open JoinSemilatticeNotation A using () renaming (_∨_ to _∨A_)
             in ⋁KF[ A ] (_∪_ (cset A) U V) ≡ (⋁KF[ A ] U) ∨A (⋁KF[ A ] V)
@@ -917,7 +1002,7 @@ possible as of now because the levels of `K-ind` are not general. So far I have
 not been able to find a way to generalise them.
 
 ```agda
-resp-⋁ : (A X : JoinSemilattice ℓ₀ ℓ₁)
+resp-⋁ : (A X : JoinSemilattice ℓ₀)
        → (f : carrier A → carrier X)
        → [ isJoinSemilatticeHomomorphism A X f ]
        → (U : ⟦ KFin ℓ₀ (cset A) ⟧)
@@ -958,7 +1043,8 @@ resp-⋁ {ℓ₀ = ℓ₀} A X f f-hom = K-ind (cset A) P φ ψ ϑ
 ```
 
 ```agda
-module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
+{--
+module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀) where
 
   open JoinSemilatticeNotation A using    ()
                                  renaming ( 𝟎        to 𝟎-A
@@ -973,7 +1059,7 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
   open JoinSemilatticeNotation
   open JSMap
 
-  AΨ = cset A
+  AHSet = cset A
 
   main : (U : ⟦ KFin ℓ₀ (cset A) ⟧) → U ≡ ⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)
   main U = K-ind (cset A) P ∅-case η-case ∪-case U
@@ -989,12 +1075,12 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
 
       ∪-case : [ ∀[ U ] ∀[ V ] P U ⇒ P V ⇒ P (_∪_ (cset A) U V) ]
       ∪-case U V P-U P-V =
-        _∪_ AΨ U V                             ≡⟨ cong (λ - → _∪_ (cset A) - V) P-U ⟩
-        _∪_ AΨ (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) V ≡⟨ cong (λ - → _∪_ AΨ (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) -) P-V ⟩
-        _∪_ AΨ (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ V))  ≡⟨ nts ⟩
-        (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ (_∪_ AΨ U) V)) ∎
+        _∪_ AHSet U V                             ≡⟨ cong (λ - → _∪_ (cset A) - V) P-U ⟩
+        _∪_ AHSet (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) V ≡⟨ cong (λ - → _∪_ AHSet (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) -) P-V ⟩
+        _∪_ AHSet (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ U)) (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ V))  ≡⟨ nts ⟩
+        (⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ (_∪_ AHSet U) V)) ∎
         where
-          nts :  _ ≡ ⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ (_∪_ (cset A) U) V) 
+          nts :  _ ≡ ⋁KF[ KFinJS ] (η ∣A∣ ⟨K⟩ (_∪_ (cset A) U) V)
           nts =
             _
             ≡⟨ sym (⋁-∪-lemma KFinJS (η ∣A∣ ⟨K⟩ U) (η ∣A∣ ⟨K⟩ V)) ⟩
@@ -1003,11 +1089,11 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
             _
             ∎
 
-  isFree : (X : JoinSemilattice ℓ₀ ℓ₁)
+  isFree : (X : JoinSemilattice {!!} {!!})
          → (f : carrier A → carrier X)
          → [ isJoinSemilatticeHomomorphism A X f ]
          → isContr
-             (Σ[ f⁻ ∈ (⟦ KFin ℓ₀ ∣A∣ ⟧ → carrier X) ]
+             (Σ[ f⁻ ∈ (⟦ KFin {!!} ∣A∣ ⟧ → carrier X) ]
                 [ isJoinSemilatticeHomomorphism KFinJS X f⁻ ] × (f ≡ f⁻ ∘ η ∣A∣))
   isFree X f f-hom = (f⁻ , f⁻-hom , funExt f~f⁻∘η) , shrink
     where
@@ -1017,13 +1103,13 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
 
       ∣X∣ = cset X
 
-      ⋁_ : ⟦ KFin ℓ₀ (cset A) ⟧ → ⟦ ∣A∣ ⟧
+      ⋁_ : ⟦ KFin {!!} (cset A) ⟧ → ⟦ ∣A∣ ⟧
       ⋁_ V = fst (fin-join A V)
 
-      ⋁X_ : ⟦ KFin ℓ₀ (cset X) ⟧ → ⟦ ∣X∣ ⟧
+      ⋁X_ : ⟦ KFin {!!} (cset X) ⟧ → ⟦ ∣X∣ ⟧
       ⋁X_ V = fst (fin-join X V)
 
-      f⁻ : ⟦ KFin ℓ₀ ∣A∣ ⟧ → ⟦ ∣X∣ ⟧
+      f⁻ : ⟦ KFin {!!} ∣A∣ ⟧ → ⟦ ∣X∣ ⟧
       f⁻ U = ⋁X (f ⟨$⟩ U)
 
       f⁻-hom : [ isJoinSemilatticeHomomorphism KFinJS X f⁻ ]
@@ -1035,7 +1121,7 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
         resp-∨ : [ respects-∨ KFinJS X f⁻ ]
         resp-∨ U V =
           f⁻ (U ∨K V)                           ≡⟨ refl ⟩
-          ⋁X (f ⟨$⟩ (_∪_ AΨ U V))               ≡⟨ cong ⋁X_ (⟨$⟩-∪-lemma A X f U V) ⟩
+          ⋁X (f ⟨$⟩ (_∪_ AHSet U V))               ≡⟨ cong ⋁X_ (⟨$⟩-∪-lemma A X f U V) ⟩
           ⋁X (_∪_ (cset X) (f ⟨$⟩ U) (f ⟨$⟩ V)) ≡⟨ ⋁-∪-lemma X (f ⟨$⟩ U) (f ⟨$⟩ V) ⟩
           ((⋁X (f ⟨$⟩ U)) ∨X (⋁X (f ⟨$⟩ V)))    ≡⟨ refl ⟩
           (f⁻ U ∨X f⁻ V)                        ∎
@@ -1050,22 +1136,23 @@ module KFinFreeJoinSemilattice (A : JoinSemilattice ℓ₀ ℓ₁) where
       f=f⁻∘η : f ≡ f⁻ ∘ η ∣A∣
       f=f⁻∘η = funExt f~f⁻∘η
 
-      shrink : ((g⁻ , g⁻-hom , f=g⁻∘η) : Σ[ g⁻ ∈ (⟦ KFin ℓ₀ ∣A∣ ⟧ → ⟦ ∣X∣ ⟧) ] [ isJoinSemilatticeHomomorphism KFinJS X g⁻ ] × (f ≡ g⁻ ∘ η ∣A∣))
+      shrink : ((g⁻ , g⁻-hom , f=g⁻∘η) : Σ[ g⁻ ∈ (⟦ KFin {!!} ∣A∣ ⟧ → ⟦ ∣X∣ ⟧) ] [ isJoinSemilatticeHomomorphism KFinJS X g⁻ ] × (f ≡ g⁻ ∘ η ∣A∣))
              → (f⁻ , f⁻-hom , f=f⁻∘η) ≡ (g⁻ , g⁻-hom , f=g⁻∘η)
       shrink (g⁻ , g⁻-hom , f=g⁻∘η) = Σ≡Prop prop (funExt ext-eq) where
         prop : _
         prop = λ p → isPropΣ (isProp[] (isJoinSemilatticeHomomorphism KFinJS X p)) λ _ → isSetΠ (λ _ → carrier-is-set P) f (p ∘ η ∣A∣)
 
-        ext-eq : (U : ⟦ KFin ℓ₀ ∣A∣ ⟧) → f⁻ U ≡ g⁻ U
+        ext-eq : (U : ⟦ KFin {!!} ∣A∣ ⟧) → f⁻ U ≡ g⁻ U
         ext-eq U =
-          f⁻ U                             ≡⟨ refl                             ⟩
-          ⋁X (f ⟨$⟩ U)                     ≡⟨ cong (λ - → ⋁X (- ⟨$⟩ U)) f=g⁻∘η ⟩
-          ⋁X ((g⁻ ∘ η AΨ) ⟨$⟩ U)           ≡⟨ {!g⁻ ⟨X⟩ (η AΨ ⟨K⟩ U)!}          ⟩
-          g⁻ (⋁KF[ KFinJS ] (η AΨ ⟨K⟩ U))  ≡⟨ cong g⁻ (sym (main U))           ⟩
-          g⁻ U                             ∎
+          f⁻ U                               ≡⟨ refl                             ⟩
+          ⋁X (f ⟨$⟩ U)                       ≡⟨ cong (λ - → ⋁X (- ⟨$⟩ U)) f=g⁻∘η ⟩
+          ⋁X ((g⁻ ∘ η AHSet) ⟨$⟩ U)          ≡⟨ {!X !}          ⟩
+          g⁻ (⋁KF[ KFinJS ] (η AHSet ⟨K⟩ U)) ≡⟨ cong g⁻ (sym (main U))           ⟩
+          g⁻ U                               ∎
           where
             open KFinImage KFinJS X using () renaming (_⟨$⟩_ to _⟨X⟩_)
 
+-- --}
 -- --}
 ```
 
