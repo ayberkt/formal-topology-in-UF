@@ -62,12 +62,6 @@ isSet⟦⟧ : (A : hSet ℓ) → isSet (fst A)
 isSet⟦⟧ (_ , A-set) = A-set
 ```
 
-```agda
-data Nat (ℓ : Level) : Type ℓ where
-  zero : Nat ℓ
-  suc  : Nat ℓ → Nat ℓ
-```
-
 For convenience, we define some new versions of operators that work on
 inhabitants of `hSet` directly.
 
