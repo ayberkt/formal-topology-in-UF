@@ -68,28 +68,6 @@ data Nat (ℓ : Level) : Type ℓ where
   suc  : Nat ℓ → Nat ℓ
 ```
 
-```agda
-Natℓ→ℕ : (ℓ : Level) → Nat ℓ → ℕ
-Natℓ→ℕ ℓ zero    = zero
-Natℓ→ℕ ℓ (suc n) = suc (Natℓ→ℕ ℓ n)
-
-ℕ→Natℓ : (ℓ : Level) → ℕ → Nat ℓ
-ℕ→Natℓ ℓ zero    = zero
-ℕ→Natℓ ℓ (suc n) = suc (ℕ→Natℓ ℓ n)
-
-Natℓ≅ℕ : (ℓ : Level) → Iso (Nat ℓ) ℕ
-Iso.fun (Natℓ≅ℕ ℓ) = Natℓ→ℕ ℓ
-Iso.inv (Natℓ≅ℕ ℓ) = ℕ→Natℓ ℓ
-Iso.rightInv (Natℓ≅ℕ ℓ) = sec-f-g where
-                            sec-f-g : _
-                            sec-f-g zero    = refl
-                            sec-f-g (suc b) = cong suc (sec-f-g b)
-Iso.leftInv (Natℓ≅ℕ ℓ) = ret-f-g where
-                             ret-f-g : _
-                             ret-f-g zero    = refl
-                             ret-f-g (suc b) = cong suc (ret-f-g b)
-```
-
 For convenience, we define some new versions of operators that work on
 inhabitants of `hSet` directly.
 
@@ -102,14 +80,6 @@ A ⊍ B = (⟦ A ⟧ ⊎ ⟦ B ⟧) , isSetSum (isSet⟦⟧ A) (isSet⟦⟧ B)
 
 Fin : ℕ → hSet ℓ-zero
 Fin n = Fin′ n , isSetFin
-
-Finn : (ℓ : Level) → ℕ → hSet ℓ
-Finn ℓ n =
-  (Σ[ n ∈ Nat ℓ ] ⟦ Fin (Natℓ→ℕ ℓ n) ⟧) , isSetΣ nts λ n → isSet⟦⟧ (Fin (Natℓ→ℕ ℓ n))
-  where
-    abstract
-      nts : isSet (Nat ℓ)
-      nts = {!!}
 
 𝟎 : ⟦ Fin 1 ⟧
 𝟎 = 0 , (0 , refl)
