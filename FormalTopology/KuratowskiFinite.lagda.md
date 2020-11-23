@@ -29,7 +29,7 @@ open import Cubical.Foundations.Structure
               renaming (⟨_⟩ to [_])
 open import Cubical.Functions.Logic
               renaming (isProp⟨⟩ to isProp[])
-              hiding   (inl; inr)
+              hiding   (inl; inr; _⊔_)
 open import Cubical.Foundations.Powerset
               using (_∈_; _⊆_; ⊆-extensionality; ⊆-isProp; ⊆-refl)
               renaming (ℙ to ℙ′; powersets-are-sets to isSetℙ′)
@@ -41,7 +41,7 @@ open import Cubical.Foundations.Function
 open import Cubical.Data.Unit
 open import Poset
 open import Basis
-              using (bot; ∥_∥; ∥∥-rec; ∥∥-prop; ∣_∣; ∥∥-×; fmap; compr-∶-syntax; fiber)
+              using (bot; ∥_∥; ∥∥-rec; ∥∥-prop; ∣_∣; ∥∥-×; fmap; compr-∶-syntax; fiber; _⊔_)
 
 private
   variable
@@ -82,24 +82,24 @@ Fin n = Fin′ n , isSetFin
 Definition of surjectivity.
 
 ```agda
-isSurjective : (A : hSet ℓ₀) (B : hSet ℓ₁) → (⟦ A ⟧ → ⟦ B ⟧) → hProp (ℓ-max ℓ₀ ℓ₁)
-isSurjective A B f = ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥) , is-prop
-  where
-    abstract
-      is-prop : isProp ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥)
-      is-prop = isPropΠ λ y → ∥∥-prop (Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y)
+isSurjective : (A : hSet ℓ₀) (B : hSet ℓ₁) → (⟦ A ⟧ → ⟦ B ⟧) → hProp (ℓ₀ ⊔ ℓ₁)
+isSurjective A B f = ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥) , is-prop where
+
+  abstract
+    is-prop : isProp ((y : ⟦ B ⟧) → ∥ Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y ∥)
+    is-prop = isPropΠ λ y → ∥∥-prop (Σ[ x ∈ ⟦ A ⟧ ] f x ≡ y)
 ```
 
 As we will talk about *subsets* i.e. subsets of inhabitants of a type that
 satisfy a certain predicate, we write down a convenient notation for it.
 
 ```agda
-_restricted-to_ : (A : hSet ℓ) → (⟦ A ⟧ → hProp ℓ′) → hSet (ℓ-max ℓ ℓ′)
-_restricted-to_ (A , A-set) U = (Σ[ x ∈ A ] [ U x ]) , is-set
-  where
-    abstract
-      is-set : isSet (Σ[ x ∈ A ] [ U x ])
-      is-set = isSetΣ A-set (isProp→isSet ∘ isProp[] ∘ U)
+_restricted-to_ : (A : hSet ℓ) → (⟦ A ⟧ → hProp ℓ′) → hSet (ℓ ⊔ ℓ′)
+_restricted-to_ (A , A-set) U = (Σ[ x ∈ A ] [ U x ]) , is-set where
+
+  abstract
+    is-set : isSet (Σ[ x ∈ A ] [ U x ])
+    is-set = isSetΣ A-set (isProp→isSet ∘ isProp[] ∘ U)
 ```
 
 `A ↠ B` denotes the type of surjections from `A` to `B`.
