@@ -31,8 +31,8 @@ _≤_ {ℓ = ℓ} m n = Σ[ k ∈ ℕ ℓ ] (k + m) ≡ n
 _<_ : ℕ ℓ → ℕ ℓ → Type ℓ
 m < n = suc m ≤ n
 
-Fin′ : {ℓ : Level} → ℕ ℓ →  Type ℓ
-Fin′ {ℓ = ℓ} n = Σ[ k ∈ ℕ ℓ ] (k < n)
+Fin′ : (ℓ : Level) → ℕ ℓ →  Type ℓ
+Fin′ ℓ n = Σ[ k ∈ ℕ ℓ ] (k < n)
 
 predℕ : ℕ ℓ → ℕ ℓ
 predℕ zero    = zero
@@ -91,7 +91,7 @@ isProp≤ {m = m} {n} (k , p) (l , q) = Σ≡Prop witness-prop nts where
   nts = inj-+m (k + m ≡⟨ p ⟩ n ≡⟨ sym q ⟩ l + m ∎)
 
 
-isSetFin : (n : ℕ ℓ) → isSet (Fin′ n)
+isSetFin : (n : ℕ ℓ) → isSet (Fin′ ℓ n)
 isSetFin n = isSetΣ isSetℕ λ m → isProp→isSet isProp≤
 
 ¬-<-zero : {m : ℕ ℓ} → ¬ m < zero
@@ -148,10 +148,10 @@ suc m ≟ suc n = Trichotomy-suc (m ≟ n)
 <-k+ {m = m} {n} {k} p = subst (λ km → km ≤ (k + n)) (+-suc k m) (≤-k+ p)
 
 ≤-k+-cancel : {k m n : ℕ ℓ} → (k + m) ≤ (k + n) → m ≤ n
-≤-k+-cancel {k = k} {m} (l , p) = l , inj-m+ (sub k m ∙ p)
- where
- sub : ∀ k m → k + (l + m) ≡ l + (k + m)
- sub k m = +-assoc k l m ∙ cong (_+ m) (+-comm k l) ∙ sym (+-assoc l k m)
+≤-k+-cancel {k = k} {m} (l , p) = l , inj-m+ (sub k m ∙ p) where
+
+  sub : ∀ k m → k + (l + m) ≡ l + (k + m)
+  sub k m = +-assoc k l m ∙ cong (_+ m) (+-comm k l) ∙ sym (+-assoc l k m)
 
 <-k+-cancel : {k m n : ℕ ℓ} → (k + m) < (k + n) → m < n
 <-k+-cancel {k = k} {m} {n} = ≤-k+-cancel ∘ subst (_≤ (k + n)) (sym (+-suc k m))
@@ -159,14 +159,14 @@ suc m ≟ suc n = Trichotomy-suc (m ≟ n)
 ¬m+n<m : {m n : ℕ ℓ} → ¬ (m + n) < m
 ¬m+n<m {m = m} {n} = ¬-<-zero ∘ <-k+-cancel ∘ subst ((m + n) <_) (sym (+-zero m))
 
-isContrFin1 : {ℓ : Level} → isContr (Fin′ {ℓ} (suc zero))
-isContrFin1 = (zero , (zero , refl)) , p
+isContrFin1 : {ℓ : Level} → isContr (Fin′ ℓ (suc zero))
+isContrFin1 {ℓ = ℓ} = (zero , (zero , refl)) , p
   where
-    p : (y : Fin′ (suc zero)) → (zero , zero , (λ _ → zero + suc zero)) ≡ y
+    p : (y : Fin′ ℓ (suc zero)) → (zero , zero , (λ _ → zero + suc zero)) ≡ y
     p (zero  , _) = Σ≡Prop (λ n → isProp≤) refl
     p (suc k , sk<1) = rec (¬-<-zero (pred-≤-pred sk<1))
 
-¬Fin0 : {ℓ : Level} → ¬ (Fin′ {ℓ} zero)
+¬Fin0 : {ℓ : Level} → ¬ (Fin′ ℓ zero)
 ¬Fin0 {ℓ} (k , k<0) = ¬-<-zero k<0
 
 chlevel : (ℓ′ : Level) → ℕ ℓ → ℕ ℓ′
