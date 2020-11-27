@@ -221,12 +221,6 @@ J ^* = compFam ⁅ j ∣ (j , _) ε J ⁆
 ```
 
 ```agda
-list-lemma : {A : Type ℓ} → (y : A) → (xs ys : List A) → xs ++ (y ∷ ys) ≡ (xs ++ y ∷ []) ++ ys
-list-lemma y []       ys = refl
-list-lemma y (x ∷ xs) ys = cong (x ∷_) (list-lemma y xs ys)
-```
-
-```agda
 J*-++-lemma : (J : Fam ℓ₂ (Nucleus F))
             → (is js : index (J ^*))
             → (x : ∣ F ∣F)
@@ -286,21 +280,57 @@ J*-closed-under-⊓ J is js =
 ```
 
 ```
-J*-directed : (J : Fam ℓ₂ (Nucleus F))
-            → [ isDirected endopos (J ^*) ]
+J*-directed : (J : Fam ℓ₂ (Nucleus F)) → [ isDirected endopos (J ^*) ]
 J*-directed J = J*-inhabited J , λ is js → ∣ J*-closed-under-⊓ J is js ∣
 ```
 
 ```agda
-⋁N_ : Fam ℓ₂ (Nucleus F) → Nucleus F
-⋁N_ J = N where
+isScottContinuous : (∣ F ∣F → ∣ F ∣F) → hProp (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+isScottContinuous j =
+  ∀[ U ∶ Fam ℓ₂ ∣ F ∣F ] isDirected (pos F) U ⇒ ((j (⋁[ F ] U) ≡ (⋁[ F ] ⁅ j x ∣ x ε U ⁆)) , carrier-is-set (pos F) _ _)
+```
+
+```agda
+J*-scott-continuous : (J : Fam ℓ₂ (Nucleus F))
+                    → [ ∀[ i ∶ index J ] isScottContinuous (J ⦅ i ⦆_) ]
+                    → (is : index (J ^*)) → [ isScottContinuous (J *⦅ is ⦆_) ]
+J*-scott-continuous J J-sc []       U dir = refl
+J*-scott-continuous J J-sc (i ∷ is) U dir =
+  J *⦅ i ∷ is ⦆ (⋁[ F ] U)                 ≡⟨ refl                             ⟩
+  J *⦅ is ⦆ (J ⦅ i ⦆ (⋁[ F ] U))           ≡⟨ cong (J *⦅ is ⦆_) (J-sc _ U dir) ⟩
+  J *⦅ is ⦆ (⋁[ F ] ⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) ≡⟨ ⦅𝟐⦆  ⟩
+  ⋁[ F ] ⁅ J *⦅ i ∷ is ⦆ x ∣ x ε U ⁆       ∎
+  where
+    J-prenucleus : (i : index J) → Prenucleus F
+    J-prenucleus i = fst (J $ i) , (fst (snd (J $ i))) , fst (snd (snd (J $ i)))
+
+    nts : (j k : index U)
+        → Σ[ l ∈ index U ] [ ⟨ (U $ j) , (U $ k) ⟩⊑[ pos F ] (U $ l) ]
+        → ∥ Σ[ l ∈ index U ] [ rel₂ (pos F) (J ⦅ i ⦆ (U $ j)) (J ⦅ i ⦆ (U $ k)) (J ⦅ i ⦆ (U $ l)) ] ∥
+    nts j k (l , p , q) = ∣ l , (monop F (J-prenucleus i) _ _ p   , monop F (J-prenucleus i) _ _ q) ∣
+
+    dir′ : [ isDirected (pos F) ⁅ J ⦅ i ⦆ x ∣ x ε U ⁆ ]
+    dir′ = (fst dir) , (λ j k → ∥∥-rec (∥∥-prop _) (nts j k) (snd dir j k))
+
+    ⦅𝟐⦆ : _
+    ⦅𝟐⦆ = J*-scott-continuous J J-sc is (⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) dir′
+```
+
+```agda
+⋁N_ : (α : Fam ℓ₂ (Nucleus F))
+    → [ ∀[ i ∶ index α ] (isScottContinuous (α ⦅ i ⦆_)) ]
+    → Nucleus F
+⋁N_ J α-sc = N where
 
   J* : Fam ℓ₂ (∣ F ∣F → ∣ F ∣F)
-  J* = compFam ⁅ j ∣ (j , _) ε J ⁆
+  J* = J ^*
 
   J*-prenuclear : (is : index J*) → isPrenuclear F (J* $ is)
   J*-prenuclear = compFam-of-nucleus-nucleus _ λ i →
                    fst (snd (J $ i)) , fst (snd (snd (J $ i)))
+
+  J*-sec : (is : index J*) → [ isScottContinuous (J *⦅ is ⦆_) ]
+  J*-sec = J*-scott-continuous J α-sc
 
   β-n₀ : (is : index J*) (x y : ∣ F ∣F)
        → (J* $ is) (x ⊓[ F ] y) ≡ ((J* $ is) x) ⊓[ F ] ((J* $ is) y)
@@ -321,18 +351,23 @@ J*-directed J = J*-inhabited J , λ is js → ∣ J*-closed-under-⊓ J is js �
       nts₀ : [ ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ⊑[ pos F ] _ ]
       nts₀ = ⋁[ F ]-least _ _ λ { z (i , eq) → ⋁[ F ]-upper _ _ ((i , i) , eq) }
 
-      rem : [ ∀[ z ε (⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆) ] (z ⊑[ pos F ] (⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆)) ]
-      rem z ((i , j) , eq)  = subst (λ - → [ - ⊑[ pos F ] (⋁[ F ] _) ]) eq nts₂ where
+      rem : [ ∀[ z ε ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆ ]
+                (z ⊑[ pos F ] (⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆)) ]
+      rem z ((i , j) , eq) = subst (λ - → [ - ⊑[ pos F ] ⋁[ F ] _ ]) eq nts₂ where
 
         k = fst (J*-closed-under-⊓ J i j)
 
         nts₂ : _
-        nts₂ = (J* $ i) x ⊓[ F ] (J* $ j) y ⊑⟨ cleft F ((J* $ j) y) (fst (snd (J*-closed-under-⊓ J i j)) x) ⟩
-               (J* $ k) x ⊓[ F ] (J* $ j) y ⊑⟨ cright F ((J* $ k) x) (snd (snd (J*-closed-under-⊓ J i j)) y) ⟩
+        nts₂ = (J* $ i) x ⊓[ F ] (J* $ j) y ⊑⟨ cleft F (J *⦅ j ⦆ y)
+                                               (fst (snd (J*-closed-under-⊓ J i j)) x) ⟩
+               (J* $ k) x ⊓[ F ] (J* $ j) y ⊑⟨ cright F (J *⦅ k ⦆ x)
+                                                        (snd (snd (J*-closed-under-⊓ J i j)) y) ⟩
                (J* $ k) x ⊓[ F ] (J* $ k) y ⊑⟨ ⋁[ F ]-upper _ _ (k , refl) ⟩
                (⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆) ■
 
-      nts₁ : [ (⋁[ F ] ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆) ⊑[ pos F ] ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ]
+      nts₁ : [ (⋁[ F ] ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆)
+               ⊑[ pos F ]
+               ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ]
       nts₁ = ⋁[ F ]-least _ (⋁[ F ] fmap (λ γ → γ x ⊓[ F ] γ y) J*) rem
 
       ⦅𝟏⦆ = cong (λ - → ⋁[ F ] (index J* , -)) (funExt λ is → β-n₀ is x y)
@@ -343,16 +378,36 @@ J*-directed J = J*-inhabited J , λ is js → ∣ J*-closed-under-⊓ J is js �
   n₁ x = ⋁[ F ]-upper (⁅ h x ∣ h ε J* ⁆) x ([] , refl)
 
   n₂ : (x : ∣ F ∣F) → [ 𝕚 (𝕚 x) ⊑[ pos F ] 𝕚 x ]
-  n₂ x = {!!}
+  n₂ x = ⋁[ F ] ⁅ α (⋁[ F ] ⁅ β x ∣ β ε J* ⁆) ∣ α ε J* ⁆          ⊑⟨ ⦅𝟎⦆  ⟩
+         ⋁[ F ] ⁅ ⋁[ F ] ⁅ α (β x) ∣ β ε J* ⁆ ∣ α ε J* ⁆          ⊑⟨ ⦅𝟏⦆   ⟩
+         ⋁[ F ] ⁅ ((J* $ j) ((J* $ i) x)) ∣ (j , i) ∶ (_ × _) ⁆   ⊑⟨ ⦅𝟑⦆  ⟩
+         ⋁[ F ] ⁅ β x ∣ β ε J* ⁆                                  ■
+    where
+      rem : [ ∀[ z ε _ ] (z ⊑[ pos F ] ⋁[ F ] ⁅ β x ∣ β ε J* ⁆) ]
+      rem z ((js , is) , eq) = ⋁[ F ]-upper _ _ ((is ++ js) , (_ ≡⟨ J*-++-lemma J is js x ⟩ (((J ^*) $ js) ∘ ((J ^*) $ is)) x ≡⟨ eq ⟩ z ∎))
+
+      dir : [ isDirected (pos F) ⁅ β x ∣ β ε J* ⁆ ]
+      dir = ∣ [] ∣ , upper-bounds where
+
+        upper-bounds : _
+        upper-bounds is js = ∣ ks , fst (snd (J*-closed-under-⊓ J is js)) x , snd (snd (J*-closed-under-⊓ J is js)) x ∣ where
+
+          ks : index (J ^*)
+          ks = fst (J*-closed-under-⊓ J is js)
+
+      goal : (λ is → (J* $ is) (⋁[ F ] fmap (λ β → β x) J*)) ≡ (λ is → ⋁[ F ] fmap (λ β → (J* $ is) (β x)) J*)
+      goal = funExt λ is → J*-scott-continuous J α-sc is ⁅ β x ∣ β ε J* ⁆ dir
+
+      ⦅𝟎⦆ = ≡⇒⊑ (pos F) (cong (λ - → ⋁[ F ] (index J* , -)) goal)
+      ⦅𝟏⦆ = ≡⇒⊑ (pos F) (sym (flatten F (index J*) (λ _ → index J*) λ j i → (J* $ j) ((J* $ i) x)))
+      ⦅𝟑⦆ = ⋁[ F ]-least _ _ rem
+
 
   N : Nucleus F
   N = 𝕚 , n₀ , n₁ , n₂
 
 {--
 
-```
-
-```agda
 ```
 
 Distributivity
