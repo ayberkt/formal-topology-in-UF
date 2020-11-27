@@ -250,7 +250,7 @@ The notion of a *directed subset*, manifested here as a directed *family*.
 ```agda
 isDirected : {ℓ₂ : Level} → (P : Poset ℓ₀ ℓ₁) → Fam ℓ₂ ∣ P ∣ₚ → hProp (ℓ-max ℓ₁ ℓ₂)
 isDirected P U@(I , _) =
-  U-inhabited ⊓ (∀[ i ∶ I ] ∀[ j ∶ I ] ∃[ k ∶ I ] ⟨ (U $ i) , (U $ j) ⟩⊑[ P ] (U $ k))
+  U-inhabited ⊓ (∀[ i ∶ I ] ∀[ j ∶ I ] ∥ Σ[ k ∈ I ] [ ⟨ (U $ i) , (U $ j) ⟩⊑[ P ] (U $ k) ] ∥ , ∥∥-prop _)
   where
     U-inhabited : hProp _
     U-inhabited = ∥ index U ∥ , (∥∥-prop I)

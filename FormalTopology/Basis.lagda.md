@@ -223,6 +223,9 @@ lookup (x ∷ xs) (sucℕ i , p)          = lookup xs (i , pred-≤-pred p)
 
 famFromList : {A : Type ℓ₀} → List A → Fam _ A
 famFromList xs = Fin (length xs) , lookup xs
+
+_×f_ : {A : Type ℓ₀} → Fam ℓ₂ A → Fam ℓ₂′ A → Fam (ℓ-max ℓ₂ ℓ₂′) (A × A)
+_×f_ (I , f) (J , g) = I × J , (λ { (i , j) → f i , g j })
 ```
 
 ## Truncation

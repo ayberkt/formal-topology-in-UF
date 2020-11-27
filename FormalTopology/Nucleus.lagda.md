@@ -10,6 +10,7 @@ module Nucleus where
 open import Basis
 open import Poset
 open import Frame
+open import Cubical.Foundations.HLevels using (isProp×; isProp×2; isProp×3)
 
 -- A predicate expressing whether a function is a nucleus.
 isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ-max ℓ₀ ℓ₁)
@@ -22,6 +23,24 @@ isNuclear L j = N₀ × N₁ × N₂
 -- The type of nuclei.
 Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
+
+isNuclear-prop : (L : Frame ℓ₀ ℓ₁ ℓ₂) (j : ∣ L ∣F → ∣ L ∣F)
+               → isProp (isNuclear L j)
+isNuclear-prop L j = isProp×2 N₀-prop N₁-prop N₂-prop
+  where
+    N₀-prop : isProp _
+    N₀-prop = isPropΠ2 (λ _ _ → carrier-is-set (pos L) _ _)
+
+    N₁-prop : isProp _
+    N₁-prop = isPropΠ λ x → isProp[] (x ⊑[ pos L ] j x)
+
+    N₂-prop : isProp _
+    N₂-prop = isPropΠ λ x → isProp[] (j (j x) ⊑[ pos L ] j x)
+
+Nucleus-set : (F : Frame ℓ₀ ℓ₁ ℓ₂) → isSet (Nucleus F)
+Nucleus-set F = isSetΣ
+                  (isSetΠ (λ _ → carrier-is-set (pos F))) λ j →
+                  isProp→isSet (isNuclear-prop F j)
 
 -- The top element is fixed point for every nucleus.
 nuclei-resp-⊤ : (L : Frame ℓ₀ ℓ₁ ℓ₂) ((j , _) : Nucleus L) → j ⊤[ L ] ≡ ⊤[ L ]
