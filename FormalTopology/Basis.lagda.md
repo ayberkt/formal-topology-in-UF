@@ -23,7 +23,7 @@ open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isE
 open DΣ  public using     (Σ≡Prop; ΣPathTransport→PathΣ; PathΣ→ΣPathTransport; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
 open DS  public using     (inl; inr; _⊎_)
-open FP  public using     (funExt; subst; isContr; isProp; isPropIsProp; isSet;
+open FP  public using     (funExt; funExt⁻; subst; isContr; isProp; isPropIsProp; isSet;
                            isProp→isSet; cong; refl; sym; _≡⟨_⟩_; _∎; transport;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;

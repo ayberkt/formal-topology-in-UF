@@ -13,7 +13,7 @@ open import Cubical.Data.Sigma           using    (Σ≡Prop; _×_)
 open import Cubical.Foundations.Function using    (const; _∘_; idfun; uncurry)
 open import Cubical.Data.List            hiding   ([_])
 open import Cubical.Data.List.Properties
-open import Basis                        renaming (_⊓_ to _∧_)
+open import Basis                        renaming (_⊓_ to _∧_) hiding (J)
 
 module FrameOfNuclei (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 ```
@@ -34,6 +34,20 @@ For simplicity, we will refer to the meet of `F` simply as `_⊓_`.
 ```agda
 _⊓_ : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
 x ⊓ y = x ⊓[ F ] y
+```
+
+```agda
+isScottContinuous : (∣ F ∣F → ∣ F ∣F) → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+isScottContinuous j =
+  (U : Fam ℓ₂ ∣ F ∣F) →
+    [ isDirected (pos F) U ] → j (⋁[ F ] U) ≡ ⋁[ F ] ⁅ j x ∣ x ε U ⁆
+```
+
+```agda
+isScottContinuous-prop : (j : ∣ F ∣F → ∣ F ∣F)
+                       → isProp (isScottContinuous j)
+isScottContinuous-prop j =
+  isPropΠ λ U → isPropΠ λ d → carrier-is-set (pos F) _ _
 ```
 
 Poset of nuclei on `F`
@@ -63,6 +77,18 @@ endopos = (∣ F ∣F → ∣ F ∣F) , _⊑f_ , is-set , ⊑f-refl , ⊑f-trans
 ```
 
 Therefore, the poset of nuclei on a frame forms a poset.
+
+```agda
+isScottCont : Nucleus F → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+isScottCont = isScottContinuous ∘ fst
+
+ScottContNucleus : Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
+ScottContNucleus = Σ[ j ∈ Nucleus F ] isScottCont j
+
+ScottContNucleus-set : isSet ScottContNucleus
+ScottContNucleus-set =
+  isSetΣ (Nucleus-set F) (isProp→isSet ∘ isScottContinuous-prop ∘ fst)
+```
 
 ```agda
 _⊑N_ : Order (ℓ-max ℓ₀ ℓ₁) (Nucleus F)
@@ -105,6 +131,23 @@ The top nucleus
 ```agda
 𝟏-top : (j : Nucleus F) → [ j ⊑[ poset-of-nuclei ] 𝟏 ]
 𝟏-top (j , _) = ⊤[ F ]-top ∘ j
+```
+
+```agda
+𝟏-sc : isScottContinuous (const ⊤[ F ])
+𝟏-sc U (∣i∣ , _) = ⊑[ pos F ]-antisym _ _ down up where
+
+  down : [ ⊤[ F ] ⊑[ pos F ] (⋁[ F ] fmap (const ⊤[ F ]) U) ]
+  down = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) rem ∣i∣ where
+
+    rem : _
+    rem i = ⋁[ F ]-upper ((const ⊤[ F ]) ⟨$⟩ U) ⊤[ F ] (i , refl)
+
+  up : [ (⋁[ F ] ((const ⊤[ F ]) ⟨$⟩ U)) ⊑[ pos F ] ⊤[ F ] ]
+  up = ⊤[ F ]-top (⋁[ F ] ((const ⊤[ F ]) ⟨$⟩ U))
+
+𝟏sc : ScottContNucleus
+𝟏sc = 𝟏 , 𝟏-sc
 ```
 
 The meet of two nuclei
@@ -168,6 +211,41 @@ _⊓N_ : Nucleus F → Nucleus F → Nucleus F
   greatest (j , _) (k , _) (l , _) (l⊑j , l⊑k) x =
     ⊓[ F ]-greatest (j x) (k x) (l x) (l⊑j x) (l⊑k x)
 
+```
+
+```agda
+_⊓sc_ : ScottContNucleus → ScottContNucleus → ScottContNucleus
+_⊓sc_ (j , j-sc) (k , k-sc) = (j ⊓N k) , nts where
+
+  nts : isScottCont (j ⊓N k)
+  nts U U-dir =
+    π₀ (j ⊓N k) (⋁[ F ] U) ≡⟨ refl ⟩
+    (π₀ j (⋁[ F ] U) ⊓[ F ] π₀ k (⋁[ F ] U)) ≡⟨ cong (λ - → - ⊓[ F ] _) (j-sc U U-dir) ⟩
+    ((⋁[ F ] ((π₀ j) ⟨$⟩ U)) ⊓[ F ] π₀ k (⋁[ F ] U)) ≡⟨ cong (λ - → glb-of F _ -) (k-sc U U-dir) ⟩
+    (⋁[ F ] ⁅ π₀ j x ∣ x ε U ⁆) ⊓[ F ] (⋁[ F ] ⁅ π₀ k x ∣ x ε U ⁆) ≡⟨ sym-distr F _ _  ⟩
+    (⋁[ F ] ⁅ ((π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n))) ∣ (m , n) ∶ (index U × index U) ⁆) ≡⟨ ⊑[ pos F ]-antisym _ _ rem₀ rem₁ ⟩
+    ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ∎
+    where
+      aux : [ (⋁[ F ] ⁅ π₀ j (U $ m) ⊓[ F ] π₀ k (U $ n) ∣ (m , n) ∶ (index U × index U) ⁆) ⊑[ pos F ] (⋁[ F ] ⁅ π₀ j (U $ o) ⊓[ F ] π₀ k (U $ o) ∣ o ∶ index U ⁆) ]
+      aux = ⋁[ F ]-least _ _ nts-α where
+
+        nts-α : _
+        nts-α z ((m , n) , p) = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) nts-β (snd U-dir m n) where
+
+          nts-β : _
+          nts-β (o , (a , b)) = subst (λ - → [ - ⊑[ pos F ] _ ]) p foo where
+
+            foo : _
+            foo = (π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n)) ⊑⟨ cleft F (π₀ k (U $ n)) (mono F j (U $ m) (U $ o) a ) ⟩
+                  (π₀ j (U $ o)) ⊓[ F ] (π₀ k (U $ n)) ⊑⟨ cright F (π₀ j (U $ o)) (mono F k (U $ n) (U $ o) b) ⟩
+                  (π₀ j (U $ o)) ⊓[ F ] (π₀ k (U $ o)) ⊑⟨ ⋁[ F ]-upper _ _ (o , refl) ⟩
+                  (⋁[ F ] ⁅ π₀ j (U $ o) ⊓[ F ] π₀ k (U $ o) ∣ o ∶ index U ⁆) ■
+
+      rem₀ : [ (⋁[ F ] ⁅ π₀ j (U $ m) ⊓[ F ] π₀ k (U $ n) ∣ (m , n) ∶ (index U × index U) ⁆) ⊑[ pos F ] ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ]
+      rem₀ = aux
+
+      rem₁ : [ ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ⊑[ pos F ] (⋁[ F ] ⁅ ((π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n))) ∣ (m , n) ∶ (index U × index U) ⁆) ]
+      rem₁ = ⋁[ F ]-least _ (⋁[ F ] _) λ { z (i , p) → ⋁[ F ]-upper _ _ ((i , i) , p) }
 ```
 
 Arbitrary join of nuclei
@@ -271,11 +349,11 @@ J *⦅ is ⦆ x = ((J ^*) $ is) x
 ```
 
 ```agda
-J*-closed-under-⊓ : (J : Fam ℓ₂ (Nucleus F))
+J*-upwards-directed : (J : Fam ℓ₂ (Nucleus F))
                   → (is js : index (J ^*))
                   → Σ[ ks ∈ index (J ^*) ]
                      [ ⟨ J ^* $ is , J ^* $ js ⟩⊑[ endopos ] (J ^* $ ks) ]
-J*-closed-under-⊓ J is js =
+J*-upwards-directed J is js =
   (is ++ js) , J*is⊑J*is++js is js , J*js⊑J*is++js is js where
 
   Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ J) $ i)
@@ -302,14 +380,7 @@ J*-closed-under-⊓ J is js =
 
 ```
 J*-directed : (J : Fam ℓ₂ (Nucleus F)) → [ isDirected endopos (J ^*) ]
-J*-directed J = J*-inhabited J , λ is js → ∣ J*-closed-under-⊓ J is js ∣
-```
-
-```agda
-isScottContinuous : (∣ F ∣F → ∣ F ∣F) → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
-isScottContinuous j =
-  (U : Fam ℓ₂ ∣ F ∣F) →
-    [ isDirected (pos F) U ] → j (⋁[ F ] U) ≡ (⋁[ F ] ⁅ j x ∣ x ε U ⁆)
+J*-directed J = J*-inhabited J , λ is js → ∣ J*-upwards-directed J is js ∣
 ```
 
 Given a family `J` of Scott-continuous nuclei, everything in `J ^*` is
@@ -346,19 +417,44 @@ The join
 ========
 
 ```agda
-⋁N_ : (J : Fam ℓ₂ (Nucleus F))
-    → ((is : index J) → isScottContinuous (J ⦅ is ⦆_)) → Nucleus F
-⋁N_ J J-sc = N where
+joins-commute : (J : Fam ℓ₂ (Nucleus F)) (U : Fam ℓ₂ ∣ F ∣F)
+              → ⋁[ F ] ⁅ (⋁[ F ] ⁅ α x ∣ α ε (J ^*) ⁆) ∣ x ε U ⁆
+              ≡ ⋁[ F ] ⁅ ⋁[ F ] ⁅ α x ∣ x ε U ⁆ ∣ α ε (J ^*) ⁆
+joins-commute J U =
+  ⋁[ F ] ⁅ (⋁[ F ] ⁅ α x ∣ α ε (J ^*) ⁆) ∣ x ε U ⁆               ≡⟨ ⦅𝟏⦆ ⟩
+  ⋁[ F ] ⁅ J *⦅ j ⦆ (U $ i) ∣ (i , j) ∶ index U × index (J ^*) ⁆ ≡⟨ ⦅𝟐⦆ ⟩
+  ⋁[ F ] ⁅ J *⦅ j ⦆ (U $ i) ∣ (j , i) ∶ index (J ^*) × index U ⁆ ≡⟨ ⦅𝟑⦆ ⟩
+  ⋁[ F ] ⁅ ⋁[ F ] ⁅ α x ∣ x ε U ⁆ ∣ α ε (J ^*) ⁆                 ∎
+  where
+    down : _
+    down = ⋁[ F ]-least _ _ λ { z ((i , j) , eq) → ⋁[ F ]-upper _ z ((j , i) , eq) }
+
+    up : _
+    up = ⋁[ F ]-least _ _ λ { z ((i , j) , eq) → ⋁[ F ]-upper _ z ((j , i) , eq) }
+
+    ⦅𝟏⦆ = sym (flatten F (index U) (λ _ → index (J ^*)) λ i j → J *⦅ j ⦆ (U $ i))
+    ⦅𝟐⦆ = ⊑[ pos F ]-antisym _ _ down up
+    ⦅𝟑⦆ = flatten F (index (J ^*)) (λ _ → index U) (λ j i → J *⦅ j ⦆ (U $ i)) 
+```
+
+```agda
+⋁N_ : (J : Fam ℓ₂ ScottContNucleus) → ScottContNucleus
+⋁N_ J₀ = N , N-sc where
+
+  J = fst ⟨$⟩ J₀
 
   J* : Fam ℓ₂ (∣ F ∣F → ∣ F ∣F)
   J* = J ^*
+
+  J-sc : (is : index J) → isScottContinuous (J ⦅ is ⦆_)
+  J-sc is = snd (J₀ $ is)
 
   J*-prenuclear : (is : index J*) → isPrenuclear F (J* $ is)
   J*-prenuclear = compFam-prenucleus _ λ i →
                    fst (snd (J $ i)) , fst (snd (snd (J $ i)))
 
-  J*-sec : (is : index J*) → (isScottContinuous (J *⦅ is ⦆_))
-  J*-sec = J*-scott-continuous J J-sc
+  J*-sc : (is : index J*) → (isScottContinuous (J *⦅ is ⦆_))
+  J*-sc = J*-scott-continuous J J-sc
 
   β-n₀ : (is : index J*) (x y : ∣ F ∣F)
        → (J* $ is) (x ⊓[ F ] y) ≡ ((J* $ is) x) ⊓[ F ] ((J* $ is) y)
@@ -383,7 +479,7 @@ The join
                 (z ⊑[ pos F ] (⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆)) ]
       rem z ((i , j) , eq) = subst (λ - → [ - ⊑[ pos F ] ⋁[ F ] _ ]) eq nts₂ where
 
-        k = fst (J*-closed-under-⊓ J i j)
+        k = fst (J*-upwards-directed J i j)
 
         nts₂ : _
         nts₂ =
@@ -392,8 +488,8 @@ The join
           (J* $ k) x ⊓[ F ] (J* $ k) y       ⊑⟨ ⋁[ F ]-upper _ _ (k , refl) ⟩
           ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ■
           where
-            ⦅a⦆ = cleft F (J *⦅ j ⦆ y) (fst (snd (J*-closed-under-⊓ J i j)) x)
-            ⦅b⦆ = cright F (J *⦅ k ⦆ x) (snd (snd (J*-closed-under-⊓ J i j)) y)
+            ⦅a⦆ = cleft F (J *⦅ j ⦆ y) (fst (snd (J*-upwards-directed J i j)) x)
+            ⦅b⦆ = cright F (J *⦅ k ⦆ x) (snd (snd (J*-upwards-directed J i j)) y)
 
       nts₁ : [ (⋁[ F ] ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆)
                ⊑[ pos F ]
@@ -409,7 +505,7 @@ The join
 
   n₂ : (x : ∣ F ∣F) → [ 𝕚 (𝕚 x) ⊑[ pos F ] 𝕚 x ]
   n₂ x = ⋁[ F ] ⁅ α (⋁[ F ] ⁅ β x ∣ β ε J* ⁆) ∣ α ε J* ⁆          ⊑⟨ ⦅𝟎⦆  ⟩
-         ⋁[ F ] ⁅ ⋁[ F ] ⁅ α (β x) ∣ β ε J* ⁆ ∣ α ε J* ⁆          ⊑⟨ ⦅𝟏⦆   ⟩
+         ⋁[ F ] ⁅ ⋁[ F ] ⁅ α (β x) ∣ β ε J* ⁆ ∣ α ε J* ⁆          ⊑⟨ ⦅𝟏⦆  ⟩
          ⋁[ F ] ⁅ ((J* $ j) ((J* $ i) x)) ∣ (j , i) ∶ (_ × _) ⁆   ⊑⟨ ⦅𝟑⦆  ⟩
          ⋁[ F ] ⁅ β x ∣ β ε J* ⁆                                  ■
     where
@@ -420,10 +516,10 @@ The join
       dir = ∣ [] ∣ , upper-bounds where
 
         upper-bounds : _
-        upper-bounds is js = ∣ ks , fst (snd (J*-closed-under-⊓ J is js)) x , snd (snd (J*-closed-under-⊓ J is js)) x ∣ where
+        upper-bounds is js = ∣ ks , fst (snd (J*-upwards-directed J is js)) x , snd (snd (J*-upwards-directed J is js)) x ∣ where
 
           ks : index (J ^*)
-          ks = fst (J*-closed-under-⊓ J is js)
+          ks = fst (J*-upwards-directed J is js)
 
       goal : (λ is → (J* $ is) (⋁[ F ] fmap (λ β → β x) J*)) ≡ (λ is → ⋁[ F ] fmap (λ β → (J* $ is) (β x)) J*)
       goal = funExt λ is → J*-scott-continuous J J-sc is ⁅ β x ∣ β ε J* ⁆ dir
@@ -435,6 +531,94 @@ The join
 
   N : Nucleus F
   N = 𝕚 , n₀ , n₁ , n₂
+
+  N-sc : isScottContinuous 𝕚
+  N-sc U U-dir =
+    𝕚 (⋁[ F ] U)                                   ≡⟨ refl ⟩
+    ⋁[ F ] ⁅ γ (⋁[ F ] U) ∣ γ ε J* ⁆               ≡⟨ cong (λ - → ⋁[ F ] (index J* , -)) (funExt λ is → J*-sc is U U-dir) ⟩
+    ⋁[ F ] ⁅ (⋁[ F ] ⁅ γ x ∣ x ε U ⁆) ∣ γ ε J* ⁆   ≡⟨ sym (joins-commute J U)  ⟩ -- I need a lemma. Prove that joins commute in general.
+    ⋁[ F ] ⁅ (⋁[ F ] ⁅ γ x ∣ γ ε J* ⁆) ∣ x ε U ⁆   ≡⟨ refl ⟩
+    ⋁[ F ] ⁅ 𝕚 x ∣ x ε U ⁆                         ∎
+```
+
+```agda
+scott-cont-nuclei-poset-str : PosetStr (ℓ-max ℓ₀ ℓ₁) ScottContNucleus
+scott-cont-nuclei-poset-str =
+  _⊑sc_ , ScottContNucleus-set , ⊑sc-refl , ⊑sc-trans , ⊑sc-antisym where
+
+  _⊑sc_ : ScottContNucleus → ScottContNucleus → hProp (ℓ-max ℓ₀ ℓ₁)
+  (j , _) ⊑sc (k , _) = j ⊑N k
+
+  ⊑sc-refl : [ isReflexive _⊑sc_ ]
+  ⊑sc-refl ((j , _) , _) = ⊑f-refl j
+
+  ⊑sc-trans : [ isTransitive _⊑sc_ ]
+  ⊑sc-trans (j , _) (k , _) (l , _) = ⊑[ poset-of-nuclei ]-trans j k l
+
+  ⊑sc-antisym : [ isAntisym ScottContNucleus-set _⊑sc_ ]
+  ⊑sc-antisym (j , _) (k , _) j⊑k k⊑j =
+    Σ≡Prop
+      (isScottContinuous-prop ∘ fst)
+      ( ⊑[ poset-of-nuclei ]-antisym j k j⊑k k⊑j)
+
+
+scn-pos : Poset (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂)) (ℓ-max ℓ₀ ℓ₁)
+scn-pos = ScottContNucleus , scott-cont-nuclei-poset-str
+```
+
+```agda
+⊓sc-meet : [ isGLB scn-pos _⊓sc_ ]
+⊓sc-meet = lower , greatest where
+
+  greatest : (x y z : ∣ scn-pos ∣ₚ)
+           → [ z ⊑[ scn-pos ] x ∧ z ⊑[ scn-pos ] y ⇒ z ⊑[ scn-pos ] (x ⊓sc y) ]
+  greatest ((j , _) , _) ((k , _) , _) ((l , _) , _) (p , q) x =
+    ⊓[ F ]-greatest (j x) (k x) (l x) (p x) (q x)
+
+  lower : (x y : ∣ scn-pos ∣ₚ) → [ rel scn-pos (x ⊓sc y) x ∧ rel scn-pos (x ⊓sc y) y ]
+  lower ((j , _) , _) ((k , _) , _) =
+    (λ x → ⊓[ F ]-lower₀ (j x) (k x)) , (λ x → ⊓[ F ]-lower₁ (j x) (k x))
+```
+
+```agda
+⋁sc-join : [ isLUB scn-pos ⋁N_ ]
+⋁sc-join = upper , least where
+
+  upper : (U : Fam ℓ₂ ∣ scn-pos ∣ₚ) → [ ∀[ x ε U ] (x ⊑[ scn-pos ] (⋁N U)) ]
+  upper U 𝒿@((j , _) , _) (i , eq) x = ⋁[ F ]-upper _ _ ((i ∷ []) , Uᵢ~j x) where
+
+    Uᵢ~j : (x : ∣ F ∣F) → fst (fst (U $ i)) x ≡ j x
+    Uᵢ~j = funExt⁻ (fst (PathΣ→ΣPathTransport _ _ (fst (PathΣ→ΣPathTransport _ _ eq))))
+
+  least : (J : Fam ℓ₂ ∣ scn-pos ∣ₚ) (j : ∣ scn-pos ∣ₚ)
+        → [ ∀[ k ε J ] (k ⊑[ scn-pos ] j) ⇒ (⋁N J) ⊑[ scn-pos ] j ]
+  least J 𝒿@((j , _ , n₁ , n₂) , _) p x = ⋁[ F ]-least _ (j x) λ { y (is , eq) → subst (λ - → [ - ⊑[ pos F ] j x ]) eq (lemma is x) } where
+
+    Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ (fst ⟨$⟩ J)) $ i)
+    Jᵢ-prenuclear i = fst (snd ((fst ⟨$⟩ J) $ i)) , fst (snd (snd ((fst ⟨$⟩ J) $ i)))
+
+    J*-prenuclear : (is : index ((fst ⟨$⟩ J) ^*)) → isPrenuclear F (((fst ⟨$⟩ J) ^*) $ is)
+    J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ (fst ⟨$⟩ J)) Jᵢ-prenuclear
+
+    lemma : (is : List (index J)) → (x : ∣ F ∣F) → [ (((fst ⟨$⟩ J) ^*) $ is) x ⊑[ pos F ] j x ]
+    lemma []       x = n₁ x
+    lemma (i ∷ is) x =
+      (((fst ⟨$⟩ J) ^*) $ is) (fst (fst (J $ i)) x) ⊑⟨ monop F ((((fst ⟨$⟩ J) ^*) $ is) , (J*-prenuclear is)) (fst (fst (J $ i)) x) (j x) (p (J $ i ) (i , refl) x ) ⟩
+      (((fst ⟨$⟩ J) ^*) $ is) (j x) ⊑⟨ lemma is (j x) ⟩ j (j x) ⊑⟨ n₂ x  ⟩ j x ■
+```
+
+```agda
+sc-dist : [ isDist scn-pos _⊓sc_ ⋁N_ ] -- The proof is written in the paper.
+sc-dist j J = j ⊓sc (⋁N J) ≡⟨ {!!} ⟩ {!!} ≡⟨ {!!} ⟩ ⋁N ⁅ j ⊓sc k ∣ k ε J ⁆ ∎
+```
+
+```agda
+ScottContNucleiFrame : Frame (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂)) (ℓ-max ℓ₀ ℓ₁) ℓ₂
+ScottContNucleiFrame =
+  ScottContNucleus , (snd scn-pos , 𝟏sc , _⊓sc_ , ⋁N_) , 𝟏sc-top , ⊓sc-meet , ⋁sc-join , sc-dist where
+
+  𝟏sc-top : [ ∀[ j ∶ ScottContNucleus ] j ⊑[ scn-pos ] 𝟏sc ]
+  𝟏sc-top ((j , _) , _) x = ⊤[ F ]-top (j x)
 ```
 
 Distributivity
