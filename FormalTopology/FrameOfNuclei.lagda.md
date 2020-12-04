@@ -82,6 +82,9 @@ Therefore, the poset of nuclei on a frame forms a poset.
 isScottCont : Nucleus F → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
 isScottCont = isScottContinuous ∘ fst
 
+isScottCont-prop : (j : Nucleus F) → isProp (isScottCont j)
+isScottCont-prop (j , _) = isScottContinuous-prop j
+
 ScottContNucleus : Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂))
 ScottContNucleus = Σ[ j ∈ Nucleus F ] isScottCont j
 
@@ -556,10 +559,10 @@ scott-cont-nuclei-poset-str =
   ⊑sc-trans (j , _) (k , _) (l , _) = ⊑[ poset-of-nuclei ]-trans j k l
 
   ⊑sc-antisym : [ isAntisym ScottContNucleus-set _⊑sc_ ]
-  ⊑sc-antisym (j , _) (k , _) j⊑k k⊑j =
+  ⊑sc-antisym (j , j-scott-cont) (k , k-scott-cont) j⊑k k⊑j =
     Σ≡Prop
       (isScottContinuous-prop ∘ fst)
-      ( ⊑[ poset-of-nuclei ]-antisym j k j⊑k k⊑j)
+      (⊑[ poset-of-nuclei ]-antisym j k j⊑k k⊑j)
 
 
 scn-pos : Poset (ℓ-max (ℓ-max ℓ₀ ℓ₁) (ℓ-suc ℓ₂)) (ℓ-max ℓ₀ ℓ₁)
@@ -603,13 +606,56 @@ scn-pos = ScottContNucleus , scott-cont-nuclei-poset-str
     lemma : (is : List (index J)) → (x : ∣ F ∣F) → [ (((fst ⟨$⟩ J) ^*) $ is) x ⊑[ pos F ] j x ]
     lemma []       x = n₁ x
     lemma (i ∷ is) x =
-      (((fst ⟨$⟩ J) ^*) $ is) (fst (fst (J $ i)) x) ⊑⟨ monop F ((((fst ⟨$⟩ J) ^*) $ is) , (J*-prenuclear is)) (fst (fst (J $ i)) x) (j x) (p (J $ i ) (i , refl) x ) ⟩
-      (((fst ⟨$⟩ J) ^*) $ is) (j x) ⊑⟨ lemma is (j x) ⟩ j (j x) ⊑⟨ n₂ x  ⟩ j x ■
+      (((fst ⟨$⟩ J) ^*) $ is) (fst (fst (J $ i)) x) ⊑⟨ monop F (_ , (J*-prenuclear is)) _ _ (p (J $ i ) (i , refl) x ) ⟩
+      (((fst ⟨$⟩ J) ^*) $ is) (j x) ⊑⟨ lemma is (j x) ⟩ j (j x) ⊑⟨ n₂ x ⟩ j x ■
+```
+
+```agda
+J*-⊓-lemma : (J : Fam ℓ₂ (Nucleus F))
+           → (j : Nucleus F)
+           → (x : ∣ F ∣F)
+           → ⁅ (fst j x ⊓[ F ] k x) ∣ k ε (J ^*) ⁆ ≡ ⁅ k x ∣ k ε (((j ⊓N_) ⟨$⟩ J) ^*) ⁆
+J*-⊓-lemma J 𝒿@(j , n₀ , n₁ , _) y = cong (λ - → (List (index J) , -)) (funExt (goal y)) where
+
+  Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ J) $ i)
+  Jᵢ-prenuclear i = fst (snd (J $ i)) , fst (snd (snd (J $ i)))
+
+  J*-prenuclear : (is : index (J ^*)) → isPrenuclear F ((J ^*) $ is)
+  J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
+
+
+  lemma⋆ : (x : ∣ F ∣F) → (is : List (index J)) → ((_⊓N_ 𝒿 ⟨$⟩ J) *⦅ is ⦆ x) ≡ j x ⊓[ F ] (J *⦅ is ⦆ x)
+  lemma⋆ x []       = ⊑[ pos F ]-antisym _ _ (⊓[ F ]-greatest _ _ _ (n₁ x) (⊑[ pos F ]-refl x)) (⊓[ F ]-lower₁ _ _)
+  lemma⋆ x (i ∷ is) =
+    ((_⊓N_ 𝒿 ⟨$⟩ J) *⦅ i ∷ is ⦆ x)
+    ≡⟨ refl ⟩
+    (((_⊓N_ 𝒿 ⟨$⟩ J) *⦅ is ⦆ (j x ⊓[ F ] (J ⦅ i ⦆ x))))
+    ≡⟨ lemma⋆ (j x ⊓[ F ] (J ⦅ i ⦆ x)) is ⟩
+    j (j x ⊓[ F ] (J ⦅ i ⦆ x)) ⊓[ F ] (J *⦅ is ⦆ (j x ⊓[ F ] (J ⦅ i ⦆ x)))
+    ≡⟨ cong (λ - → - ⊓[ F ] (J *⦅ is ⦆ (j x ⊓[ F ] (J ⦅ i ⦆ x)))) (n₀ (j x) (J ⦅ i ⦆ x)) ⟩
+    (j (j x) ⊓[ F ] j (J ⦅ i ⦆ x)) ⊓[ F ] (J *⦅ is ⦆ (j x ⊓[ F ] (J ⦅ i ⦆ x)))
+    ≡⟨ {!!} ⟩
+    j x ⊓[ F ] (J *⦅ is ⦆ (J ⦅ i ⦆ x)) ∎
+
+  goal : (x : ∣ F ∣F) (is : List (index J)) → j x ⊓[ F ] (J *⦅ is ⦆ x) ≡ ((𝒿 ⊓N_) ⟨$⟩ J) *⦅ is ⦆ x
+  goal x is = sym (lemma⋆ x is)
 ```
 
 ```agda
 sc-dist : [ isDist scn-pos _⊓sc_ ⋁N_ ] -- The proof is written in the paper.
-sc-dist j J = j ⊓sc (⋁N J) ≡⟨ {!!} ⟩ {!!} ≡⟨ {!!} ⟩ ⋁N ⁅ j ⊓sc k ∣ k ε J ⁆ ∎
+sc-dist j@((𝒿 , _) , _) J = Σ≡Prop isScottCont-prop (Σ≡Prop (isNuclear-prop F) nts) where
+
+  J₀ = fst ⟨$⟩ J
+
+  nts : (j ⊓sc (⋁N J)) .π₀ .π₀ ≡ (⋁N ⁅ j ⊓sc k ∣ k ε J ⁆) .π₀ .π₀
+  nts = funExt rem
+    where
+      rem : _
+      rem x = _ ≡⟨ dist F (𝒿 x) _ ⟩
+              ⋁[ F ] ⁅ 𝒿 x ⊓[ F ] (J₀ *⦅ is ⦆ x) ∣ is ∶ List (index J) ⁆ ≡⟨ cong (λ - → ⋁[ F ] -) (J*-⊓-lemma J₀ (fst j) x) ⟩
+              (⋁[ F ] ⁅ l x ∣ l ε (⁅ fst (j ⊓sc k) ∣ k ε J ⁆ ^*) ⁆)   ≡⟨ refl ⟩
+              (⋁[ F ] (List (index J) , λ is → ((⁅ (π₀ j) ⊓N (π₀ k) ∣ k ε J ⁆ ^*) $ is) x))   ≡⟨ refl ⟩
+              π₀ (π₀ (⋁N fmap (λ k → j ⊓sc k) J)) x ∎
 ```
 
 ```agda
