@@ -263,19 +263,15 @@ Arbitrary join of nuclei
 
 This is the non-trivial part of this development.
 
-Given a family `α` of endofunctions on a type, we denote by `compFam α` the
-family obtained by taking compositions of functions in `α`.
-
 ```agda
+ℜ : {A : Type ℓ} → (α : Fam ℓ′ (A → A)) → List (index α) → A → A
+ℜ α []       = idfun _
+ℜ α (i ∷ is) = ℜ α is ∘ (α $ i)
 ```
 
 ```agda
-compFam : {A : Type ℓ₀} (α : Fam ℓ₂ (A → A)) → Fam ℓ₂ (A → A)
-compFam {A = A} α = List (index α) , f where
-
-  f : List (index α) → A → A
-  f []       = idfun A
-  f (i ∷ is) = f is ∘ (α $ i)
+ℜ-fam : {A : Type ℓ₀} (α : Fam ℓ₂ (A → A)) → Fam ℓ₂ (A → A)
+ℜ-fam {A = A} α = List (index α) , ℜ α
 ```
 
 We will use this function to compute the join of a family of nuclei.
@@ -288,47 +284,47 @@ id-is-nuclear F = (λ _ _ → refl) , ⊑[ pos F ]-refl
 ```
 
 Compositions of prenuclei are prenuclei meaning given a family of nuclei, its
-`compFam` is a family of prenuclei
+`ℜ-fam` is a family of prenuclei
 
 ```agda
-compFam-prenucleus : (α : Fam ℓ₂ (∣ F ∣F → ∣ F ∣F))
+ℜ-fam-prenucleus : (α : Fam ℓ₂ (∣ F ∣F → ∣ F ∣F))
                    → ((i : index α) → isPrenuclear F (α $ i))
-                   → (is : List (index α)) → isPrenuclear F ((compFam α) $ is)
-compFam-prenucleus α φ []       = id-is-nuclear F
-compFam-prenucleus α φ (i ∷ is) = n₀ , n₁ where
+                   → (is : List (index α)) → isPrenuclear F ((ℜ-fam α) $ is)
+ℜ-fam-prenucleus α φ []       = id-is-nuclear F
+ℜ-fam-prenucleus α φ (i ∷ is) = n₀ , n₁ where
 
-  j = compFam α $ (i ∷ is)
+  j = ℜ-fam α $ (i ∷ is)
 
   j′ : ∣ F ∣F → ∣ F ∣F
-  j′ = compFam α $ is
+  j′ = ℜ-fam α $ is
 
   ih : isPrenuclear F j′
-  ih = compFam-prenucleus α φ is
+  ih = ℜ-fam-prenucleus α φ is
 
-  j′-n₀ : (x y : ∣ F ∣F) → j′ (x ⊓[ F ] y) ≡ j′ x ⊓[ F ] j′ y
+  j′-n₀ : (x y : ∣ F ∣F) → j′ (x ⊓ y) ≡ j′ x ⊓ j′ y
   j′-n₀ = fst ih
 
   j′-n₁ : (x : ∣ F ∣F) → [ x ⊑[ pos F ] j′ x ]
   j′-n₁ = snd ih
 
   n₀ : (x y : ∣ F ∣F)
-     → (compFam α $ (i ∷ is)) (x ⊓[ F ] y)
-     ≡ (compFam α $ (i ∷ is)) x ⊓[ F ] (compFam α $ (i ∷ is)) y
+     → (ℜ-fam α $ (i ∷ is)) (x ⊓ y)
+     ≡ (ℜ-fam α $ (i ∷ is)) x ⊓ (ℜ-fam α $ (i ∷ is)) y
   n₀ x y =
-    j′ ((α $ i) (x ⊓[ F ] y))       ≡⟨ cong j′ (fst (φ i) x y)   ⟩
-    j′ ((α $ i) x ⊓[ F ] (α $ i) y) ≡⟨ j′-n₀ _ _                 ⟩
-    (compFam α $ (i ∷ is)) x ⊓[ F ] (compFam α $ (i ∷ is)) y ∎
+    j′ ((α $ i) (x ⊓ y))                            ≡⟨ cong j′ (fst (φ i) x y) ⟩
+    j′ ((α $ i) x ⊓ (α $ i) y)                      ≡⟨ j′-n₀ _ _               ⟩
+    (ℜ-fam α $ (i ∷ is)) x ⊓ (ℜ-fam α $ (i ∷ is)) y ∎
 
   n₁ : (x : ∣ F ∣F) → [ x ⊑[ pos F ] j x ]
   n₁ x = x ⊑⟨ snd (φ i) x ⟩ (α $ i) x ⊑⟨ j′-n₁ _ ⟩ j′ ((α $ i) x) ■
 ```
 
 For convenience, we introduce the following notation: given a some family
-`J` of nuclei, `J ^*` denotes its `compFam`.
+`J` of nuclei, `J ^*` denotes its `ℜ-fam`.
 
 ```agda
 _^* : Fam ℓ₂ (Nucleus F) → Fam ℓ₂ (∣ F ∣F → ∣ F ∣F)
-J ^* = compFam ⁅ j ∣ (j , _) ε J ⁆
+J ^* = ℜ-fam ⁅ j ∣ (j , _) ε J ⁆
 ```
 
 ```agda
@@ -362,18 +358,18 @@ J *⦅ is ⦆ x = ((J ^*) $ is) x
 ```
 
 ```agda
-J*-upwards-directed : (J : Fam ℓ₂ (Nucleus F))
-                  → (is js : index (J ^*))
-                  → Σ[ ks ∈ index (J ^*) ]
-                     [ ⟨ J ^* $ is , J ^* $ js ⟩⊑[ endopos ] (J ^* $ ks) ]
-J*-upwards-directed J is js =
+J*-up : (J : Fam ℓ₂ (Nucleus F))
+      → (is js : index (J ^*))
+      → Σ[ ks ∈ index (J ^*) ]
+         [ ⟨ J ^* $ is , J ^* $ js ⟩⊑[ endopos ] (J ^* $ ks) ]
+J*-up J is js =
   (is ++ js) , J*is⊑J*is++js is js , J*js⊑J*is++js is js where
 
   Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ J) $ i)
   Jᵢ-prenuclear i = fst (snd (J $ i)) , fst (snd (snd (J $ i)))
 
   J*-prenuclear : (is : index (J ^*)) → isPrenuclear F ((J ^*) $ is)
-  J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
+  J*-prenuclear = ℜ-fam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
 
   J*is⊑J*is++js : (is js : index (J ^*))
                 → [ J *⦅ is ⦆_ ⊑[ endopos ] J *⦅ is ++ js ⦆_ ]
@@ -393,7 +389,7 @@ J*-upwards-directed J is js =
 
 ```
 J*-directed : (J : Fam ℓ₂ (Nucleus F)) → [ isDirected endopos (J ^*) ]
-J*-directed J = J*-inhabited J , λ is js → ∣ J*-upwards-directed J is js ∣
+J*-directed J = J*-inhabited J , λ is js → ∣ J*-up J is js ∣
 ```
 
 Given a family `J` of Scott-continuous nuclei, everything in `J ^*` is
@@ -463,7 +459,7 @@ joins-commute J U =
   J-sc is = snd (J₀ $ is)
 
   J*-prenuclear : (is : index J*) → isPrenuclear F (J* $ is)
-  J*-prenuclear = compFam-prenucleus _ λ i →
+  J*-prenuclear = ℜ-fam-prenucleus _ λ i →
                    fst (snd (J $ i)) , fst (snd (snd (J $ i)))
 
   J*-sc : (is : index J*) → (isScottContinuous (J *⦅ is ⦆_))
@@ -492,7 +488,7 @@ joins-commute J U =
                 (z ⊑[ pos F ] (⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆)) ]
       rem z ((i , j) , eq) = subst (λ - → [ - ⊑[ pos F ] ⋁[ F ] _ ]) eq nts₂ where
 
-        k = fst (J*-upwards-directed J i j)
+        k = fst (J*-up J i j)
 
         nts₂ : _
         nts₂ =
@@ -501,8 +497,8 @@ joins-commute J U =
           (J* $ k) x ⊓[ F ] (J* $ k) y       ⊑⟨ ⋁[ F ]-upper _ _ (k , refl) ⟩
           ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ■
           where
-            ⦅a⦆ = cleft F (J *⦅ j ⦆ y) (fst (snd (J*-upwards-directed J i j)) x)
-            ⦅b⦆ = cright F (J *⦅ k ⦆ x) (snd (snd (J*-upwards-directed J i j)) y)
+            ⦅a⦆ = cleft F (J *⦅ j ⦆ y) (fst (snd (J*-up J i j)) x)
+            ⦅b⦆ = cright F (J *⦅ k ⦆ x) (snd (snd (J*-up J i j)) y)
 
       nts₁ : [ (⋁[ F ] ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆)
                ⊑[ pos F ]
@@ -529,10 +525,10 @@ joins-commute J U =
       dir = ∣ [] ∣ , upper-bounds where
 
         upper-bounds : _
-        upper-bounds is js = ∣ ks , fst (snd (J*-upwards-directed J is js)) x , snd (snd (J*-upwards-directed J is js)) x ∣ where
+        upper-bounds is js = ∣ ks , fst (snd (J*-up J is js)) x , snd (snd (J*-up J is js)) x ∣ where
 
           ks : index (J ^*)
-          ks = fst (J*-upwards-directed J is js)
+          ks = fst (J*-up J is js)
 
       goal : (λ is → (J* $ is) (⋁[ F ] fmap (λ β → β x) J*)) ≡ (λ is → ⋁[ F ] fmap (λ β → (J* $ is) (β x)) J*)
       goal = funExt λ is → J*-scott-continuous J J-sc is ⁅ β x ∣ β ε J* ⁆ dir
@@ -611,7 +607,7 @@ scn-pos = ScottContNucleus , scott-cont-nuclei-poset-str
     Jᵢ-prenuclear i = fst (snd ((fst ⟨$⟩ J) $ i)) , fst (snd (snd ((fst ⟨$⟩ J) $ i)))
 
     J*-prenuclear : (is : index ((fst ⟨$⟩ J) ^*)) → isPrenuclear F (((fst ⟨$⟩ J) ^*) $ is)
-    J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ (fst ⟨$⟩ J)) Jᵢ-prenuclear
+    J*-prenuclear = ℜ-fam-prenucleus (fst ⟨$⟩ (fst ⟨$⟩ J)) Jᵢ-prenuclear
 
     lemma : (is : List (index J)) → (x : ∣ F ∣F) → [ (((fst ⟨$⟩ J) ^*) $ is) x ⊑[ pos F ] j x ]
     lemma []       x = n₁ x
@@ -632,7 +628,7 @@ J*-⊓-lemma J 𝒿@(j , n₀ , n₁ , _) y = ⊑[ pos F ]-antisym _ _ nts₀ nt
   Jᵢ-prenuclear i = fst (snd (J $ i)) , fst (snd (snd (J $ i)))
 
   J*-prenuclear : (is : index (J ^*)) → isPrenuclear F ((J ^*) $ is)
-  J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
+  J*-prenuclear = ℜ-fam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
 
   nts₀ : [ (⋁[ F ] fmap (λ k → (j y) ⊓[ F ] (k y)) (J ^*)) ⊑[ pos F ] (⋁[ F ] fmap (λ k → k y) ((_⊓N_ 𝒿 ⟨$⟩ J) ^*)) ]
   nts₀ = ⋁[ F ]-least _ _ rem where
