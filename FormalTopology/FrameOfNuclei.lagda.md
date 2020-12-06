@@ -29,11 +29,15 @@ We assume a fixed frame `F` on which to define the frame of nuclei.
 open PosetReasoning (pos F) using (_⊑⟨_⟩_; _■)
 ```
 
-For simplicity, we will refer to the meet of `F` simply as `_⊓_`.
+For simplicity, we will refer to the meet and join of `F` simply as `_⊓_` and
+`⋁_`.
 
 ```agda
 _⊓_ : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
 x ⊓ y = x ⊓[ F ] y
+
+⋁_ : Fam ℓ₂ ∣ F ∣F → ∣ F ∣F
+⋁ U = ⋁[ F ] U
 ```
 
 ```agda
@@ -216,39 +220,42 @@ _⊓N_ : Nucleus F → Nucleus F → Nucleus F
 
 ```
 
+The meet of two Scott-continuous nuclei is Scott-continuous.
+
+```agda
+⊓N-sc : (𝒿 𝓀 : Nucleus F) → isScottCont 𝒿 → isScottCont 𝓀 → isScottCont (𝒿 ⊓N 𝓀)
+⊓N-sc 𝒿@(j , _) 𝓀@(k , _) j-sc k-sc U U-dir@(_ , U-up) =
+  j (⋁ U) ⊓ k (⋁ U)                                             ≡⟨ ⦅𝟏⦆ ⟩
+  (⋁ ⁅ j x ∣ x ε U ⁆) ⊓ k (⋁ U)                                 ≡⟨ ⦅𝟐⦆ ⟩
+  (⋁ ⁅ j x ∣ x ε U ⁆) ⊓ (⋁ ⁅ k x ∣ x ε U ⁆)                     ≡⟨ ⦅𝟑⦆ ⟩
+  ⋁ (⁅ j (U $ m) ⊓ k (U $ n) ∣ (m , n) ∶ (index U × index U) ⁆) ≡⟨ ⦅𝟒⦆ ⟩
+  ⋁ ⁅ j x ⊓ k x ∣ x ε U ⁆ ∎
+  where
+    ⦅𝟒c⦆ : [ ∀[ z ε _ ] (z ⊑[ pos F ] ⋁ ⁅ j x ⊓ k x ∣ x ε U ⁆) ]
+    ⦅𝟒c⦆ z ((m , n) , eq) =
+      ∥∥-rec (isProp[] (z ⊑[ pos F ] _)) nts (U-up m n) where
+
+        nts : _
+        nts (o , (Uₘ⊑Uₒ , Uₙ⊑Uₒ)) =
+          z                       ⊑⟨ ≡⇒⊑ (pos F) (sym eq)            ⟩
+          j (U $ m) ⊓ k (U $ n)   ⊑⟨ cleft F _ (mono F 𝒿 _ _ Uₘ⊑Uₒ ) ⟩
+          j (U $ o) ⊓ k (U $ n)   ⊑⟨ cright F _ (mono F 𝓀 _ _ Uₙ⊑Uₒ) ⟩
+          j (U $ o) ⊓ k (U $ o)   ⊑⟨ ⋁[ F ]-upper _ _ (o , refl)     ⟩
+          ⋁ ⁅ j x ⊓ k x ∣ x ε U ⁆ ■
+
+    ⦅𝟒a⦆ = ⋁[ F ]-least _ _ ⦅𝟒c⦆
+
+    ⦅𝟒b⦆ = ⋁[ F ]-least _ _ λ { z (i , eq) → ⋁[ F ]-upper _ _ ((i , i) , eq) }
+
+    ⦅𝟏⦆  = cong (λ - → - ⊓ _) (j-sc U U-dir)
+    ⦅𝟐⦆  = cong (λ - → _ ⊓ -) (k-sc U U-dir)
+    ⦅𝟑⦆  = sym-distr F ⁅ j x ∣ x ε U ⁆ ⁅ k x ∣ x ε U ⁆
+    ⦅𝟒⦆  = ⊑[ pos F ]-antisym _ _ ⦅𝟒a⦆ ⦅𝟒b⦆
+```
+
 ```agda
 _⊓sc_ : ScottContNucleus → ScottContNucleus → ScottContNucleus
-_⊓sc_ (j , j-sc) (k , k-sc) = (j ⊓N k) , nts where
-
-  nts : isScottCont (j ⊓N k)
-  nts U U-dir =
-    π₀ (j ⊓N k) (⋁[ F ] U) ≡⟨ refl ⟩
-    (π₀ j (⋁[ F ] U) ⊓[ F ] π₀ k (⋁[ F ] U)) ≡⟨ cong (λ - → - ⊓[ F ] _) (j-sc U U-dir) ⟩
-    ((⋁[ F ] ((π₀ j) ⟨$⟩ U)) ⊓[ F ] π₀ k (⋁[ F ] U)) ≡⟨ cong (λ - → glb-of F _ -) (k-sc U U-dir) ⟩
-    (⋁[ F ] ⁅ π₀ j x ∣ x ε U ⁆) ⊓[ F ] (⋁[ F ] ⁅ π₀ k x ∣ x ε U ⁆) ≡⟨ sym-distr F _ _  ⟩
-    (⋁[ F ] ⁅ ((π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n))) ∣ (m , n) ∶ (index U × index U) ⁆) ≡⟨ ⊑[ pos F ]-antisym _ _ rem₀ rem₁ ⟩
-    ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ∎
-    where
-      aux : [ (⋁[ F ] ⁅ π₀ j (U $ m) ⊓[ F ] π₀ k (U $ n) ∣ (m , n) ∶ (index U × index U) ⁆) ⊑[ pos F ] (⋁[ F ] ⁅ π₀ j (U $ o) ⊓[ F ] π₀ k (U $ o) ∣ o ∶ index U ⁆) ]
-      aux = ⋁[ F ]-least _ _ nts-α where
-
-        nts-α : _
-        nts-α z ((m , n) , p) = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) nts-β (snd U-dir m n) where
-
-          nts-β : _
-          nts-β (o , (a , b)) = subst (λ - → [ - ⊑[ pos F ] _ ]) p foo where
-
-            foo : _
-            foo = (π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n)) ⊑⟨ cleft F (π₀ k (U $ n)) (mono F j (U $ m) (U $ o) a ) ⟩
-                  (π₀ j (U $ o)) ⊓[ F ] (π₀ k (U $ n)) ⊑⟨ cright F (π₀ j (U $ o)) (mono F k (U $ n) (U $ o) b) ⟩
-                  (π₀ j (U $ o)) ⊓[ F ] (π₀ k (U $ o)) ⊑⟨ ⋁[ F ]-upper _ _ (o , refl) ⟩
-                  (⋁[ F ] ⁅ π₀ j (U $ o) ⊓[ F ] π₀ k (U $ o) ∣ o ∶ index U ⁆) ■
-
-      rem₀ : [ (⋁[ F ] ⁅ π₀ j (U $ m) ⊓[ F ] π₀ k (U $ n) ∣ (m , n) ∶ (index U × index U) ⁆) ⊑[ pos F ] ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ]
-      rem₀ = aux
-
-      rem₁ : [ ⋁[ F ] ⁅ (π₀ j x ⊓[ F ] π₀ k x) ∣ x ε U ⁆ ⊑[ pos F ] (⋁[ F ] ⁅ ((π₀ j (U $ m)) ⊓[ F ] (π₀ k (U $ n))) ∣ (m , n) ∶ (index U × index U) ⁆) ]
-      rem₁ = ⋁[ F ]-least _ (⋁[ F ] _) λ { z (i , p) → ⋁[ F ]-upper _ _ ((i , i) , p) }
+_⊓sc_ (𝒿@(j , _) , j-sc) (𝓀@(k , _) , k-sc) = 𝒿 ⊓N 𝓀 , ⊓N-sc 𝒿 𝓀 j-sc k-sc
 ```
 
 Arbitrary join of nuclei
@@ -258,6 +265,9 @@ This is the non-trivial part of this development.
 
 Given a family `α` of endofunctions on a type, we denote by `compFam α` the
 family obtained by taking compositions of functions in `α`.
+
+```agda
+```
 
 ```agda
 compFam : {A : Type ℓ₀} (α : Fam ℓ₂ (A → A)) → Fam ℓ₂ (A → A)
@@ -614,8 +624,9 @@ scn-pos = ScottContNucleus , scott-cont-nuclei-poset-str
 J*-⊓-lemma : (J : Fam ℓ₂ (Nucleus F))
            → (j : Nucleus F)
            → (x : ∣ F ∣F)
-           → ⁅ (fst j x ⊓[ F ] k x) ∣ k ε (J ^*) ⁆ ≡ ⁅ k x ∣ k ε (((j ⊓N_) ⟨$⟩ J) ^*) ⁆
-J*-⊓-lemma J 𝒿@(j , n₀ , n₁ , _) y = cong (λ - → (List (index J) , -)) (funExt (goal y)) where
+           → (⋁[ F ] ⁅ (fst j x ⊓[ F ] k x) ∣ k ε (J ^*) ⁆)
+           ≡ (⋁[ F ] ⁅ l x ∣ l ε (((j ⊓N_) ⟨$⟩ J) ^*) ⁆)
+J*-⊓-lemma J 𝒿@(j , n₀ , n₁ , _) y = ⊑[ pos F ]-antisym _ _ nts₀ nts₁ where
 
   Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ J) $ i)
   Jᵢ-prenuclear i = fst (snd (J $ i)) , fst (snd (snd (J $ i)))
@@ -623,6 +634,18 @@ J*-⊓-lemma J 𝒿@(j , n₀ , n₁ , _) y = cong (λ - → (List (index J) , -
   J*-prenuclear : (is : index (J ^*)) → isPrenuclear F ((J ^*) $ is)
   J*-prenuclear = compFam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
 
+  nts₀ : [ (⋁[ F ] fmap (λ k → (j y) ⊓[ F ] (k y)) (J ^*)) ⊑[ pos F ] (⋁[ F ] fmap (λ k → k y) ((_⊓N_ 𝒿 ⟨$⟩ J) ^*)) ]
+  nts₀ = ⋁[ F ]-least _ _ rem where
+
+    rem : [ ∀[ z ε fmap (λ k → j y ⊓[ F ] k y) (J ^*) ] (z ⊑[ pos F ] (⋁[ F ] fmap (λ k → k y) ((_⊓N_ 𝒿 ⟨$⟩ J) ^*))) ]
+    rem z ([] , eq)     = subst (λ - → [ - ⊑[ pos F ] _ ]) eq (⋁[ F ]-upper _ _ ([] , (⊑[ pos F ]-antisym _ _ {!!} {!!})))
+    rem z (i ∷ is , eq) = subst (λ - → [ - ⊑[ pos F ] _ ]) eq (⋁[ F ]-upper _ _ ((i ∷ is) , {!!}))
+
+  nts₁ : [ (⋁[ F ] fmap (λ k → k y) ((_⊓N_ 𝒿 ⟨$⟩ J) ^*)) ⊑[ pos F ] (⋁[ F ] fmap (λ k → (j y) ⊓[ F ] (k y)) (J ^*)) ]
+  nts₁ = ⋁[ F ]-least _ _ rem where
+
+    rem : [ ∀[ z ε (fmap (λ k → k y) ((_⊓N_ 𝒿 ⟨$⟩ J) ^*)) ] (z ⊑[ pos F ] {!!}) ]
+    rem = {!!}
 
   lemma⋆ : (x : ∣ F ∣F) → (is : List (index J)) → ((_⊓N_ 𝒿 ⟨$⟩ J) *⦅ is ⦆ x) ≡ j x ⊓[ F ] (J *⦅ is ⦆ x)
   lemma⋆ x []       = ⊑[ pos F ]-antisym _ _ (⊓[ F ]-greatest _ _ _ (n₁ x) (⊑[ pos F ]-refl x)) (⊓[ F ]-lower₁ _ _)
@@ -652,7 +675,7 @@ sc-dist j@((𝒿 , _) , _) J = Σ≡Prop isScottCont-prop (Σ≡Prop (isNuclear-
     where
       rem : _
       rem x = _ ≡⟨ dist F (𝒿 x) _ ⟩
-              ⋁[ F ] ⁅ 𝒿 x ⊓[ F ] (J₀ *⦅ is ⦆ x) ∣ is ∶ List (index J) ⁆ ≡⟨ cong (λ - → ⋁[ F ] -) (J*-⊓-lemma J₀ (fst j) x) ⟩
+              ⋁[ F ] ⁅ 𝒿 x ⊓[ F ] (J₀ *⦅ is ⦆ x) ∣ is ∶ List (index J) ⁆ ≡⟨ J*-⊓-lemma J₀ (fst j) x ⟩
               (⋁[ F ] ⁅ l x ∣ l ε (⁅ fst (j ⊓sc k) ∣ k ε J ⁆ ^*) ⁆)   ≡⟨ refl ⟩
               (⋁[ F ] (List (index J) , λ is → ((⁅ (π₀ j) ⊓N (π₀ k) ∣ k ε J ⁆ ^*) $ is) x))   ≡⟨ refl ⟩
               π₀ (π₀ (⋁N fmap (λ k → j ⊓sc k) J)) x ∎
