@@ -55,17 +55,8 @@ nothing but the map `U ↦ - ◁ U`.
         ⊑[ pos P↓ ]-antisym (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) down up
         where
           down : [ (𝕛 (𝕌 ⊓[ P↓ ] 𝕍)) ⊑[ pos P↓ ] (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ]
-          down a (dir (a∈U , a∈V)) = dir a∈U , dir a∈V
-          down a (branch b f)      = branch b (π₀ ∘ IH) , branch b (π₁ ∘ IH)
-            where
-              IH : (c : outcome ℱ b) → [ π₀ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) (next ℱ c) ]
-              IH c = down (next ℱ c) (f c)
-          down a (squash p q i) = squash (π₀ IH₀) (π₀ IH₁) i , squash (π₁ IH₀) (π₁ IH₁) i
-            where
-              _ : a ◁ π₀ (glb-of P↓ (U , U-down) (V , V-down))
-              _ = p
-              IH₀ = down a p
-              IH₁ = down a q
+          down a p = (◁-lem₄ (U ∩ V) U (λ { u (u∈U , u∈V) → dir u∈U }) a p)
+                   , (◁-lem₄ (U ∩ V) V (λ { u (u∈U , u∈V) → dir u∈V }) a p)
 
           up : [ (𝕛 𝕌 ⊓[ P↓ ] 𝕛 𝕍) ⊑[ pos P↓ ] 𝕛 (𝕌 ⊓[ P↓ ] 𝕍) ]
           up a (a◁U , a◁V) = ◁-lem₃ V U V-down U-down (⊑[ P ]-refl a) a◁V a◁U
