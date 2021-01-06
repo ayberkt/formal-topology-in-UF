@@ -81,7 +81,7 @@ ScottContNucleus-set =
   isSetΣ (Nucleus-set F) (isProp→isSet ∘ isScottCont-prop)
 ```
 
-Poset of nuclei on `F`
+Poset of nuclei on `F` (`𝔑`)
 ======================
 
 The set of endofunctions on a given frame forms a poset under the pointwise
@@ -132,8 +132,8 @@ fst 𝔑 = Nucleus F
 snd 𝔑 = poset-of-nuclei-str
 ```
 
-Frame of nuclei on `F`
-======================
+Frame of Scott-continuous nuclei on `F`
+=======================================
 
 The top nucleus
 ---------------
@@ -283,7 +283,13 @@ _⊓sc_ (𝒿@(j , _) , j-sc) (𝓀@(k , _) , k-sc) = 𝒿 ⊓N 𝓀 , ⊓N-sc �
 Arbitrary join of nuclei
 ------------------------
 
+### Directification of a family of nuclei
+
 This is the non-trivial part of this development.
+
+We first define following function `ℜ` such that, given a family `U ≔ { fᵢ : A →
+A ∣ i ∈ I }` of endofunctions, and a list `i₀, …, iₙ` of indices from `I`, `ℜ U
+[i₀, …, iₙ]` denotes the composition `fᵢₙ ∘ ⋯ ∘ fᵢ₀`.
 
 ```agda
 ℜ : {A : Type ℓ} → (α : Fam ℓ′ (A → A)) → List (index α) → A → A
@@ -291,12 +297,17 @@ This is the non-trivial part of this development.
 ℜ α (i ∷ is) = ℜ α is ∘ (α $ i)
 ```
 
+Using `ℜ`, we define the family obtained from such a family of endofunctions
+that consists of all such compositions.
+
 ```agda
 ℜ-fam : {A : Type ℓ₀} (α : Fam ℓ₂ (A → A)) → Fam ℓ₂ (A → A)
 ℜ-fam {A = A} α = List (index α) , ℜ α
 ```
 
-We will use this function to compute the join of a family of nuclei.
+We will use this function to compute the join of a family of nuclei. The key
+idea is that the family of compositions is a directed family even if the family
+we start with is not.
 
 Notice that the identity function is always a (pre)nucleus.
 
@@ -313,8 +324,8 @@ Compositions of prenuclei are prenuclei meaning given a family of nuclei, its
                    → ((i : index α) → isPrenuclear F (α $ i))
                    → (is : List (index α)) → isPrenuclear F ((ℜ-fam α) $ is)
 ℜ-fam-prenucleus α φ []       = id-is-nuclear F
-ℜ-fam-prenucleus α φ (i ∷ is) = n₀ , n₁ where
-
+ℜ-fam-prenucleus α φ (i ∷ is) = n₀ , n₁
+  where
   j = ℜ-fam α $ (i ∷ is)
 
   j′ : ∣ F ∣F → ∣ F ∣F
@@ -350,16 +361,16 @@ J ^* = ℜ-fam ⁅ j ∣ (j , _) ε J ⁆
 ```
 
 ```agda
-J*-++-ext : (J : Fam ℓ₂ (Nucleus F))
-          → (is js : index (J ^*))
-          → (x : ∣ F ∣F)
-          → (J ^* $ (is ++ js)) x ≡ ((J ^* $ js) ∘ (J ^* $ is)) x
-J*-++-ext J []       js x = refl
-J*-++-ext J (i ∷ is) js x = J*-++-ext J is js (fst (J $ i) x)
+J*-++-lemma : (J : Fam ℓ₂ (Nucleus F))
+            → (is js : index (J ^*))
+            → (x : ∣ F ∣F)
+            → (J ^* $ (is ++ js)) x ≡ ((J ^* $ js) ∘ (J ^* $ is)) x
+J*-++-lemma J []       js x = refl
+J*-++-lemma J (i ∷ is) js x = J*-++-lemma J is js (fst (J $ i) x)
 
 J*-++ : (J : Fam ℓ₂ (Nucleus F))
       → (is js : index (J ^*)) → J ^* $ (is ++ js) ≡ (J ^* $ js) ∘ (J ^* $ is)
-J*-++ J is js = funExt (J*-++-ext J is js)
+J*-++ J is js = funExt (J*-++-lemma J is js)
 ```
 
 `J ^*` is always inhabited.
@@ -444,8 +455,7 @@ J*-scott-continuous J J-sc (i ∷ is) U dir =
     ⦅𝟐⦆ = J*-scott-continuous J J-sc is (⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) dir′
 ```
 
-The join
-========
+### A lemma
 
 ```agda
 joins-commute : (J : Fam 𝒲 (Nucleus F)) (U : Fam 𝒲 ∣ F ∣F)
@@ -470,13 +480,15 @@ joins-commute J U =
 
 ```agda
 𝕚 : (J : Fam 𝒲 (Nucleus F)) → ∣ F ∣F → ∣ F ∣F
-𝕚 J x = ⋁[ F ] ⁅ α x ∣ α ε (J ^*) ⁆
+𝕚 J x = ⋁ ⁅ α x ∣ α ε J ^* ⁆
 ```
+
+### The definition of the join
 
 ```agda
 ⋁N_ : (J : Fam 𝒲 ScottContNucleus) → ScottContNucleus
-⋁N_ J₀ = N , N-sc where
-
+⋁N_ J₀ = N , N-sc
+  where
   J = fst ⟨$⟩ J₀
 
   J* : Fam 𝒲 (∣ F ∣F → ∣ F ∣F)
@@ -498,13 +510,11 @@ joins-commute J U =
 
   n₀ : (x y : ∣ F ∣F) → 𝕚 J (x ⊓[ F ] y) ≡ (𝕚 J x) ⊓[ F ] (𝕚 J y)
   n₀ x y =
-    𝕚 J (x ⊓[ F ] y)                                             ≡⟨ refl ⟩
     ⋁[ F ] ⁅ γ (x ⊓[ F ] y)     ∣ γ ε J* ⁆                     ≡⟨ ⦅𝟏⦆  ⟩
     ⋁[ F ] ⁅ (γ x) ⊓[ F ] (γ y) ∣ γ ε J* ⁆                     ≡⟨ ⦅𝟐⦆  ⟩
     ⋁[ F ] ⁅ (J* $ i) x ⊓[ F ] (J* $ j) y ∣ (i , j) ∶ _ × _ ⁆  ≡⟨ ⦅𝟑⦆  ⟩
-    (⋁[ F ] ⁅ α x ∣ α ε J* ⁆) ⊓[ F ] (⋁[ F ] ⁅ β y ∣ β ε J* ⁆) ≡⟨ refl ⟩
-    𝕚 J x ⊓[ F ] 𝕚 J y                                             ∎ where
-
+    (⋁ ⁅ α x ∣ α ε J* ⁆) ⊓ (⋁ ⁅ β y ∣ β ε J* ⁆) ∎
+      where
       nts₀ : [ ⋁[ F ] ⁅ γ x ⊓[ F ] γ y ∣ γ ε J* ⁆ ⊑[ pos F ] _ ]
       nts₀ = ⋁[ F ]-least _ _ λ { z (i , eq) → ⋁[ F ]-upper _ _ ((i , i) , eq) }
 
@@ -543,7 +553,7 @@ joins-commute J U =
          ⋁[ F ] ⁅ β x ∣ β ε J* ⁆                                  ■
     where
       rem : [ ∀[ z ε _ ] (z ⊑[ pos F ] ⋁[ F ] ⁅ β x ∣ β ε J* ⁆) ]
-      rem z ((js , is) , eq) = ⋁[ F ]-upper _ _ ((is ++ js) , (_ ≡⟨ J*-++-ext J is js x ⟩ (((J ^*) $ js) ∘ ((J ^*) $ is)) x ≡⟨ eq ⟩ z ∎))
+      rem z ((js , is) , eq) = ⋁[ F ]-upper _ _ ((is ++ js) , (_ ≡⟨ J*-++-lemma J is js x ⟩ (((J ^*) $ js) ∘ ((J ^*) $ is)) x ≡⟨ eq ⟩ z ∎))
 
       dir : [ isDirected (pos F) ⁅ β x ∣ β ε J* ⁆ ]
       dir = ∣ [] ∣ , upper-bounds where
