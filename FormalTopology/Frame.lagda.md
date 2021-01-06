@@ -262,14 +262,14 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
   bin-dist : (x y z : ∣ F ∣F) → x ⊓[ F ] (y ∨[ F ] z) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
   bin-dist x y z =
-    x ⊓[ F ] (y ∨[ F ] z)               ≡⟨ dist x 𝒰  ⟩
-    join-of (λ i → glb-of F x (𝒰 $ i))  ≡⟨ NTS       ⟩
+    x ⊓[ F ] (y ∨[ F ] z)               ≡⟨ dist x 𝒰′  ⟩
+    join-of (λ i → glb-of F x (𝒰′ $ i))  ≡⟨ NTS       ⟩
     (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)    ∎
     where
-      𝒰 : Fam ℓ₂ ∣ F ∣F
-      𝒰 = Bool ℓ₂ , λ p → if p then y else z
+      𝒰′ : Fam ℓ₂ ∣ F ∣F
+      𝒰′ = Bool ℓ₂ , λ p → if p then y else z
 
-      NTS : ⋁⟨ b ⟩ (x ⊓[ F ] (𝒰 $ b)) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
+      NTS : ⋁⟨ b ⟩ (x ⊓[ F ] (𝒰′ $ b)) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
       NTS = cong (λ - → ⋁[ F ] (Bool ℓ₂ , -)) (funExt λ { true → refl ; false → refl })
 
   comm : (x y : ∣ F ∣F) → x ⊓[ F ] y ≡ y ⊓[ F ] x

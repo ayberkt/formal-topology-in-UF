@@ -66,6 +66,33 @@ A ↔ B = (A → B) × (B → A)
 ↔-from (_ , from) = from
 ```
 
+## Levels
+
+Escardó-style level notation.
+
+```agda
+infixr 5 _∨_
+
+Universe : Type₀
+Universe = Level
+
+variable
+  𝒰 𝒱 𝒲 : Universe
+
+_∨_ : Level → Level → Level
+ℓ₀ ∨ ℓ₁ = ℓ-max ℓ₀ ℓ₁
+
+infix 6 _⁺
+
+_⁺ : Level → Level
+ℓ ⁺ = ℓ-suc ℓ
+
+infix 6 _̇
+
+_̇ : (ℓ : Level) → Type (ℓ ⁺)
+ℓ ̇ = Type ℓ
+```
+
 ## The unit type
 
 ```
