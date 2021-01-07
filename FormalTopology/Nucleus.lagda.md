@@ -24,6 +24,18 @@ isNuclear L j = N₀ × N₁ × N₂
 Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
 
+𝓃₀ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x y : ∣ F ∣F) → j (x ⊓[ F ] y) ≡ (j x) ⊓[ F ] (j y)
+𝓃₀ F (_ , n₀ , _) = n₀
+
+𝓃₁ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x : ∣ F ∣F) → [ x ⊑[ pos F ] j x ]
+𝓃₁ F (_ , _ , n₁ , _) = n₁
+
+𝓃₂ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x : ∣ F ∣F) → [ j (j x) ⊑[ pos F ] j x ]
+𝓃₂ F (_ , _ , _ , n₂) = n₂
+
 isNuclear-prop : (L : Frame ℓ₀ ℓ₁ ℓ₂) (j : ∣ L ∣F → ∣ L ∣F)
                → isProp (isNuclear L j)
 isNuclear-prop L j = isProp×2 N₀-prop N₁-prop N₂-prop
@@ -60,6 +72,44 @@ mono L (j , N₀ , N₁ , N₂) x y x⊑y =
   j y             ■
   where
     open PosetReasoning (pos L)
+
+module Nucleus-∨-Lemmata (L : Frame ℓ₀ ℓ₁ ℓ₂) (𝒿 : Nucleus L) where
+
+  open PosetReasoning (pos L)
+
+  j = π₀ 𝒿
+  n₁ = π₀ (π₁ (π₁ 𝒿))
+  n₂ = π₁ (π₁ (π₁ 𝒿))
+
+  nucleus-∨-lemma₀ : (x y : ∣ L ∣F)
+                   → [ j (x ∨[ L ] y) ⊑[ pos L ] j (x ∨[ L ] j y) ]
+  nucleus-∨-lemma₀ x y =
+    mono L 𝒿 _ _ (⊔[ L ]-least x y (x ∨[ L ] (j y)) (⊔[ L ]-upper₀ _ _) α)
+    where
+      α : [ y ⊑[ pos L ] x ∨[ L ] (j y) ]
+      α = y ⊑⟨ n₁ y ⟩ j y ⊑⟨ ⊔[ L ]-upper₁ _ _ ⟩ x ∨[ L ] j y ■
+
+  nucleus-∨-lemma₁ : (x y : ∣ L ∣F)
+                   → [ j (x ∨[ L ] j y) ⊑[ pos L ] j (j x ∨[ L ] j y) ]
+  nucleus-∨-lemma₁ x y = mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (x ⊑⟨ n₁ x ⟩ j x ⊑⟨ ⊔[ L ]-upper₀ _ _ ⟩ _ ■) (⊔[ L ]-upper₁ _ _))
+
+  nucleus-∨-lemma₂ : (x y : ∣ L ∣F)
+                   → [ j (j x ∨[ L ] j y) ⊑[ pos L ] j (j (x ∨[ L ] y)) ]
+  nucleus-∨-lemma₂ x y = mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (mono L 𝒿 _ _ (⊔[ L ]-upper₀ x y)) (mono L 𝒿 _ _ (⊔[ L ]-upper₁ x y)))
+
+  nucleus-∨-thm₀ : (x y : ∣ L ∣F)
+                 → j (x ∨[ L ] y) ≡ j (j x ∨[ L ] j y)
+  nucleus-∨-thm₀ x y = ⊑[ pos L ]-antisym _ _ nts₀ nts₁
+    where
+      nts₀ : _
+      nts₀ = j (x ∨[ L ] y)     ⊑⟨ nucleus-∨-lemma₀ x y ⟩
+             j (x ∨[ L ] j y)   ⊑⟨ nucleus-∨-lemma₁ x y ⟩
+             j (j x ∨[ L ] j y) ■
+
+      nts₁ : _
+      nts₁ = j (j x ∨[ L ] j y) ⊑⟨ nucleus-∨-lemma₂ x y ⟩
+             j (j (x ∨[ L ] y)) ⊑⟨ n₂ (x ∨[ L ] y)      ⟩
+             j (x ∨[ L ] y)     ■
 
 -- The set of fixed points for nucleus `j` is equivalent hence equal to its image.
 -- This is essentially due to the fact that j (j ())
@@ -217,6 +267,9 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
           j (x ⊓[ L ] (⋁L U₀))               ≡⟨ cong j (dist L x U₀)                 ⟩
           j (⋁L ⁅ x ⊓[ L ] yᵢ ∣ yᵢ ε U₀ ⁆)   ≡⟨ refl                                 ⟩
           π₀ (⋁⟨ i ⟩ (𝓍 ∧ (U $ i)))          ∎
+```
+
+```agda
 ```
 
 ```agda
