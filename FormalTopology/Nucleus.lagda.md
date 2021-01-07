@@ -24,6 +24,18 @@ isNuclear L j = N₀ × N₁ × N₂
 Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
 
+𝓃₀ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x y : ∣ F ∣F) → j (x ⊓[ F ] y) ≡ (j x) ⊓[ F ] (j y)
+𝓃₀ F (_ , n₀ , _) = n₀
+
+𝓃₁ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x : ∣ F ∣F) → [ x ⊑[ pos F ] j x ]
+𝓃₁ F (_ , _ , n₁ , _) = n₁
+
+𝓃₂ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
+   → (x : ∣ F ∣F) → [ j (j x) ⊑[ pos F ] j x ]
+𝓃₂ F (_ , _ , _ , n₂) = n₂
+
 isNuclear-prop : (L : Frame ℓ₀ ℓ₁ ℓ₂) (j : ∣ L ∣F → ∣ L ∣F)
                → isProp (isNuclear L j)
 isNuclear-prop L j = isProp×2 N₀-prop N₁-prop N₂-prop
