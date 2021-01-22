@@ -77,7 +77,7 @@ Universe : Type₀
 Universe = Level
 
 variable
-  𝒰 𝒱 𝒲 : Universe
+  𝒰 𝒱 𝒲 𝓤 𝓥 𝓦 : Universe
 
 _∨_ : Level → Level → Level
 ℓ₀ ∨ ℓ₁ = ℓ-max ℓ₀ ℓ₁
