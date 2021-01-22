@@ -32,7 +32,7 @@ Every prenucleus is monotonic.
 ```agda
 monop : (L : Frame ℓ₀ ℓ₁ ℓ₂) ((j , _) : Prenucleus L)
       → (x y : ∣ L ∣F) → [ x ⊑[ pos L ] y ] → [ (j x) ⊑[ pos L ] (j y) ]
-monop L (j , N₀ , N₁) x y x⊑y =
+monop L (j , N₀ , _) x y x⊑y =
   j x             ⊑⟨ ≡⇒⊑ (pos L) (cong j (x⊑y⇒x=x∧y L x⊑y)) ⟩
   j (x ⊓[ L ] y)  ⊑⟨ ≡⇒⊑ (pos L) (N₀ x y)                   ⟩
   j x ⊓[ L ] j y  ⊑⟨ ⊓[ L ]-lower₁ (j x) (j y)              ⟩
