@@ -425,6 +425,14 @@ _*⦅_⦆_ : (J : Fam 𝒲 (Nucleus F)) → index (J ^*) → ∣ F ∣F → ∣ 
 J *⦅ is ⦆ x = ((J ^*) $ is) x
 ```
 
+```agda
+nucl-lemma₁-a : ((j , _) (k , _) : Prenucleus F) → [ j ⊑[ 𝔉 ] (j ∘ k) ]
+nucl-lemma₁-a 𝒿@(j , _) (k , n₀ , n₁) x = monop F 𝒿 x (k x) (n₁ x) 
+
+nucl-lemma₁-b : ((j , _) (k , _) : Prenucleus F) → [ k ⊑[ 𝔉 ] (j ∘ k) ]
+nucl-lemma₁-b (j , n₀ , n₁) (k , _) x = n₁ (k x)
+```
+
 `J^*` is upwards-closed.
 
 ```agda
@@ -433,7 +441,7 @@ J*-up : (J : Fam 𝒲 (Nucleus F))
       → Σ[ ks ∈ index (J ^*) ]
          [ ⟨ J ^* $ is , J ^* $ js ⟩⊑[ 𝔉 ] (J ^* $ ks) ]
 J*-up J is js =
-  (is ++ js) , J*is⊑J*is++js is js , J*js⊑J*is++js is js
+  (is ++ js) , subst (λ - → [ rel₂ 𝔉 _ _ - ]) (sym (J*-++ J is js)) (nucl-lemma₁-b Jⱼₛ Jᵢₛ , nucl-lemma₁-a Jⱼₛ Jᵢₛ)
   where
   Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ J) $ i)
   Jᵢ-prenuclear i = fst (snd (J $ i)) , fst (snd (snd (J $ i)))
@@ -441,20 +449,14 @@ J*-up J is js =
   J*-prenuclear : (is : List (index J)) → isPrenuclear F (J ^* $ is)
   J*-prenuclear = ℜ-fam-prenucleus (fst ⟨$⟩ J) Jᵢ-prenuclear
 
-  J*is⊑J*is++js : (is js : index (J ^*))
-                → [ J *⦅ is ⦆_ ⊑[ 𝔉 ] J *⦅ is ++ js ⦆_ ]
-  J*is⊑J*is++js []       js x = snd (J*-prenuclear js) x
-  J*is⊑J*is++js (i ∷ is) js x =
-    J *⦅ is ⦆ (J ⦅ i ⦆ x)       ⊑⟨ J*is⊑J*is++js is js (J ⦅ i ⦆ x) ⟩
-    J *⦅ is ++ js ⦆ (J ⦅ i ⦆ x) ■
+  Jᵢₛ : Prenucleus F
+  Jᵢₛ = (J *⦅ is ⦆_) , J*-prenuclear is
 
-  J*js⊑J*is++js : (is js : index (J ^*))
-                → [ J *⦅ js ⦆_ ⊑[ 𝔉 ] J *⦅ is ++ js ⦆_ ]
-  J*js⊑J*is++js is js =
-    subst (λ - → [ _ ⊑[ 𝔉 ] - ]) (sym (J*-++ J is js)) rem
-    where
-    rem : [ ((J ^*) $ js) ⊑[ 𝔉 ] (((J ^*) $ js) ∘ ((J ^*) $ is)) ]
-    rem x = monop F (_ , J*-prenuclear js) x _ (snd (J*-prenuclear is) x)
+  Jⱼₛ : Prenucleus F
+  Jⱼₛ = (J *⦅ js ⦆_) , J*-prenuclear js
+
+  Jᵢₛ₊₊ⱼₛ : Prenucleus F
+  Jᵢₛ₊₊ⱼₛ = J *⦅ is ++ js ⦆_ , J*-prenuclear (is ++ js)
 ```
 
 ```
@@ -473,7 +475,7 @@ J*-scott-continuous J J-sc []       U dir = refl
 J*-scott-continuous J J-sc (i ∷ is) U dir =
   J *⦅ i ∷ is ⦆ (⋁ U)                 ≡⟨ refl                             ⟩
   J *⦅ is ⦆ (J ⦅ i ⦆ (⋁ U))           ≡⟨ cong (J *⦅ is ⦆_) (J-sc _ U dir) ⟩
-  J *⦅ is ⦆ (⋁ ⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) ≡⟨ ⦅𝟐⦆                              ⟩
+  J *⦅ is ⦆ (⋁ ⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) ≡⟨ IH                               ⟩
   ⋁ ⁅ J *⦅ i ∷ is ⦆ x ∣ x ε U ⁆       ∎
   where
   J-prenucleus : (i : index J) → Prenucleus F
@@ -489,8 +491,8 @@ J*-scott-continuous J J-sc (i ∷ is) U dir =
   dir′ : [ isDirected (pos F) ⁅ J ⦅ i ⦆ x ∣ x ε U ⁆ ]
   dir′ = (fst dir) , (λ j k → ∥∥-rec (∥∥-prop _) (lem j k) (snd dir j k))
 
-  ⦅𝟐⦆ : _
-  ⦅𝟐⦆ = J*-scott-continuous J J-sc is (⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) dir′
+  IH : _
+  IH = J*-scott-continuous J J-sc is (⁅ J ⦅ i ⦆ x ∣ x ε U ⁆) dir′
 ```
 
 ### A lemma
@@ -663,9 +665,6 @@ dupl x y = ⊓[ F ]-greatest _ _ _ (⊓[ F ]-lower₀ x y) (⊑[ pos F ]-refl (x
 ```
 
 ```agda
-nucl-lemma₁-b : ((j , _) (k , _) : Nucleus F) → [ k ⊑[ 𝔉 ] (j ∘ k) ]
-nucl-lemma₁-b (j , n₀ , n₁ , n₂) (k , _) x = n₁ (k x)
-
 nucl-lemma₂ : ((j , _) (k , _) (j′ , _) (k′ , _) : Nucleus F)
             → [ j ⊑[ 𝔉 ] j′ ] → [ k ⊑[ 𝔉 ] k′ ] → [ (j ∘ k) ⊑[ 𝔉 ] (j′ ∘ k′) ]
 nucl-lemma₂ 𝒿@(j , _) (k , _) (j′ , _) (k′ , _) p q x =
