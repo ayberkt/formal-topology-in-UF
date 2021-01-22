@@ -54,7 +54,7 @@
 </pre>
 **Definition 2.7**.
 
-<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3758" class="Function Operator">Basis._~_</a>
+<pre class="Agda"><a id="911" href="Index.html#911" class="Function">_</a> <a id="913" class="Symbol">=</a> <a id="915" href="Basis.html#3764" class="Function Operator">Basis._~_</a>
 </pre>
 **Proposition 2.8**.
 
@@ -164,49 +164,49 @@ Proposition 2.15 is omitted.
 
 **Definition 2.34**.
 
-<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3855" class="Function">Basis.𝒫</a>
+<pre class="Agda"><a id="2531" href="Index.html#2531" class="Function">_</a> <a id="2533" class="Symbol">=</a> <a id="2535" href="Basis.html#3861" class="Function">Basis.𝒫</a>
 </pre>
 **Proposition 2.35**.
 
-<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#4037" class="Function">Basis.𝒫-set</a>
+<pre class="Agda"><a id="2579" href="Index.html#2579" class="Function">_</a> <a id="2581" class="Symbol">=</a> <a id="2583" href="Basis.html#4043" class="Function">Basis.𝒫-set</a>
 </pre>
 **Definition 2.36**.
 
-<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#4286" class="Function Operator">Basis._⊆_</a>
+<pre class="Agda"><a id="2630" href="Index.html#2630" class="Function">_</a> <a id="2632" class="Symbol">=</a> <a id="2634" href="Basis.html#4292" class="Function Operator">Basis._⊆_</a>
 </pre>
 **Definition 2.37**.
 
-<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#4618" class="Function">Basis.entire</a>
+<pre class="Agda"><a id="2679" href="Index.html#2679" class="Function">_</a> <a id="2681" class="Symbol">=</a> <a id="2683" href="Basis.html#4624" class="Function">Basis.entire</a>
 </pre>
 **Definition 2.38**.
 
-<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#4685" class="Function Operator">Basis._∩_</a>
+<pre class="Agda"><a id="2731" href="Index.html#2731" class="Function">_</a> <a id="2733" class="Symbol">=</a> <a id="2735" href="Basis.html#4691" class="Function Operator">Basis._∩_</a>
 </pre>
 ### 2.6: Families
 
 **Definition 2.39**.
 
-<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#5058" class="Function">Basis.Fam</a>
+<pre class="Agda"><a id="2799" href="Index.html#2799" class="Function">_</a> <a id="2801" class="Symbol">=</a> <a id="2803" href="Basis.html#5064" class="Function">Basis.Fam</a>
 </pre>
 **Definition 2.41**.
 
-<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#5320" class="Function Operator">Basis._ε_</a>
+<pre class="Agda"><a id="2848" href="Index.html#2848" class="Function">_</a> <a id="2850" class="Symbol">=</a> <a id="2852" href="Basis.html#5326" class="Function Operator">Basis._ε_</a>
 </pre>
 **Definition 2.42**.
 
-<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#5527" class="Function Operator">Basis._⟨$⟩_</a>
+<pre class="Agda"><a id="2897" href="Index.html#2897" class="Function">_</a> <a id="2899" class="Symbol">=</a> <a id="2901" href="Basis.html#5533" class="Function Operator">Basis._⟨$⟩_</a>
 </pre>
 **Definition 2.43**.
 
-<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#6287" class="Function Operator">Basis.⟪_⟫</a>
+<pre class="Agda"><a id="2948" href="Index.html#2948" class="Function">_</a> <a id="2950" class="Symbol">=</a> <a id="2952" href="Basis.html#6293" class="Function Operator">Basis.⟪_⟫</a>
 </pre>
 ### 2.8: Truncation
 
 **Definition 2.44**.
 
-<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#6913" class="Datatype Operator">Basis.∥_∥</a>
-<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#7000" class="Function">Basis.∥∥-prop</a>
-<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#7058" class="Function">Basis.∥∥-rec</a>
+<pre class="Agda"><a id="3018" href="Index.html#3018" class="Function">_</a> <a id="3020" class="Symbol">=</a> <a id="3022" href="Basis.html#6919" class="Datatype Operator">Basis.∥_∥</a>
+<a id="3032" href="Index.html#3032" class="Function">_</a> <a id="3034" class="Symbol">=</a> <a id="3036" href="Basis.html#7006" class="Function">Basis.∥∥-prop</a>
+<a id="3050" href="Index.html#3050" class="Function">_</a> <a id="3052" class="Symbol">=</a> <a id="3054" href="Basis.html#7064" class="Function">Basis.∥∥-rec</a>
 </pre>
 ## Chapter 3: Frames
 
