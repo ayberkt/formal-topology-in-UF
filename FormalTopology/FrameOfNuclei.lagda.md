@@ -522,7 +522,7 @@ Some shorthand notation that we will use when defining the join.
 
 ```agda
 𝕚 : (J : Fam 𝒲 (Nucleus F)) → ∣ F ∣F → ∣ F ∣F
-𝕚 J x = ⋁ ⁅ α x ∣ α ε J ^* ⁆
+𝕚 K = λ x → ⋁ ⁅ α x ∣ α ε K ^* ⁆
 ```
 
 ### The definition of the join
@@ -630,27 +630,35 @@ Some shorthand notation that we will use when defining the join.
 ⋁sc-join : [ isLUB 𝔖 ⋁n_ ]
 ⋁sc-join = upper , least
   where
-  upper : (U : Fam 𝒲 ∣ 𝔖 ∣ₚ) → [ ∀[ x ε U ] (x ⊑[ 𝔖 ] ⋁n U) ]
-  upper U 𝒿@((j , _) , _) (i , eq) x = ⋁[ F ]-upper _ _ ((i ∷ []) , Uᵢ~j x)
+  upper : (K : Fam 𝒲 ScottContNucleus) → [ ∀[ k ε K ] (k ⊑[ 𝔖 ] ⋁n K) ]
+  upper K 𝒿@((j , _) , _) (i , eq) x = ⋁[ F ]-upper _ _ (i ∷ [] , Kᵢ~j x)
     where
-    Uᵢ~j : (x : ∣ F ∣F) → fst (fst (U $ i)) x ≡ j x
-    Uᵢ~j = funExt⁻ (fst (PathΣ→ΣPathTransport _ _ (fst (PathΣ→ΣPathTransport _ _ eq))))
+    K₀ = fst ⟨$⟩ K
+    Kᵢ~j : (x : ∣ F ∣F) → K₀ ⦅ i ⦆ x ≡ j x
+    Kᵢ~j x = λ i → fst (fst (eq i)) x
 
-  least : (J : Fam 𝒲 ∣ 𝔖 ∣ₚ) (j : ∣ 𝔖 ∣ₚ)
-        → [ ∀[ k ε J ] (k ⊑[ 𝔖 ] j) ⇒ (⋁n J) ⊑[ 𝔖 ] j ]
-  least J 𝒿@((j , _ , n₁ , n₂) , _) p x = ⋁[ F ]-least _ (j x) λ { y (is , eq) → subst (λ - → [ - ⊑[ pos F ] j x ]) eq (lemma is x) } where
+  least : (𝒦 : Fam 𝒲 ScottContNucleus) (𝒿 : ScottContNucleus)
+        → [ ∀[ 𝓀ᵢ ε 𝒦 ] (𝓀ᵢ ⊑[ 𝔖 ] 𝒿) ⇒ (⋁n 𝒦) ⊑[ 𝔖 ] 𝒿 ]
+  least 𝒦 𝒿@((j , _ , n₁ , n₂) , _) p x =
+    ⋁[ F ]-least _ _ λ { y (is , q) → subst (λ - → [ - ⊑ j x ]) q (lemma is x) }
+    where
+    𝒦₀ = fst ⟨$⟩ 𝒦
 
-    Jᵢ-prenuclear : (i : index J) → isPrenuclear F ((fst ⟨$⟩ (fst ⟨$⟩ J)) $ i)
-    Jᵢ-prenuclear i = fst (snd ((fst ⟨$⟩ J) $ i)) , fst (snd (snd ((fst ⟨$⟩ J) $ i)))
+    Jᵢ-prenuclear : (i : index 𝒦) → isPrenuclear F (𝒦₀ ⦅ i ⦆_)
+    Jᵢ-prenuclear = snd ∘ nucleus⇒prenucleus F ∘ (𝒦₀ $_)
 
-    J*-prenuclear : (is : index ((fst ⟨$⟩ J) ^*)) → isPrenuclear F (((fst ⟨$⟩ J) ^*) $ is)
-    J*-prenuclear = ℜ-fam-prenucleus (fst ⟨$⟩ (fst ⟨$⟩ J)) Jᵢ-prenuclear
+    K*-prenuclear : (is : List (index 𝒦)) → isPrenuclear F (𝒦₀ *⦅ is ⦆_)
+    K*-prenuclear = snd ∘ (𝒦₀ ^** $_)
 
-    lemma : (is : List (index J)) → (x : ∣ F ∣F) → [ (((fst ⟨$⟩ J) ^*) $ is) x ⊑[ pos F ] j x ]
-    lemma []       x = n₁ x
+    lemma : (is : List (index 𝒦)) (x : ∣ F ∣F) → [ (𝒦₀ *⦅ is ⦆ x) ⊑ j x ]
+    lemma []         = n₁
     lemma (i ∷ is) x =
-      (((fst ⟨$⟩ J) ^*) $ is) (fst (fst (J $ i)) x) ⊑⟨ monop F (_ , (J*-prenuclear is)) _ _ (p (J $ i ) (i , refl) x ) ⟩
-      (((fst ⟨$⟩ J) ^*) $ is) (j x) ⊑⟨ lemma is (j x) ⟩ j (j x) ⊑⟨ n₂ x ⟩ j x ■
+      𝒦₀ *⦅ is ⦆ (𝒦₀ ⦅ i ⦆ x) ⊑⟨ monop F (𝒦₀ ^** $ is) _ _ (p _ (i , refl) x) ⟩
+      𝒦₀ *⦅ is ⦆ (j x)        ⊑⟨ ih                                           ⟩
+      j (j x)                 ⊑⟨ n₂ x                                         ⟩
+      j x                     ■
+      where
+      ih = lemma is (j x)
 ```
 
 Distributivity
@@ -704,11 +712,10 @@ lemma-δ : (𝒿 : Nucleus F) (𝒦 : Fam 𝒲 (Nucleus F))
         → [ ((𝒿 ⊓n_) ⟨$⟩ 𝒦) *⦅ is ⦆ x ⊑[ pos F ] fst 𝒿 x ]
 lemma-δ 𝒿@(j , n₀ , n₁ , n₂) 𝒦 x []       = n₁ x
 lemma-δ 𝒿@(j , n₀ , n₁ , n₂) 𝒦 x (i ∷ is) =
-  (_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ i ∷ is ⦆ x                      ⊑⟨ ⊑[ pos F ]-refl _ ⟩
-  ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (j x ⊓[ F ] (𝒦 ⦅ i ⦆ x))) ⊑⟨ ≡⇒⊑ (pos F) (fst (ℜ-fam-prenucleus (fst ⟨$⟩ (_⊓n_ 𝒿 ⟨$⟩ 𝒦)) (λ i → (fst (snd ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) $ i))) , fst (snd (snd ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) $ i)))) is) _ _)  ⟩
-  ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (j x)) ⊓[ F ] ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (𝒦 ⦅ i ⦆ x)) ⊑⟨ ⊓[ F ]-lower₀ _ _ ⟩
-  ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (j x))                    ⊑⟨ lemma-δ 𝒿 𝒦 (j x) is ⟩
-  _                                                 ⊑⟨ n₂ x ⟩
+  ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (j x ⊓ (𝒦 ⦅ i ⦆ x))) ⊑⟨ lemma-δ 𝒿 𝒦 ((j x) ⊓[ F ] (𝒦 ⦅ i ⦆ x)) is ⟩
+  j (j x ⊓ (𝒦 ⦅ i ⦆ x))                        ⊑⟨ ≡⇒⊑ (pos F ) (n₀ (j x) (𝒦 ⦅ i ⦆ x))  ⟩
+  j (j x) ⊓ j (𝒦 ⦅ i ⦆ x)                      ⊑⟨ ⊓[ F ]-lower₀ _ _ ⟩
+  j (j x)                                      ⊑⟨ ≡⇒⊑ (pos F) (idem F 𝒿 x)  ⟩
   j x ■
 
 sc-dist : [ isDist 𝔖 _⊓sc_ ⋁n_ ] -- The proof is written in the paper.
@@ -724,9 +731,9 @@ sc-dist j@(jn@(𝒿 , n₀ , n₁ , n₂) , _) J =
   ∣J∣ = fst ⟨$⟩ (fst ⟨$⟩ J)
 
   Jᵢ-prenuclear : (i : index J) → isPrenuclear F (∣J∣ $ i)
-  Jᵢ-prenuclear i = fst (snd (K $ i)) , fst (snd (snd (K $ i)))
+  Jᵢ-prenuclear = snd ∘ nucleus⇒prenucleus F ∘ (K $_)
 
-  J*-prenuclear : (is : index (K ^*)) → isPrenuclear F ((K ^*) $ is)
+  J*-prenuclear : (is : List (index K)) → isPrenuclear F (K *⦅ is ⦆_)
   J*-prenuclear = ℜ-fam-prenucleus ∣J∣ Jᵢ-prenuclear
 
   cofinal₀ : (x : ∣ F ∣F) → ⁅ 𝒿 x ⊓[ F ] α x ∣ α ε K ^* ⁆ cofinal-in ⁅ β x ∣ β ε ((jn ⊓n_) ⟨$⟩ K) ^* ⁆
