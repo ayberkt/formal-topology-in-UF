@@ -10,6 +10,7 @@ module Nucleus where
 open import Basis
 open import Poset
 open import Frame
+open import Prenucleus
 open import Cubical.Foundations.HLevels using (isProp×; isProp×2; isProp×3)
 
 -- A predicate expressing whether a function is a nucleus.
@@ -270,6 +271,8 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
 ```
 
 ```agda
+nucleus⇒prenucleus : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Nucleus F → Prenucleus F
+nucleus⇒prenucleus F (j , n₀ , n₁ , _)= j , n₀ , n₁
 ```
 
 ```agda
