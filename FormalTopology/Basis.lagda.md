@@ -91,6 +91,9 @@ infix 6 _̇
 
 _̇ : (ℓ : Level) → Type (ℓ ⁺)
 ℓ ̇ = Type ℓ
+
+𝓤₀ : Level
+𝓤₀ = ℓ-zero
 ```
 
 ## The unit type
