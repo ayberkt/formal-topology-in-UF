@@ -5,7 +5,6 @@
 
 module Cover where
 
-open import Level
 open import FormalTopology
 open import Poset
 open import Basis
