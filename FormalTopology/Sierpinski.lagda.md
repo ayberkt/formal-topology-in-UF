@@ -90,8 +90,8 @@ open NucleusFrom 𝕊
 true∈⊤𝔖 : [ true ∈ ⦅ ⊤[ 𝔖 ] ⦆ ]
 true∈⊤𝔖 = tt
 
-false∈U→true∈U : (𝔘 : ∣ 𝔖 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → [ true ∈ ⦅ 𝔘 ⦆ ]
-false∈U→true∈U 𝔘@((U , U-dc) , _) p = U-dc false true p tt
+_≠∅ : (U : ∣ 𝔖 ∣F) → 𝓤₀ ̇
+𝔘 ≠∅ = [ true ∈ ⦅ 𝔘 ⦆ ] ⊎ [ false ∈ ⦅ 𝔘 ⦆ ]
 ```
 
 ```agda
@@ -158,9 +158,11 @@ We will use the following shorthand for `A`'s operations:
 
   infixr 3 _==>_
 
+  𝔨 : ∣ A ∣F → ∣ 𝔖 ∣F → Fam 𝓤₀ ∣ A ∣F
+  𝔨 x 𝔘 = (true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ])
+
   from₀ : ∣ A ∣F → ∣ 𝔖 ∣F → ∣ A ∣F
-  from₀ x 𝔘 =
-    ⋁ ((true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ]))
+  from₀ x 𝔘 = ⋁ 𝔨 x 𝔘
 ```
 
 #### Monotonicity
@@ -192,11 +194,11 @@ We will use the following shorthand for `A`'s operations:
   from₀-comm-∧ : (x : ∣ A ∣F) (𝔘 𝔙 : ∣ 𝔖 ∣F)
                → from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ≡ (from₀ x 𝔘) ∧ (from₀ x 𝔙)
   from₀-comm-∧ x 𝔘@((_ , 𝔘-dc) , _) 𝔙@((_ , 𝔙-dc) , _) =
-    from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙)      ≡⟨ refl ⟩
-    (⋁ ((true ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ==> ⊤[ A ])))  ≡⟨ nts ⟩
-    (⋁ ⁅ _ ∧ _ ∣ _ ∶ ([ true ∈ ⦅ 𝔘 ⦆ ] ⊎ [ false ∈ ⦅ 𝔘 ⦆ ]) × ([ true ∈ ⦅ 𝔙 ⦆ ] ⊎ [ false ∈ ⦅ 𝔙 ⦆ ]) ⁆ ) ≡⟨ sym (sym-distr A _ _) ⟩
-    (⋁ ((true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ]))) ∧ (⋁ ((true ∈ ⦅ 𝔙 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔙 ⦆ ==> ⊤[ A ]))) ≡⟨ refl ⟩
-    (from₀ x 𝔘) ∧ (from₀ x 𝔙) ∎
+    from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙)                    ≡⟨ refl                  ⟩
+    ⋁ 𝔨 x (𝔘 ⊓[ 𝔖 ] 𝔙)                      ≡⟨ nts                   ⟩
+    (⋁ ⁅ _ ∧ _ ∣ (_ , _) ∶ 𝔘 ≠∅ × 𝔙 ≠∅ ⁆ )  ≡⟨ sym (sym-distr A _ _) ⟩
+    (⋁ 𝔨 x 𝔘) ∧ (⋁ 𝔨 x 𝔙)                   ≡⟨ refl                  ⟩
+    (from₀ x 𝔘) ∧ (from₀ x 𝔙)               ∎
     where
     nts₀ : _
     nts₀ (inl (p , q)) = (inl p , inl q) , ≡⇒⊑ (pos A) (sym (x∧x=x A x))
@@ -204,8 +206,8 @@ We will use the following shorthand for `A`'s operations:
 
     nts₁ : _
     nts₁ (inl p , inl q) = inl (p , q) , ≡⇒⊑ (pos A) (x∧x=x A x)
-    nts₁ (inl p , inr q) = (inl (p , 𝔙-dc false true q tt)) , ⊓[ A ]-lower₀ _ _
-    nts₁ (inr p , inl q) = (inl (𝔘-dc false true p tt , q)) , ⊓[ A ]-lower₁ _ _
+    nts₁ (inl p , inr q) = inl (p , 𝔙-dc false true q tt) , ⊓[ A ]-lower₀ _ _
+    nts₁ (inr p , inl q) = inl (𝔘-dc false true p tt , q) , ⊓[ A ]-lower₁ _ _
     nts₁ (inr p , inr q) = (inr (p , q)) , ≡⇒⊑ (pos A) (x∧x=x A ⊤[ A ])
 
     nts : (⋁ _) ≡ (⋁ _)
