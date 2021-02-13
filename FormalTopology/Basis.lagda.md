@@ -42,9 +42,11 @@ open HAE public using     (isHAEquiv; equiv→HAEquiv)
 open import Cubical.Data.Nat  using (ℕ; _+_) renaming (suc to sucℕ; zero to zeroℕ)
 open import Cubical.Data.Nat.Properties using (injSuc; snotz; +-comm)
 open import Cubical.Data.Nat.Order
-open import Cubical.Data.Empty using (rec)
+open import Cubical.Data.Empty using (rec; ⊥)
 open import Cubical.Data.List using (List; length; _∷_; [])
 open import Cubical.Data.Fin  using (Fin)
+open import Cubical.Relation.Nullary.DecidableEq using (Discrete→isSet)
+open import Cubical.Relation.Nullary using (Discrete; yes; no; Dec)
 ```
 
 ```
