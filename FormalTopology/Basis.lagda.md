@@ -202,6 +202,9 @@ _⊆_ {A = A} U V = ((λ - → [ U - ]) ⊆⊆ (λ - → [ V - ])) , prop
 ⊆-antisym : [ U ⊆ V ] → [ V ⊆ U ] → U ≡ V
 ⊆-antisym {U = U} {V} U⊆V V⊆V = funExt (λ x → ⇔toPath (U⊆V x) (V⊆V x))
 
+∅ : 𝒫 A
+∅  _ = bot _
+
 entire : {A : Type ℓ} → 𝒫 A
 entire {ℓ = ℓ} _ = Unit ℓ , Unit-prop
 
