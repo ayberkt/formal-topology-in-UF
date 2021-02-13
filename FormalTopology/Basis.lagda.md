@@ -127,6 +127,24 @@ data Bool (ℓ : Level) : Type ℓ where
 ```
 
 ```agda
+true≠false : _≡_ {ℓ = 𝓤} true false → ⊥
+true≠false p = subst (λ { true → Unit 𝓤₀ ; false → ⊥ }) p tt
+```
+
+```agda
+_=b=_ : Discrete (Bool 𝓤)
+true  =b= true  = yes refl
+true  =b= false = no true≠false
+false =b= true  = no (true≠false ∘ sym)
+false =b= false = yes refl
+```
+
+```agda
+Bool-set : isSet (Bool 𝓤)
+Bool-set = Discrete→isSet _=b=_
+```
+
+```agda
 if_then_else_ : {A : Type ℓ₀} → Bool ℓ₁ → A → A → A
 if true  then x else y = x
 if false then x else y = y
