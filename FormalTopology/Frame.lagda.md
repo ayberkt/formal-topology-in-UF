@@ -240,6 +240,10 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
     where
       open PosetReasoning (pos F)
 
+
+  x∧x=x : (x : ∣ F ∣F) → x ⊓[ F ] x ≡ x
+  x∧x=x x = sym (x⊑y⇒x=x∧y (⊑[ pos F ]-refl x))
+
   x∧⊤=x : (x : ∣ F ∣F) → x ⊓[ F ] ⊤[ F ] ≡ x
   x∧⊤=x = sym ∘ x⊑y⇒x=x∧y ∘ ⊤[_]-top
 

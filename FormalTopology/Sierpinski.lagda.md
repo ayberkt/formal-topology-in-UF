@@ -69,8 +69,8 @@ open NucleusFrom 𝕊
 𝔖 : Frame 𝓤₁ 𝓤₀ 𝓤₀
 𝔖 = NucleusFrom.L 𝕊
 
-⊤ : ∣ 𝔖 ∣F
-⊤ = (Q , Q-dc) , fix
+⁅⊤⁆ : ∣ 𝔖 ∣F
+⁅⊤⁆ = (Q , Q-dc) , fix
   where
   Q : 𝒫 ∣ 𝕊-pos ∣ₚ
   Q _ = Unit 𝓤₀ , Unit-prop
@@ -86,6 +86,12 @@ open NucleusFrom 𝕊
 
     β : [ rel (DCPoset 𝕊-pos) (Q , Q-dc) (NucleusFrom.𝕛 𝕊 (Q , Q-dc)) ]
     β _ _ = dir tt
+
+true∈⊤𝔖 : [ true ∈ ⦅ ⊤[ 𝔖 ] ⦆ ]
+true∈⊤𝔖 = tt
+
+false∈U→true∈U : (𝔘 : ∣ 𝔖 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → [ true ∈ ⦅ 𝔘 ⦆ ]
+false∈U→true∈U 𝔘@((U , U-dc) , _) p = U-dc false true p tt
 ```
 
 ```agda
@@ -129,11 +135,12 @@ We will use the following shorthand for `A`'s operations:
 
 ```agda
   to : (𝔖 ─f→ A) → ∣ A ∣F
-  to ((f , _) , _) = f ⊤
+  to ((f , _) , _) = f ⁅⊤⁆
 ```
 
 ```agda
-  lemma : (F : Frame 𝓤 𝓥 𝓦) (I : 𝓦 ̇) (x : ∣ F ∣F) → ∥ I ∥ → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
+  lemma : (F : Frame 𝓤 𝓥 𝓦) (I : 𝓦 ̇) (x : ∣ F ∣F)
+        → ∥ I ∥ → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
   lemma F I x ∣i∣ = ∥∥-rec (carrier-is-set (pos F) _ _) f ∣i∣
     where
     f : I → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
@@ -146,9 +153,14 @@ We will use the following shorthand for `A`'s operations:
 ### The converse direction
 
 ```agda
+  _==>_ : hProp 𝓤₀ → ∣ A ∣F → Fam 𝓤₀ ∣ A ∣F
+  p ==> x = ⁅ x ∣ _ ∶ [ p ] ⁆
+
+  infixr 3 _==>_
+
   from₀ : ∣ A ∣F → ∣ 𝔖 ∣F → ∣ A ∣F
   from₀ x 𝔘 =
-    (⋁ ⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆) ∨ (⋁ ⁅ 𝟏 ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆)
+    ⋁ ((true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ]))
 ```
 
 #### Monotonicity
@@ -158,19 +170,8 @@ We will use the following shorthand for `A`'s operations:
   from₀-mono x 𝔘 𝔙 𝔘⊆𝔙 = ⋁[ A ]-least _ _ nts
     where
     nts : _
-    nts y (true  , p₀) =
-      subst (λ - → [ - ⊑[ pos A ] _ ]) p₀ (⋁[ A ]-least _ _ nts′)
-      where
-      nts′ : _
-      nts′ z (b , p₁) =
-        ⋁[ A ]-upper _ _ (true , subst (_ ≡_) p₁ (lemma A _ _ ∣ 𝔘⊆𝔙 true b ∣))
-    nts y (false , eq) =
-      subst (λ - → [ - ⊑[ pos A ] _ ]) eq (⋁[ A ]-least _ _ nts′) 
-      where
-      nts′ : _
-      nts′ z (b , p₁) =
-        ⋁[ A ]-upper _ _ (false , subst (_ ≡_) p₁ (lemma A _ _ ∣ 𝔘⊆𝔙 false b ∣))
-{--
+    nts _ (inl i , eq) = ⋁[ A ]-upper _ _ (inl (𝔘⊆𝔙 true  i) , eq)
+    nts _ (inr j , eq) = ⋁[ A ]-upper _ _ (inr (𝔘⊆𝔙 false j) , eq)
 ```
 
 ```agda
@@ -182,38 +183,35 @@ We will use the following shorthand for `A`'s operations:
 
 ```agda
   resp-⊤ : (x : ∣ A ∣F) → from₀ x ⊤[ 𝔖 ] ≡ ⊤[ A ]
-  resp-⊤ x = ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) nts
-    where
-    nts : [ ⊤[ A ] ⊑[ pos A ] from₀ x ⊤[ 𝔖 ] ]
-    nts = ⋁[ A ]-upper _ _ (false , lemma A _ ⊤[ A ] ∣ tt ∣)
+  resp-⊤ x =
+    ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (inr tt , refl))
+
 ```
 
 ```agda
   from₀-comm-∧ : (x : ∣ A ∣F) (𝔘 𝔙 : ∣ 𝔖 ∣F)
                → from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ≡ (from₀ x 𝔘) ∧ (from₀ x 𝔙)
-  from₀-comm-∧ x 𝔘 𝔙 = nts
+  from₀-comm-∧ x 𝔘@((_ , 𝔘-dc) , _) 𝔙@((_ , 𝔙-dc) , _) =
+    from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙)      ≡⟨ refl ⟩
+    (⋁ ((true ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ==> ⊤[ A ])))  ≡⟨ nts ⟩
+    (⋁ ⁅ _ ∧ _ ∣ _ ∶ ([ true ∈ ⦅ 𝔘 ⦆ ] ⊎ [ false ∈ ⦅ 𝔘 ⦆ ]) × ([ true ∈ ⦅ 𝔙 ⦆ ] ⊎ [ false ∈ ⦅ 𝔙 ⦆ ]) ⁆ ) ≡⟨ sym (sym-distr A _ _) ⟩
+    (⋁ ((true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ]))) ∧ (⋁ ((true ∈ ⦅ 𝔙 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔙 ⦆ ==> ⊤[ A ]))) ≡⟨ refl ⟩
+    (from₀ x 𝔘) ∧ (from₀ x 𝔙) ∎
     where
-    ϕ : [ from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ⊑[ pos A ] from₀ x 𝔘 ]
-    ϕ = from₀-mono x (𝔘 ⊓[ 𝔖 ] 𝔙) 𝔘 (⊓[ 𝔖 ]-lower₀ 𝔘 𝔙)
+    nts₀ : _
+    nts₀ (inl (p , q)) = (inl p , inl q) , ≡⇒⊑ (pos A) (sym (x∧x=x A x))
+    nts₀ (inr (p , q)) = (inr p , inr q) , ≡⇒⊑ (pos A) (sym (x∧x=x A ⊤[ A ]))
 
-    ψ : [ from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ⊑[ pos A ] from₀ x 𝔙 ]
-    ψ = from₀-mono x (𝔘 ⊓[ 𝔖 ] 𝔙) 𝔙 (⊓[ 𝔖 ]-lower₁ 𝔘 𝔙)
+    nts₁ : _
+    nts₁ (inl p , inl q) = inl (p , q) , ≡⇒⊑ (pos A) (x∧x=x A x)
+    nts₁ (inl p , inr q) = (inl (p , 𝔙-dc false true q tt)) , ⊓[ A ]-lower₀ _ _
+    nts₁ (inr p , inl q) = (inl (𝔘-dc false true p tt , q)) , ⊓[ A ]-lower₁ _ _
+    nts₁ (inr p , inr q) = (inr (p , q)) , ≡⇒⊑ (pos A) (x∧x=x A ⊤[ A ])
 
-    nts₀ : [ from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ⊑[ pos A ] from₀ x 𝔘 ∧ from₀ x 𝔙 ]
-    nts₀ = ⊓[ A ]-greatest _ _ _ ϕ ψ
+    nts : (⋁ _) ≡ (⋁ _)
+    nts = bicofinal→same-join A _ _ (nts₀ , nts₁)
 
-    nts₁ : [ from₀ x 𝔘 ∧ from₀ x 𝔙 ⊑[ pos A ] from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ]
-    nts₁ = {!⊑[ pos A ]-antisym _ _ ? ?!}
-
-    nts′ : from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ≡ ⋁ ⁅ (⁅ ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆) , ⋁ (⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆) ⁆ $ p) ∧ (⁅ {!!} , {!!} ⁆ $ q) ∣ (p , q) ∶ Bool 𝓤₀ × Bool 𝓤₀ ⁆
-    nts′ = {!■substeq!}
-
-    nts : from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙) ≡ (from₀ x 𝔘) ∧ (from₀ x 𝔙)
-    nts = from₀ x (𝔘 ⊓[ 𝔖 ] 𝔙)                                                                                       ≡⟨ refl ⟩
-          ((⋁ ⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ] ⁆) ∨ (⋁ ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⊓[ 𝔖 ] 𝔙 ⦆ ] ⁆))              ≡⟨ nts′ ⟩
-          (⋁ ⁅ _ ∧ _ ∣ _ ∶ Bool 𝓤₀ × Bool 𝓤₀ ⁆)                                                                      ≡⟨ sym (sym-distr A _ _) ⟩
-          (((⋁ ⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆) ∨ (⋁ ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆)) ∧ ((⋁ ⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔙 ⦆ ] ⁆) ∨ (⋁ ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔙 ⦆ ] ⁆))) ≡⟨ refl ⟩
-          from₀ x 𝔘 ∧ from₀ x 𝔙     ∎
+{--
 ```
 
 ```agda
