@@ -280,6 +280,9 @@ famFromList xs = Fin (length xs) , lookup xs
 
 _×f_ : {A : Type ℓ₀} → Fam ℓ₂ A → Fam ℓ₂′ A → Fam (ℓ-max ℓ₂ ℓ₂′) (A × A)
 _×f_ (I , f) (J , g) = I × J , (λ { (i , j) → f i , g j })
+
+_∪f_ : {A : 𝓤 ̇} → Fam 𝓦 A → Fam 𝓦 A → Fam 𝓦 A
+_∪f_ (I , f) (J , g) = I ⊎ J , λ { (inl i) → f i ; (inr j) → g j }
 ```
 
 ## Truncation
