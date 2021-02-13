@@ -133,8 +133,8 @@ syntax glb-of F x y = x ⊓[ F ] y
 ⊥[_] : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F
 ⊥[ F ] = ⋁[ F ] (𝟘 _ , λ ())
 
-bin-join : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
-bin-join {ℓ₂ = ℓ₂} F x y = ⋁[ F ] (Bool ℓ₂ , λ p → if p then x else y)
+bin-join : (F : Frame 𝓤 𝓥 𝓦) → ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
+bin-join F x y = ⋁[ F ] ⁅ x , y ⁆
 
 syntax bin-join F x y = x ∨[ F ] y
 

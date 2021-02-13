@@ -283,6 +283,9 @@ _×f_ (I , f) (J , g) = I × J , (λ { (i , j) → f i , g j })
 
 _∪f_ : {A : 𝓤 ̇} → Fam 𝓦 A → Fam 𝓦 A → Fam 𝓦 A
 _∪f_ (I , f) (J , g) = I ⊎ J , λ { (inl i) → f i ; (inr j) → g j }
+
+⁅_,_⁆ : {A : 𝓤 ̇} {𝓦 : Universe} → A → A → Fam 𝓦 A
+⁅_,_⁆ {𝓦 = 𝓦} x y = Bool 𝓦 , λ b → if b then x else y
 ```
 
 ## Truncation
