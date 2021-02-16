@@ -12,6 +12,7 @@ open import Poset
 open import FormalTopology renaming (pos to pos′)
 open import Cubical.Data.Fin
 open import Cubical.Data.Sum
+open import Cubical.Data.Empty using () renaming (rec to ⊥-rec)
 open import Cubical.Data.Nat hiding (Unit)
 open import Frame
 open import Cofinality
@@ -69,39 +70,68 @@ open NucleusFrom 𝕊
 𝔖 : Frame 𝓤₁ 𝓤₀ 𝓤₀
 𝔖 = NucleusFrom.L 𝕊
 
+open import Cover
+
+thm-foo : (U : 𝒫 (Bool 𝓤₀)) (b : Bool 𝓤₀) → b ◁ U → [ b ∈ U ]
+thm-foo U b (dir p) = p
+thm-foo U b (squash p q i) =
+  isProp[] (b ∈ U) (thm-foo U b p) (thm-foo U b q) i
+
 ⁅⊤⁆ : ∣ 𝔖 ∣F
 ⁅⊤⁆ = (Q , Q-dc) , fix
   where
   Q : 𝒫 ∣ 𝕊-pos ∣ₚ
-  Q _ = Unit 𝓤₀ , Unit-prop
+  Q x = (x ≡ true) , Bool-set x true
 
   Q-dc : [ isDownwardsClosed 𝕊-pos Q ]
-  Q-dc _ _ _ _ = tt
+  Q-dc true  true  x∈Q _ = x∈Q
+  Q-dc false true  x∈Q _ = ⊥-rec (true≠false (sym x∈Q))
+  Q-dc false false x∈Q _ = x∈Q
 
   fix : NucleusFrom.𝕛 𝕊 (Q , Q-dc) ≡ (Q , Q-dc)
-  fix = ⊑[ DCPoset 𝕊-pos ]-antisym _ _ α β
-    where
-    α : [ (NucleusFrom.𝕛 𝕊 (Q , Q-dc)) ⊑[ DCPoset 𝕊-pos ] (Q , Q-dc) ]
-    α _ _ = tt
+  fix = Σ≡Prop (isProp[] ∘ isDownwardsClosed 𝕊-pos) (⊆-antisym (thm-foo Q) (λ _ → dir))
 
-    β : [ rel (DCPoset 𝕊-pos) (Q , Q-dc) (NucleusFrom.𝕛 𝕊 (Q , Q-dc)) ]
-    β _ _ = dir tt
+⊤-lemma : (𝔘 : ∣ 𝔖 ∣F) → [ true ∈ ⦅ 𝔘 ⦆ ] → [ ⁅⊤⁆ ⊑[ pos 𝔖 ] 𝔘 ]
+⊤-lemma 𝔘 p true  q = p
+⊤-lemma 𝔘 p false q = ⊥-rec (true≠false (sym q))
+
+𝔖-equality : (𝔘 𝔙 : ∣ 𝔖 ∣F) → ⦅ 𝔘 ⦆ ≡ ⦅ 𝔙 ⦆ → 𝔘 ≡ 𝔙
+𝔖-equality 𝔘 𝔙 p = Σ≡Prop nts₀ (Σ≡Prop nts₁ p)
+  where
+  nts₀ : (U : ∣ DCPoset 𝕊-pos ∣ₚ) → isProp (𝕛 U ≡ U)
+  nts₀ U = carrier-is-set (DCPoset 𝕊-pos) (𝕛 U) U
+
+  nts₁ : (U : 𝒫 ∣ 𝕊-pos ∣ₚ) → isProp [ isDownwardsClosed 𝕊-pos U ]
+  nts₁ U = isProp[] (isDownwardsClosed 𝕊-pos U)
+
+⁅⊤⁆=η-true : ⁅⊤⁆ ≡ η true
+⁅⊤⁆=η-true = Σ≡Prop nts₀ (Σ≡Prop nts₁ goal)
+  where
+  nts₀ : (U : ∣ DCPoset 𝕊-pos ∣ₚ) → isProp (𝕛 U ≡ U)
+  nts₀ U = carrier-is-set (DCPoset 𝕊-pos) (𝕛 U) U
+
+  nts₁ : (U : 𝒫 ∣ 𝕊-pos ∣ₚ) → isProp [ isDownwardsClosed 𝕊-pos U ]
+  nts₁ U = isProp[] (isDownwardsClosed 𝕊-pos U)
+
+  goal₀ : [ η true .π₀ .π₀ ⊆ ⁅⊤⁆ .π₀ .π₀ ]
+  goal₀ true (dir _)        = refl
+  goal₀ b    (squash p q i) = isProp[] (b ∈ ⦅ ⁅⊤⁆ ⦆) (goal₀ b p) (goal₀ b q ) i
+
+  goal : ⁅⊤⁆ .π₀ .π₀ ≡ η true .π₀ .π₀
+  goal = ⊆-antisym (⊤-lemma (η true) (dir tt)) goal₀
+
+𝟏=η-false : ⊤[ 𝔖 ] ≡ η false
+𝟏=η-false = 𝔖-equality ⊤[ 𝔖 ] (η false) (⊆-antisym goal λ _ _ → tt) 
+  where
+  goal : [ ⦅ ⊤[ 𝔖 ] ⦆ ⊆ ⦅ η false ⦆ ]
+  goal true  x₁ = π₁ (π₀ (η false)) true _ (dir tt) tt
+  goal false x₁ = dir (⊑[ 𝕊-pos ]-refl false)
 
 true∈⊤𝔖 : [ true ∈ ⦅ ⊤[ 𝔖 ] ⦆ ]
 true∈⊤𝔖 = tt
 
 _≠∅ : (U : ∣ 𝔖 ∣F) → 𝓤₀ ̇
 𝔘 ≠∅ = [ true ∈ ⦅ 𝔘 ⦆ ] ⊎ [ false ∈ ⦅ 𝔘 ⦆ ]
-```
-
-```agda
-open import Cover
-open CoverFromFormalTopology 𝕊 hiding (_◁_)
-
-thm-foo : (U : ∣ 𝔖 ∣F) (b : Bool 𝓤₀) → b ◁ ⦅ U ⦆ → [ b ∈ ⦅ U ⦆ ]
-thm-foo U b (dir p) = p
-thm-foo U b (squash p q i) =
-  isProp[] (b ∈ (π₀ (π₀ U))) (thm-foo U b p) (thm-foo U b q) i
 ```
 
 ## Is this the correct Sierpinski space?
@@ -163,6 +193,70 @@ We will use the following shorthand for `A`'s operations:
 
   from₀ : ∣ A ∣F → ∣ 𝔖 ∣F → ∣ A ∣F
   from₀ x 𝔘 = ⋁ 𝔨 x 𝔘
+
+  from-lemma₀ : (x : ∣ A ∣F) → from₀ x ⁅⊤⁆ ≡ x
+  from-lemma₀ x = ⊑[ pos A ]-antisym _ _ nts₀ nts₁
+    where
+    nts₀ : [ from₀ x ⁅⊤⁆ ⊑[ pos A ] x ]
+    nts₀ = ⋁[ A ]-least _ _ λ { y (inl i , eq) → ≡⇒⊑ (pos A) (sym eq)
+                              ; y (inr i , eq) → ⊥-rec (true≠false (sym i))
+                              }
+
+    nts₁ : [ x ⊑[ pos A ] from₀ x ⁅⊤⁆ ]
+    nts₁ = ⋁[ A ]-upper _ _ (inl refl , refl)
+
+  from-lemma₁ : (x : ∣ A ∣F) → from₀ x ⊤[ 𝔖 ] ≡ ⊤[ A ]
+  from-lemma₁ x =
+    ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (inr tt , refl))
+
+  from-lemma₂ : (x : ∣ A ∣F) → from₀ x ⊥[ 𝔖 ] ≡ ⊥[ A ]
+  from-lemma₂ x = ⊑[ pos A ]-antisym _ _ nts (⊥[ A ]-bottom _)
+    where
+    nts′ : [ ∀[ z ε _ ] (z ≤ ⊥[ A ]) ]
+    nts′ z (inl (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
+    nts′ z (inl (squash p q i) , eq) = isProp[] (_ ≤ _) (nts′ z (inl p , eq)) (nts′ z (inl q , eq)) i
+    nts′ z (inr (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
+    nts′ z (inr (squash p q i) , eq) = isProp[] (_ ≤ _) (nts′ z (inr p , eq)) (nts′ z (inr q , eq)) i
+
+    nts : [ (from₀ x ⊥[ 𝔖 ]) ≤ ⊥[ A ] ]
+    nts = ⋁[ A ]-least _ _ nts′
+
+  another-lemma : (𝔘 : ∣ 𝔖 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⦅ 𝔘 ⦆ ≡ entire
+  another-lemma ((U , U-dc) , _) false∈𝔘 = funExt nts
+    where
+    f : [ true ∈ U ] → entire true .π₀
+    f x = tt
+
+    g : entire true .π₀ → [ true ∈ U ]
+    g x = U-dc false true false∈𝔘 tt
+
+    sec : section f g
+    sec tt = refl
+
+    ret : retract f g
+    ret p = isProp[] (true ∈ U) (U-dc false true false∈𝔘 tt) p
+
+    f′ : [ false ∈ U ] → entire true .π₀
+    f′ x = tt
+
+    g′ : entire true .π₀ → [ false ∈ U ]
+    g′ x = false∈𝔘
+
+    nts : _
+    nts true  = Σ≡Prop (λ _ → isPropIsProp ) (isoToPath (iso f g sec ret))
+    nts false = Σ≡Prop (λ _ → isPropIsProp) (isoToPath (iso f′ g′ (Unit-prop tt) λ p → isProp[] (false ∈ U) false∈𝔘 p))
+
+  another-lemma′ : (𝔘 : ∣ 𝔖 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⊤[ 𝔖 ] ≡ 𝔘
+  another-lemma′ 𝔘 false∈𝔘 = sym (Σ≡Prop nts₀ (Σ≡Prop nts₁ nts))
+    where
+    nts₀ : (U : ∣ DCPoset 𝕊-pos ∣ₚ) → isProp (𝕛 U ≡ U)
+    nts₀ U = carrier-is-set (DCPoset 𝕊-pos) (𝕛 U) U
+
+    nts₁ : (U : 𝒫 ∣ 𝕊-pos ∣ₚ) → isProp [ isDownwardsClosed 𝕊-pos U ]
+    nts₁ U = isProp[] (isDownwardsClosed 𝕊-pos U)
+
+    nts : ⦅ 𝔘 ⦆ ≡ ⦅ ⊤[ 𝔖 ] ⦆
+    nts = another-lemma 𝔘 false∈𝔘
 ```
 
 #### Monotonicity
@@ -231,21 +325,74 @@ We are now ready to write down the inverse of `to`.
 
 ```agda
   from : ∣ A ∣F → 𝔖 ─f→ A
-  from x = (from₀ x , from₀-mono x) , from₀-cont x
+  π₀ (π₀ (from x)) = from₀ x
+  π₁ (π₀ (from x)) = from₀-mono x
+  π₁ (from x)      = from₀-cont x
 ```
 
 #### Section
 
 ```agda
   sec : section to from
-  sec = {!!}
+  sec x = to (from x) ≡⟨ refl ⟩ from₀ x ⁅⊤⁆ ≡⟨ from-lemma₀ x ⟩ x ∎
 ```
 
 #### Retraction
 
 ```agda
+  hauptsatz : (((f , _) , _) : 𝔖 ─f→ A) (𝔘 : ∣ 𝔖 ∣F)
+            → ⋁[ A ] ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ≡ f 𝔘
+  hauptsatz 𝒻@((f , _) , _ , _ , f-resp-⋁) 𝔘 =
+    ⋁ ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆      ≡⟨ sym (f-resp-⋁ (⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆)) ⟩
+    f (⋁[ 𝔖 ] ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆) ≡⟨ sym (cong f (main-lemma 𝕊 𝔘))        ⟩
+    f 𝔘                            ∎
+```
+
+```agda
   ret : retract to from
-  ret = {!!}
+  ret 𝒻@((f , f-mono) , f-resp-⊤ , r-resp-∧ , _) =
+    forget-homo 𝔖 A (from (to 𝒻)) 𝒻 goal
+    where
+    goal : (𝔘 : ∣ 𝔖 ∣F) → from (to 𝒻) .π₀ .π₀ 𝔘 ≡ f 𝔘
+    goal 𝔘 = sym (⋁-unique A _ _ nts₀ nts₁)
+      where
+      open PosetReasoning (pos A)
+
+      nts₀ : (x : ∣ A ∣F) → x ε 𝔨 (to 𝒻) 𝔘 → [ x ≤ (f 𝔘) ]
+      nts₀ x (inl i , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq nts₀′
+        where
+        ⦅𝟏⦆ : [ f ⁅⊤⁆ ≤ f 𝔘 ]
+        ⦅𝟏⦆ = f-mono _ _ (⊤-lemma 𝔘 i) 
+
+        nts₀′ : [ (𝔨 (f ⁅⊤⁆) 𝔘 $ inl i) ≤ f 𝔘 ]
+        nts₀′ = ⁅ f ⁅⊤⁆ ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ $ i ⊑⟨ ≡⇒⊑ (pos A) refl ⟩
+                f ⁅⊤⁆                                ⊑⟨ ⦅𝟏⦆              ⟩
+                f 𝔘                                  ■
+      nts₀ x (inr j , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq (≡⇒⊑ (pos A) p)
+        where
+        p : 𝔨 (to 𝒻) 𝔘 $ inr j ≡ f 𝔘
+        p = 𝔨 (to 𝒻) 𝔘 $ inr j ≡⟨ refl                        ⟩
+            ⊤[ A ]             ≡⟨ sym f-resp-⊤                ⟩
+            f ⊤[ 𝔖 ]           ≡⟨ cong f (another-lemma′ 𝔘 j) ⟩
+            f 𝔘                ∎
+
+      nts₁ : (u : ∣ A ∣F)
+           → ((x : ∣ A ∣F) → x ε 𝔨 (to 𝒻) 𝔘 → [ x ≤ u ]) → [ f 𝔘 ≤ u ]
+      nts₁ u p = subst (λ - → [ - ≤ u ]) (hauptsatz 𝒻 𝔘) rem
+        where
+        aux₀ : [ false ∈ ⦅ 𝔘 ⦆ ] → [ ⊤[ A ] ≤ u ]
+        aux₀ q = p ⊤[ A ] (inr q , refl)
+
+        aux₁ : [ true ∈ ⦅ 𝔘 ⦆ ] → [ f ⁅⊤⁆ ≤ u ]
+        aux₁ q = p (f ⁅⊤⁆) (inl q , refl)
+
+        rem′ : [ ∀[ z ε ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ] (z ≤ u) ]
+        rem′ z ((true  , q) , eq) = subst (λ - → [ - ≤ u ]) eq (f (η true) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym ⁅⊤⁆=η-true)) ⟩ f ⁅⊤⁆ ⊑⟨ aux₁ q  ⟩ u ■)
+        rem′ z ((false , q) , eq) = subst (λ - → [ - ≤ u ]) eq (f (η false) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym 𝟏=η-false)) ⟩ f ⊤[ 𝔖 ] ⊑⟨ ≡⇒⊑ (pos A) f-resp-⊤ ⟩ ⊤[ A ] ⊑⟨ aux₀ q ⟩ u ■)
+
+        rem : [ (⋁[ A ] ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆) ≤ u ]
+        rem = ⋁[ A ]-least _ _ rem′
+
 ```
 
 ```agda

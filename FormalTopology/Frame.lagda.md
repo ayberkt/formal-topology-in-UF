@@ -465,6 +465,15 @@ isFrameHomomorphism-prop (A , s , _) (B , s′ , _) = isRawFrameHomo-prop (A , s
 _─f→_ : Frame ℓ₀ ℓ₁ ℓ₂ → Frame ℓ₀′ ℓ₁′ ℓ₂ → Type _
 _─f→_ {ℓ₂ = ℓ₂} F G = Σ[ f ∈ (pos F ─m→ pos G) ] (isFrameHomomorphism F G f)
 
+forget-homo : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦)
+            → (f g : F ─f→ G)
+            → ((x : ∣ F ∣F) → f .π₀ .π₀ x ≡ g .π₀ .π₀ x)
+            → f ≡ g
+forget-homo F G 𝒻@(f , _) ℊ@(g , _) e =
+  Σ≡Prop
+    (isFrameHomomorphism-prop F G)
+    (forget-mono (pos F) (pos G) f g (funExt e))
+
 _$f_ : {F : Frame ℓ₀ ℓ₁ ℓ₂} {G : Frame ℓ₀′ ℓ₁′ ℓ₂} → F ─f→ G → ∣ F ∣F → ∣ G ∣F
 (f , _) $f x = f $ₘ x
 
