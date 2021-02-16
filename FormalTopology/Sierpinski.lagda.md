@@ -311,35 +311,45 @@ We will use the following shorthand for `A`'s operations:
 ```agda
   from₀-comm-⋁ : (x : ∣ A ∣F) (W : Fam 𝓤₀ ∣ 𝔖 ∣F)
                → from₀ x (⋁[ 𝔖 ] W) ≡ ⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆
-  from₀-comm-⋁ x W =
-    from₀ x (⋁[ 𝔖 ] W)      ≡⟨ refl ⟩
-    ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆) ≡⟨ nts ⟩
-    ⋁ ⁅ ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆) ∣ 𝔘 ε W ⁆ ≡⟨ refl ⟩
-    ⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ ∎
+  from₀-comm-⋁ x W = ⋁-unique A _ _ nts₀ nts₁
     where
-    nts₀′ : [ ∀[ 𝔘 ε 𝔨 x (⋁[ 𝔖 ] W) ] (𝔘 ≤ (⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆)) ]
-    nts₀′ 𝔘 (inl (dir p)        , r) = ∥∥-rec (isProp[] (_ ≤ _)) rem p
+    nts₀ : [ ∀[ z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ ] (z ⊑[ pos A ] from₀ x (⋁[ 𝔖 ] W)) ]
+    nts₀ z (i , eq) =
+      subst (λ - → [ - ≤ _ ]) eq (from₀-mono x (W $ i) (⋁[ 𝔖 ] W) rem)
       where
-      rem : _
-      rem (q , q′) = {!q′!}
-    nts₀′ 𝔘 (inl (squash p q i) , r) = {!!}
-    nts₀′ 𝔘 (inr q , r) = {!!}
+      rem : [ (W $ i) ⊑[ pos 𝔖 ] (⋁[ 𝔖 ] W) ]
+      rem b x∈Wᵢ = dir ∣ i , x∈Wᵢ ∣
 
-    nts₀ : [ (⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆)) ≤ (⋁ ⁅ ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆) ∣ 𝔘 ε W ⁆) ]
-    nts₀ = ⋁[ A ]-least _ _ nts₀′
-
-    nts₁ : [  (⋁ ⁅ ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆) ∣ 𝔘 ε W ⁆) ≤ (⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆)) ]
-    nts₁ = ⋁[ A ]-least _ _ nts
+    nts₁ : (u : ∣ A ∣F) → (((z : ∣ A ∣F) → z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ → [ z ≤ u ])) → [ from₀ x (⋁[ 𝔖 ] W) ≤ u ]
+    nts₁ u u-upper = ⋁[ A ]-least _ _ rem
       where
-      nts : _
-      nts z (i , eq) = subst (λ - → [ - ≤ _ ]) eq (⋁[ A ]-least _ _ nts′)
+      open PosetReasoning (pos A)
+
+      rem : (z : ∣ A ∣F) → z ε 𝔨 x (⋁[ 𝔖 ] W) → [ z ≤ u ]
+      rem z (inl (dir p) , eq) = subst (λ - → [ - ≤ u ]) eq goal
         where
-          nts′ : _
-          nts′ y (inl p , eq₁) = ⋁[ A ]-upper _ _ (inl (dir ∣ i , p ∣) , eq₁)
-          nts′ y (inr q , eq₁) = ⋁[ A ]-upper _ _ ((inr (dir ∣ i , q ∣)) , eq₁)
+        goal′ : _
+        goal′ (j , true∈Wⱼ) =
+          x               ⊑⟨ ≡⇒⊑ (pos A) (sym (from-lemma₀ x))    ⟩
+          from₀ x ⁅⊤⁆     ⊑⟨ from₀-mono x ⁅⊤⁆ (W $ j) last        ⟩
+          from₀ x (W $ j) ⊑⟨ u-upper (from₀ x (W $ j)) (j , refl) ⟩
+          u               ■
+          where
+          last : [ ⁅⊤⁆ ⊑[ pos 𝔖 ] (W $ j) ]
+          last true _ = true∈Wⱼ
+          last false p = ⊥-rec (true≠false (sym p))
 
-    nts : ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ ⋁[ 𝔖 ] W ⦆ ] ⁆) ≡ (⋁ ⁅ ⋁ (⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ ∪f ⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆) ∣ 𝔘 ε W ⁆)
-    nts = ⊑[ pos A ]-antisym _ _ nts₀ nts₁
+        goal : [ ((𝔨 x (⋁[ 𝔖 ] W)) $ (inl (dir p))) ≤ u ]
+        goal = ∥∥-rec (isProp[] (_ ≤ _ )) goal′ p
+      rem z (inl (squash p q i) , eq) = isProp[] (_ ≤ _) (rem z (inl p , eq)) (rem z (inl q , eq)) i
+      rem z (inr (dir p) , eq) = subst (λ - → [ - ≤ u ]) eq goal
+        where
+        goal′ : _
+        goal′ (j , false∈Wⱼ) = u-upper ⊤[ A ] (j , (subst (λ - → from₀ x - ≡ ⊤[ A ]) (another-lemma′ (W $ j) false∈Wⱼ) (resp-⊤ x)))
+
+        goal : [ ⊤[ A ] ≤ u ]
+        goal = ∥∥-rec (isProp[] (_ ≤ _)) goal′ p
+      rem z (inr (squash p q i) , eq) = isProp[] (_ ≤ _) (rem z (inr p , eq)) (rem z (inr q , eq)) i
 ```
 
 ```agda
