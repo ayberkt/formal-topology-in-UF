@@ -14,6 +14,6 @@ for f in `ls *.md`; do
         echo "Handling the FrameOfNuclei module..."
         pandoc $f --css Agda.css --toc -o "$(basename --suffix='.md' $f).html"
     else
-        pandoc $f --css Agda.css -o "$(basename --suffix='.md' $f).html"
+        pandoc $f -s --css Agda.css -o "$(basename --suffix='.md' $f).html"
     fi
 done
