@@ -251,32 +251,35 @@ We now construct an isomorphism
   to ((f , _) , _) = f ⁅true⁆
 ```
 
-```agda
-  lemma : (F : Frame 𝓤 𝓥 𝓦) (I : 𝓦 ̇) (x : ∣ F ∣F)
-        → ∥ I ∥ → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
-  lemma F I x ∣i∣ = ∥∥-rec (carrier-is-set (pos F) _ _) f ∣i∣
-    where
-    f : I → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
-    f i = ⊑[ pos F ]-antisym _ _ (⋁[ F ]-least _ _ nts) (⋁[ F ]-upper _ _ (i , refl))
-      where
-      nts : _
-      nts _ (_ , eq) = ≡⇒⊑ (pos F) (sym eq)
-```
-
 ### The backwards direction
 
+Let us first define an auxiliary function that we will need in the definition
+of `from`, called `𝔨`, defined as:
+
 ```agda
-  _==>_ : hProp 𝓤₀ → ∣ A ∣F → Fam 𝓤₀ ∣ A ∣F
-  p ==> x = ⁅ x ∣ _ ∶ [ p ] ⁆
-
-  infixr 3 _==>_
-
   𝔨 : ∣ A ∣F → ∣ 𝕊 ∣F → Fam 𝓤₀ ∣ A ∣F
-  𝔨 x 𝔘 = (true ∈ ⦅ 𝔘 ⦆ ==> x) ∪f (false ∈ ⦅ 𝔘 ⦆ ==> ⊤[ A ])
+  𝔨 x 𝔘 = ⁅ x ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ ∪f ⁅ 𝟏 ∣ _ ∶ [ false ∈ ⦅ 𝔘 ⦆ ] ⁆
+```
 
+We then define the underlying function of `from` that we call `from₀`:
+
+```agda
   from₀ : ∣ A ∣F → ∣ 𝕊 ∣F → ∣ A ∣F
   from₀ x 𝔘 = ⋁ 𝔨 x 𝔘
+```
 
+To be able to define `from`, which is supposed to be a frame homomorphism for
+every `x : ∣ A ∣`, we need to show that `from₀`:
+
+1. is monotonic,
+1. respects finite meets, and
+1. respects joins,
+
+Let us start by proving some lemmas that we will need to prove those.
+
+First, we note that applying `from₀` to `⁅true⁆` gives back `x`:
+
+```agda
   from-lemma₀ : (x : ∣ A ∣F) → from₀ x ⁅true⁆ ≡ x
   from-lemma₀ x = ⊑[ pos A ]-antisym _ _ nts₀ nts₁
     where
@@ -285,64 +288,52 @@ We now construct an isomorphism
                               ; y (inr i , eq) → ⊥-rec (true≠false (sym i))
                               }
 
-    nts₁ : [ x ⊑[ pos A ] from₀ x ⁅true⁆ ]
+    nts₁ : [ x ≤ from₀ x ⁅true⁆ ]
     nts₁ = ⋁[ A ]-upper _ _ (inl refl , refl)
+```
 
-  from-lemma₁ : (x : ∣ A ∣F) → from₀ x ⊤[ 𝕊 ] ≡ ⊤[ A ]
-  from-lemma₁ x =
+`from₀` respects the top element:
+
+```agda
+  from₀-resp-⊤ : (x : ∣ A ∣F) → from₀ x ⊤[ 𝕊 ] ≡ ⊤[ A ]
+  from₀-resp-⊤ x =
     ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (inr tt , refl))
+```
 
-  from-lemma₂ : (x : ∣ A ∣F) → from₀ x ⊥[ 𝕊 ] ≡ ⊥[ A ]
-  from-lemma₂ x = ⊑[ pos A ]-antisym _ _ nts (⊥[ A ]-bottom _)
+It also respects the bottom element:
+
+```agda
+  from-resp-⊥ : (x : ∣ A ∣F) → from₀ x ⊥[ 𝕊 ] ≡ ⊥[ A ]
+  from-resp-⊥ x =
+    ⊑[ pos A ]-antisym _ _ (⋁[ A ]-least _ _ nts) (⊥[ A ]-bottom _)
     where
-    nts′ : [ ∀[ z ε _ ] (z ≤ ⊥[ A ]) ]
-    nts′ z (inl (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
-    nts′ z (inl (squash p q i) , eq) = isProp[] (_ ≤ _) (nts′ z (inl p , eq)) (nts′ z (inl q , eq)) i
-    nts′ z (inr (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
-    nts′ z (inr (squash p q i) , eq) = isProp[] (_ ≤ _) (nts′ z (inr p , eq)) (nts′ z (inr q , eq)) i
+    nts : [ ∀[ z ε _ ] (z ≤ ⊥[ A ]) ]
+    nts z (inl (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
+    nts z (inl (squash p q i) , eq) = isProp[] (_ ≤ _) (nts z (inl p , eq)) (nts z (inl q , eq)) i
+    nts z (inr (dir p)        , eq) = ∥∥-rec (isProp[] (_ ≤ _)) (λ { (() , _) }) p
+    nts z (inr (squash p q i) , eq) = isProp[] (_ ≤ _) (nts z (inr p , eq)) (nts z (inr q , eq)) i
+```
 
-    nts : [ (from₀ x ⊥[ 𝕊 ]) ≤ ⊥[ A ] ]
-    nts = ⋁[ A ]-least _ _ nts′
+If some `𝔘 : 𝕊` contains `false`, then it has to be the entire subset:
 
-  another-lemma : (𝔘 : ∣ 𝕊 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⦅ 𝔘 ⦆ ≡ entire
-  another-lemma ((U , U-dc) , _) false∈𝔘 = funExt nts
+```agda
+  false∈𝔘→𝔘-top : (𝔘 : ∣ 𝕊 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⊤[ 𝕊 ] ≡ 𝔘
+  false∈𝔘→𝔘-top 𝔘 false∈𝔘 = 𝕊-equality ⊤[ 𝕊 ] 𝔘 (sym (goal 𝔘 false∈𝔘))
     where
-    f : [ true ∈ U ] → entire true .π₀
-    f x = tt
+    goal : (𝔘 : ∣ 𝕊 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⦅ 𝔘 ⦆ ≡ entire
+    goal ((U , U-dc) , _) false∈𝔘 = ⊆-antisym nts₀ nts₁
+      where
+      nts₀ : [ U ⊆ entire ]
+      nts₀ _ _ = tt
 
-    g : entire true .π₀ → [ true ∈ U ]
-    g x = U-dc false true false∈𝔘 tt
-
-    sec : section f g
-    sec tt = refl
-
-    ret : retract f g
-    ret p = isProp[] (true ∈ U) (U-dc false true false∈𝔘 tt) p
-
-    f′ : [ false ∈ U ] → entire true .π₀
-    f′ x = tt
-
-    g′ : entire true .π₀ → [ false ∈ U ]
-    g′ x = false∈𝔘
-
-    nts : _
-    nts true  = Σ≡Prop (λ _ → isPropIsProp ) (isoToPath (iso f g sec ret))
-    nts false = Σ≡Prop (λ _ → isPropIsProp) (isoToPath (iso f′ g′ (Unit-prop tt) λ p → isProp[] (false ∈ U) false∈𝔘 p))
-
-  another-lemma′ : (𝔘 : ∣ 𝕊 ∣F) → [ false ∈ ⦅ 𝔘 ⦆ ] → ⊤[ 𝕊 ] ≡ 𝔘
-  another-lemma′ 𝔘 false∈𝔘 = sym (Σ≡Prop nts₀ (Σ≡Prop nts₁ nts))
-    where
-    nts₀ : (U : ∣ DCPoset (S-pos 𝓤₀ 𝓤₀) ∣ₚ) → isProp (𝕛 U ≡ U)
-    nts₀ U = carrier-is-set (DCPoset (S-pos 𝓤₀ 𝓤₀)) (𝕛 U) U
-
-    nts₁ : (U : 𝒫 ∣ (S-pos 𝓤₀ 𝓤₀) ∣ₚ) → isProp [ isDownwardsClosed (S-pos 𝓤₀ 𝓤₀) U ]
-    nts₁ U = isProp[] (isDownwardsClosed (S-pos 𝓤₀ 𝓤₀) U)
-
-    nts : ⦅ 𝔘 ⦆ ≡ ⦅ ⊤[ 𝕊 ] ⦆
-    nts = another-lemma 𝔘 false∈𝔘
+      nts₁ : [ entire ⊆ U ]
+      nts₁ true  tt = U-dc false true false∈𝔘 tt
+      nts₁ false tt = false∈𝔘
 ```
 
 #### Monotonicity
+
+Monotonicity of `from₀` is easy to show.
 
 ```agda
   from₀-mono : (x : ∣ A ∣F) → isMonotonic (pos 𝕊) (pos A) (from₀ x)
@@ -360,17 +351,22 @@ We now construct an isomorphism
 
 #### Continuity
 
+We now prove that `from₀` is a frame homomorphism.
+
+We have already shown that it respects the top element.
+
 ```agda
   resp-⊤ : (x : ∣ A ∣F) → from₀ x ⊤[ 𝕊 ] ≡ ⊤[ A ]
-  resp-⊤ x =
-    ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (inr tt , refl))
-
+  resp-⊤ = from₀-resp-⊤
 ```
 
+To show meet preservation, we make use of the fact that bi-cofinal families have
+the same join.
+
 ```agda
-  from₀-comm-∧ : (x : ∣ A ∣F) (𝔘 𝔙 : ∣ 𝕊 ∣F)
-               → from₀ x (𝔘 ⊓[ 𝕊 ] 𝔙) ≡ (from₀ x 𝔘) ∧ (from₀ x 𝔙)
-  from₀-comm-∧ x 𝔘@((_ , 𝔘-dc) , _) 𝔙@((_ , 𝔙-dc) , _) =
+  from₀-resp-∧ : (x : ∣ A ∣F) (𝔘 𝔙 : ∣ 𝕊 ∣F)
+               → from₀ x (𝔘 ⊓[ 𝕊 ] 𝔙) ≡ from₀ x 𝔘 ∧ from₀ x 𝔙
+  from₀-resp-∧ x 𝔘@((_ , 𝔘-dc) , _) 𝔙@((_ , 𝔙-dc) , _) =
     from₀ x (𝔘 ⊓[ 𝕊 ] 𝔙)                    ≡⟨ refl                  ⟩
     ⋁ 𝔨 x (𝔘 ⊓[ 𝕊 ] 𝔙)                      ≡⟨ nts                   ⟩
     (⋁ ⁅ _ ∧ _ ∣ (_ , _) ∶ 𝔘 ≠∅ × 𝔙 ≠∅ ⁆ )  ≡⟨ sym (sym-distr A _ _) ⟩
@@ -391,20 +387,25 @@ We now construct an isomorphism
     nts = bicofinal→same-join A _ _ (nts₀ , nts₁)
 ```
 
+Preservation of joins is a bit more complicated. Let `W` be a family of
+Sierpiński opens and let `x : A`. We use the uniqueness of
+`⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆` by showing that `from₀ x (⋁[ 𝕊 ] W)` is the least
+upper bound of `⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆`.
+
 ```agda
   from₀-comm-⋁ : (x : ∣ A ∣F) (W : Fam 𝓤₀ ∣ 𝕊 ∣F)
                → from₀ x (⋁[ 𝕊 ] W) ≡ ⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆
-  from₀-comm-⋁ x W = ⋁-unique A _ _ nts₀ nts₁
+  from₀-comm-⋁ x W = ⋁-unique A _ _ ub least
     where
-    nts₀ : [ ∀[ z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ ] (z ⊑[ pos A ] from₀ x (⋁[ 𝕊 ] W)) ]
-    nts₀ z (i , eq) =
+    ub : [ ∀[ z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ ] (z ≤ from₀ x (⋁[ 𝕊 ] W)) ]
+    ub z (i , eq) =
       subst (λ - → [ - ≤ _ ]) eq (from₀-mono x (W $ i) (⋁[ 𝕊 ] W) rem)
       where
       rem : [ (W $ i) ⊑[ pos 𝕊 ] (⋁[ 𝕊 ] W) ]
-      rem b x∈Wᵢ = dir ∣ i , x∈Wᵢ ∣
+      rem _ x∈Wᵢ = dir ∣ i , x∈Wᵢ ∣
 
-    nts₁ : (u : ∣ A ∣F) → (((z : ∣ A ∣F) → z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ → [ z ≤ u ])) → [ from₀ x (⋁[ 𝕊 ] W) ≤ u ]
-    nts₁ u u-upper = ⋁[ A ]-least _ _ rem
+    least : (u : ∣ A ∣F) → (((z : ∣ A ∣F) → z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ → [ z ≤ u ])) → [ from₀ x (⋁[ 𝕊 ] W) ≤ u ]
+    least u u-upper = ⋁[ A ]-least _ _ rem
       where
       open PosetReasoning (pos A)
 
@@ -413,10 +414,10 @@ We now construct an isomorphism
         where
         goal′ : _
         goal′ (j , true∈Wⱼ) =
-          x               ⊑⟨ ≡⇒⊑ (pos A) (sym (from-lemma₀ x))    ⟩
-          from₀ x ⁅true⁆     ⊑⟨ from₀-mono x ⁅true⁆ (W $ j) last        ⟩
-          from₀ x (W $ j) ⊑⟨ u-upper (from₀ x (W $ j)) (j , refl) ⟩
-          u               ■
+          x                ⊑⟨ ≡⇒⊑ (pos A) (sym (from-lemma₀ x))    ⟩
+          from₀ x ⁅true⁆   ⊑⟨ from₀-mono x ⁅true⁆ (W $ j) last     ⟩
+          from₀ x (W $ j)  ⊑⟨ u-upper (from₀ x (W $ j)) (j , refl) ⟩
+          u                ■
           where
           last : [ ⁅true⁆ ⊑[ pos 𝕊 ] (W $ j) ]
           last true _ = true∈Wⱼ
@@ -428,7 +429,7 @@ We now construct an isomorphism
       rem z (inr (dir p) , eq) = subst (λ - → [ - ≤ u ]) eq goal
         where
         goal′ : _
-        goal′ (j , false∈Wⱼ) = u-upper ⊤[ A ] (j , (subst (λ - → from₀ x - ≡ ⊤[ A ]) (another-lemma′ (W $ j) false∈Wⱼ) (resp-⊤ x)))
+        goal′ (j , false∈Wⱼ) = u-upper ⊤[ A ] (j , (subst (λ - → from₀ x - ≡ ⊤[ A ]) (false∈𝔘→𝔘-top (W $ j) false∈Wⱼ) (resp-⊤ x)))
 
         goal : [ ⊤[ A ] ≤ u ]
         goal = ∥∥-rec (isProp[] (_ ≤ _)) goal′ p
@@ -437,7 +438,7 @@ We now construct an isomorphism
 
 ```agda
   from₀-cont : (x : ∣ A ∣F) → isFrameHomomorphism 𝕊 A (from₀m x)
-  from₀-cont x = resp-⊤ x , from₀-comm-∧ x  , from₀-comm-⋁ x
+  from₀-cont x = resp-⊤ x , from₀-resp-∧ x  , from₀-comm-⋁ x
 ```
 
 We are now ready to write down the inverse of `to`.
@@ -492,7 +493,7 @@ We are now ready to write down the inverse of `to`.
         p : 𝔨 (to 𝒻) 𝔘 $ inr j ≡ f 𝔘
         p = 𝔨 (to 𝒻) 𝔘 $ inr j ≡⟨ refl                        ⟩
             ⊤[ A ]             ≡⟨ sym f-resp-⊤                ⟩
-            f ⊤[ 𝕊 ]           ≡⟨ cong f (another-lemma′ 𝔘 j) ⟩
+            f ⊤[ 𝕊 ]           ≡⟨ cong f (false∈𝔘→𝔘-top 𝔘 j) ⟩
             f 𝔘                ∎
 
       nts₁ : (u : ∣ A ∣F)
