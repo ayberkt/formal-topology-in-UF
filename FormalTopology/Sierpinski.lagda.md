@@ -35,12 +35,13 @@ In Agda, we express this as follows:
 
 ```agda
 sierpiński-exists : Σ[ S ∈ FormalTopology 𝓤₀ 𝓤₀ ]
-                     ((A : Frame 𝓤₁ 𝓤₀ 𝓤₀) → (to-frame S ─f→ A) ≃ ∣ A ∣F)
+                     ((A : Frame 𝓤₁ 𝓤₀ 𝓤₀) → ((to-frame S) ─f→ A) ≃ ∣ A ∣F)
 ```
 
-You can click [here](#15058) to jump directly to the inhabitant of this type
-that we construct, and follow the construction in a top-down manner. Otherwise,
-you can continue reading and follow in a bottom-up manner.
+You can click [here](#the-proof) to jump to the inhabitant of this type that we
+construct and follow the construction in a top-down manner by examining its
+constituents. Otherwise, you can continue reading to follow the construction in
+a bottom-up manner.
 
 ## Sierpiński formal topology
 
@@ -546,7 +547,8 @@ Finally, we write down the desired equivalence:
   𝕊-correct = isoToEquiv (iso to from to∘from=id from∘to=id)
 ```
 
+#### The proof
+
 ```agda
-main-proof        = S 𝓤₀ 𝓤₀ , 𝕊-correct
-sierpiński-exists = main-proof
+sierpiński-exists = S 𝓤₀ 𝓤₀ , 𝕊-correct
 ```
