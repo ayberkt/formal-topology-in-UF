@@ -390,7 +390,8 @@ the same join.
 Preservation of joins is a bit more complicated. Let `W` be a family of
 Sierpiński opens and let `x : A`. We use the uniqueness of
 `⋁ ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆` by showing that `from₀ x (⋁[ 𝕊 ] W)` is the least
-upper bound of `⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆`.
+upper bound of `⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆`. The fact that it is an upper bound
+is given by `ub` and the fact that it is the least such is given in `least`.
 
 ```agda
   from₀-comm-⋁ : (x : ∣ A ∣F) (W : Fam 𝓤₀ ∣ 𝕊 ∣F)
@@ -404,36 +405,44 @@ upper bound of `⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆`.
       rem : [ (W $ i) ⊑[ pos 𝕊 ] (⋁[ 𝕊 ] W) ]
       rem _ x∈Wᵢ = dir ∣ i , x∈Wᵢ ∣
 
-    least : (u : ∣ A ∣F) → (((z : ∣ A ∣F) → z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ → [ z ≤ u ])) → [ from₀ x (⋁[ 𝕊 ] W) ≤ u ]
+    least : (u : ∣ A ∣F)
+          → (((z : ∣ A ∣F) → z ε ⁅ from₀ x 𝔘 ∣ 𝔘 ε W ⁆ → [ z ≤ u ]))
+          → [ from₀ x (⋁[ 𝕊 ] W) ≤ u ]
     least u u-upper = ⋁[ A ]-least _ _ rem
       where
       open PosetReasoning (pos A)
 
       rem : (z : ∣ A ∣F) → z ε 𝔨 x (⋁[ 𝕊 ] W) → [ z ≤ u ]
-      rem z (inl (dir p) , eq) = subst (λ - → [ - ≤ u ]) eq goal
+      rem z (inl (dir p) , eq) =
+        subst (λ - → [ - ≤ u ]) eq (∥∥-rec (isProp[] (_ ≤ _ )) goal p)
         where
-        goal′ : _
-        goal′ (j , true∈Wⱼ) =
+        goal : _
+        goal (j , true∈Wⱼ) =
           x                ⊑⟨ ≡⇒⊑ (pos A) (sym (from-lemma₀ x))    ⟩
-          from₀ x ⁅true⁆   ⊑⟨ from₀-mono x ⁅true⁆ (W $ j) last     ⟩
+          from₀ x ⁅true⁆   ⊑⟨ from₀-mono x ⁅true⁆ (W $ j) nts      ⟩
           from₀ x (W $ j)  ⊑⟨ u-upper (from₀ x (W $ j)) (j , refl) ⟩
           u                ■
           where
-          last : [ ⁅true⁆ ⊑[ pos 𝕊 ] (W $ j) ]
-          last true _ = true∈Wⱼ
-          last false p = ⊥-rec (true≠false (sym p))
-
-        goal : [ ((𝔨 x (⋁[ 𝕊 ] W)) $ (inl (dir p))) ≤ u ]
-        goal = ∥∥-rec (isProp[] (_ ≤ _ )) goal′ p
-      rem z (inl (squash p q i) , eq) = isProp[] (_ ≤ _) (rem z (inl p , eq)) (rem z (inl q , eq)) i
-      rem z (inr (dir p) , eq) = subst (λ - → [ - ≤ u ]) eq goal
+          nts : [ ⁅true⁆ ⊑[ pos 𝕊 ] (W $ j) ]
+          nts true  _ = true∈Wⱼ
+          nts false p = ⊥-rec (true≠false (sym p))
+      rem z (inr (dir p) , eq) =
+        subst (λ - → [ - ≤ u ]) eq (∥∥-rec (isProp[] (_ ≤ _)) goal p)
         where
-        goal′ : _
-        goal′ (j , false∈Wⱼ) = u-upper ⊤[ A ] (j , (subst (λ - → from₀ x - ≡ ⊤[ A ]) (false∈𝔘→𝔘-top (W $ j) false∈Wⱼ) (resp-⊤ x)))
+        goal : _
+        goal (j , false∈Wⱼ) = u-upper 𝟏 (j , nts)
+          where
+          Wⱼ=⊤ : W $ j ≡ ⊤[ 𝕊 ]
+          Wⱼ=⊤ = sym (false∈𝔘→𝔘-top (W $ j) false∈Wⱼ)
 
-        goal : [ ⊤[ A ] ≤ u ]
-        goal = ∥∥-rec (isProp[] (_ ≤ _)) goal′ p
-      rem z (inr (squash p q i) , eq) = isProp[] (_ ≤ _) (rem z (inr p , eq)) (rem z (inr q , eq)) i
+          nts : from₀ x (W $ j) ≡ 𝟏
+          nts = from₀ x (W $ j) ≡⟨ cong (from₀ x) Wⱼ=⊤ ⟩
+                from₀ x ⊤[ 𝕊 ]  ≡⟨ resp-⊤ x            ⟩
+                𝟏               ∎
+      rem z (inl (squash p q i) , eq) =
+        isProp[] (_ ≤ _) (rem z (inl p , eq)) (rem z (inl q , eq)) i
+      rem z (inr (squash p q i) , eq) =
+        isProp[] (_ ≤ _) (rem z (inr p , eq)) (rem z (inr q , eq)) i
 ```
 
 ```agda
