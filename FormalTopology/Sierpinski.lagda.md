@@ -445,12 +445,15 @@ is given by `ub` and the fact that it is the least such is given in `least`.
         isProp[] (_ ≤ _) (rem z (inr p , eq)) (rem z (inr q , eq)) i
 ```
 
+The combination of these two proofs give us the fact that `from₀` is a frame
+homomorphism (i.e. a continuous function):
+
 ```agda
   from₀-cont : (x : ∣ A ∣F) → isFrameHomomorphism 𝕊 A (from₀m x)
   from₀-cont x = resp-⊤ x , from₀-resp-∧ x  , from₀-comm-⋁ x
 ```
 
-We are now ready to write down the inverse of `to`.
+We are now ready to write down `from`:
 
 ```agda
   from : ∣ A ∣F → 𝕊 ─f→ A
@@ -459,94 +462,87 @@ We are now ready to write down the inverse of `to`.
   π₁ (from x)      = from₀-cont x
 ```
 
-#### Section
+#### `to` cancels `from`
 
 ```agda
-  sec : section to from
-  sec x = to (from x) ≡⟨ refl ⟩ from₀ x ⁅true⁆ ≡⟨ from-lemma₀ x ⟩ x ∎
+  to∘from=id : (x : ∣ A ∣F) → to (from x) ≡ x
+  to∘from=id x = to (from x) ≡⟨ refl ⟩ from₀ x ⁅true⁆ ≡⟨ from-lemma₀ x ⟩ x ∎
 ```
 
-#### Retraction
+#### `from` cancels `to`
+
+To prove this result, we will make use of the following, rather important
+lemma:
 
 ```agda
-  hauptsatz : (((f , _) , _) : 𝕊 ─f→ A) (𝔘 : ∣ 𝕊 ∣F)
-            → ⋁[ A ] ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ≡ f 𝔘
-  hauptsatz 𝒻@((f , _) , _ , _ , f-resp-⋁) 𝔘 =
-    ⋁ ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆      ≡⟨ sym (f-resp-⋁ (⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆)) ⟩
+  useful-lemma : (((f , _) , _) : 𝕊 ─f→ A) (𝔘 : ∣ 𝕊 ∣F)
+            → ⋁ ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ≡ f 𝔘
+  useful-lemma 𝒻@((f , _) , _ , _ , f-resp-⋁) 𝔘 =
+    ⋁ ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆      ≡⟨ sym (f-resp-⋁ (⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆))   ⟩
     f (⋁[ 𝕊 ] ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆) ≡⟨ sym (cong f (main-lemma (S 𝓤₀ 𝓤₀) 𝔘))  ⟩
     f 𝔘                            ∎
 ```
 
+We now prove that `from` cancels `to`:
+
 ```agda
-  ret : retract to from
-  ret 𝒻@((f , f-mono) , f-resp-⊤ , r-resp-∧ , _) =
+  from∘to=id : (𝒻 : 𝕊 ─f→ A) → from (to 𝒻) ≡ 𝒻 
+  from∘to=id 𝒻@((f , f-mono) , f-resp-⊤ , _) =
     forget-homo 𝕊 A (from (to 𝒻)) 𝒻 goal
     where
     goal : (𝔘 : ∣ 𝕊 ∣F) → from (to 𝒻) .π₀ .π₀ 𝔘 ≡ f 𝔘
-    goal 𝔘 = sym (⋁-unique A _ _ nts₀ nts₁)
+    goal 𝔘 = sym (⋁-unique A _ _ ub least)
       where
       open PosetReasoning (pos A)
 
-      nts₀ : (x : ∣ A ∣F) → x ε 𝔨 (to 𝒻) 𝔘 → [ x ≤ (f 𝔘) ]
-      nts₀ x (inl i , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq nts₀′
+      ub : (x : ∣ A ∣F) → x ε 𝔨 (to 𝒻) 𝔘 → [ x ≤ (f 𝔘) ]
+      ub x (inl i , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq nts
         where
         ⦅𝟏⦆ : [ f ⁅true⁆ ≤ f 𝔘 ]
         ⦅𝟏⦆ = f-mono _ _ (⊤-lemma 𝔘 i) 
 
-        nts₀′ : [ (𝔨 (f ⁅true⁆) 𝔘 $ inl i) ≤ f 𝔘 ]
-        nts₀′ = ⁅ f ⁅true⁆ ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ $ i ⊑⟨ ≡⇒⊑ (pos A) refl ⟩
-                f ⁅true⁆                                ⊑⟨ ⦅𝟏⦆              ⟩
-                f 𝔘                                  ■
-      nts₀ x (inr j , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq (≡⇒⊑ (pos A) p)
+        nts : [ (𝔨 (f ⁅true⁆) 𝔘 $ inl i) ≤ f 𝔘 ]
+        nts = ⁅ f ⁅true⁆ ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ $ i ⊑⟨ ≡⇒⊑ (pos A) refl ⟩
+              f ⁅true⁆                                ⊑⟨ ⦅𝟏⦆              ⟩
+              f 𝔘                                     ■
+      ub x (inr j , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq (≡⇒⊑ (pos A) nts)
         where
-        p : 𝔨 (to 𝒻) 𝔘 $ inr j ≡ f 𝔘
-        p = 𝔨 (to 𝒻) 𝔘 $ inr j ≡⟨ refl                        ⟩
-            ⊤[ A ]             ≡⟨ sym f-resp-⊤                ⟩
-            f ⊤[ 𝕊 ]           ≡⟨ cong f (false∈𝔘→𝔘-top 𝔘 j) ⟩
-            f 𝔘                ∎
+        nts : 𝔨 (to 𝒻) 𝔘 $ inr j ≡ f 𝔘
+        nts = 𝔨 (to 𝒻) 𝔘 $ inr j ≡⟨ refl                       ⟩
+              ⊤[ A ]             ≡⟨ sym f-resp-⊤               ⟩
+              f ⊤[ 𝕊 ]           ≡⟨ cong f (false∈𝔘→𝔘-top 𝔘 j) ⟩
+              f 𝔘                ∎
 
-      nts₁ : (u : ∣ A ∣F)
+      least : (u : ∣ A ∣F)
            → ((x : ∣ A ∣F) → x ε 𝔨 (to 𝒻) 𝔘 → [ x ≤ u ]) → [ f 𝔘 ≤ u ]
-      nts₁ u p = subst (λ - → [ - ≤ u ]) (hauptsatz 𝒻 𝔘) rem
+      least u p =
+        subst (λ - → [ - ≤ u ]) (useful-lemma 𝒻 𝔘) (⋁[ A ]-least _ _ rem)
         where
-        aux₀ : [ false ∈ ⦅ 𝔘 ⦆ ] → [ ⊤[ A ] ≤ u ]
-        aux₀ q = p ⊤[ A ] (inr q , refl)
+        π : [ false ∈ ⦅ 𝔘 ⦆ ] → [ ⊤[ A ] ≤ u ]
+        π q = p ⊤[ A ] (inr q , refl)
 
-        aux₁ : [ true ∈ ⦅ 𝔘 ⦆ ] → [ f ⁅true⁆ ≤ u ]
-        aux₁ q = p (f ⁅true⁆) (inl q , refl)
+        ρ : [ true ∈ ⦅ 𝔘 ⦆ ] → [ f ⁅true⁆ ≤ u ]
+        ρ q = p (f ⁅true⁆) (inl q , refl)
 
-        rem′ : [ ∀[ z ε ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ] (z ≤ u) ]
-        rem′ z ((true  , q) , eq) = subst (λ - → [ - ≤ u ]) eq (f (η true) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym ⁅true⁆=η-true)) ⟩ f ⁅true⁆ ⊑⟨ aux₁ q  ⟩ u ■)
-        rem′ z ((false , q) , eq) = subst (λ - → [ - ≤ u ]) eq (f (η false) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym 𝟏=η-false)) ⟩ f ⊤[ 𝕊 ] ⊑⟨ ≡⇒⊑ (pos A) f-resp-⊤ ⟩ ⊤[ A ] ⊑⟨ aux₀ q ⟩ u ■)
-
-        rem : [ (⋁[ A ] ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆) ≤ u ]
-        rem = ⋁[ A ]-least _ _ rem′
-
+        rem : [ ∀[ z ε ⁅ f (η u) ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ ] (z ≤ u) ]
+        rem z ((true  , q) , eq) = subst (λ - → [ - ≤ u ]) eq nts
+          where
+          nts = f (η true) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym ⁅true⁆=η-true)) ⟩
+                f ⁅true⁆   ⊑⟨ ρ q                                      ⟩
+                u          ■
+        rem z ((false , q) , eq) = subst (λ - → [ - ≤ u ]) eq nts
+          where
+          nts = f (η false) ⊑⟨ ≡⇒⊑ (pos A) (cong f (sym 𝟏=η-false)) ⟩
+                f ⊤[ 𝕊 ]    ⊑⟨ ≡⇒⊑ (pos A) f-resp-⊤                 ⟩
+                ⊤[ A ]      ⊑⟨ π q                                  ⟩
+                u           ■
 ```
+
+Finally, we write down the desired equivalence:
 
 ```agda
   𝕊-correct : (𝕊 ─f→ A) ≃ ∣ A ∣F
-  𝕊-correct = isoToEquiv (iso to from sec ret)
---             nts′ : [ ⋁[ A ] (⁅ ⊤[ A ] ∣ _ ∶ [ false ∈ U ] ⁆) ⊑[ pos A ] _ ]
---             nts′ = ⋁[ A ]-least _ _ nts′′
-
---       q : isFrameHomomorphism 𝕊 A (f , f-mono)
---       q = resp-⊤ , resp-∧ , {!!}
---         where
---         resp-⊤ : f ⊤[ 𝕊 ] ≡ ⊤[ A ]
---         resp-⊤ = ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (false , lemma A [ false ∈ ⦅ ⊤[ 𝕊 ] ⦆ ] ⊤[ A ] ∣ tt ∣))
-
---         resp-∧ : (U V : ∣ 𝕊 ∣F) → f (U ⊓[ 𝕊 ] V) ≡ f U ⊓[ A ] f V
---         resp-∧ U V = ⊑[ pos A ]-antisym _ _ nts₀ nts₁
---           where
---           nts₀ : [ (f (U ⊓[ 𝕊 ] V)) ⊑[ pos A ] (f U ⊓[ A ] f V) ]
---           nts₀ = ⊓[ A ]-greatest _ _ _ (f-mono (U ⊓[ 𝕊 ] V) U (⊓[ 𝕊 ]-lower₀ U V)) (f-mono (U ⊓[ 𝕊 ] V) V (⊓[ 𝕊 ]-lower₁ U V))
-
---           nts₁ : [ (f U ⊓[ A ] f V) ⊑[ pos A ] f (U ⊓[ 𝕊 ] V) ]
---           nts₁ = {!!}
---
-
--- --}
+  𝕊-correct = isoToEquiv (iso to from to∘from=id from∘to=id)
 ```
 
 ```agda
