@@ -1,5 +1,6 @@
 ---
 title: Sierpiński
+author: Ayberk Tosun (j.w.w. Martín Escardó)
 ---
 
 <!--
