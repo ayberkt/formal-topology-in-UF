@@ -240,6 +240,14 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
     where
       open PosetReasoning (pos F)
 
+  ⋁-constant-id : (I : Type ℓ₂) (x : ∣ F ∣F) → ∥ I ∥ → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
+  ⋁-constant-id I x ∣i∣ = ∥∥-rec (carrier-is-set (pos F) _ _) f ∣i∣
+    where
+    f : I → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
+    f i = ⊑[ pos F ]-antisym _ _ (⋁[_]-least _ _ nts) (⋁[_]-upper _ _ (i , refl))
+      where
+      nts : _
+      nts _ (_ , eq) = ≡⇒⊑ (pos F) (sym eq)
 
   x∧x=x : (x : ∣ F ∣F) → x ⊓[ F ] x ≡ x
   x∧x=x x = sym (x⊑y⇒x=x∧y (⊑[ pos F ]-refl x))
