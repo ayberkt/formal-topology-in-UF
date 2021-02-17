@@ -1,5 +1,5 @@
 ---
-title: Sierpiński
+title: The Sierpiński Frame
 author: Ayberk Tosun (j.w.w. Martín Escardó)
 ---
 
