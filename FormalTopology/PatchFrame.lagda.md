@@ -27,7 +27,7 @@ Preliminaries
 We assume a fixed frame `F` on which to define the frame of nuclei.
 
 ```agda
-module FrameOfNuclei (F : Frame 𝒰 𝒱 𝒲) where
+module PatchFrame (F : Frame 𝒰 𝒱 𝒲) where
 ```
 
 ```agda
