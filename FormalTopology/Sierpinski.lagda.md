@@ -224,20 +224,21 @@ We need to show that `𝕊` classifies the opens of `A`.
 We will use the following shorthand for `A`'s operations:
 
 ```
-  ⋁_ : Fam 𝓤₀ ∣ A ∣F → ∣ A ∣F
-  ⋁ U = ⋁[ A ] U
+  private
+    ⋁_ : Fam 𝓤₀ ∣ A ∣F → ∣ A ∣F
+    ⋁ U = ⋁[ A ] U
 
-  _∨_ : ∣ A ∣F → ∣ A ∣F → ∣ A ∣F
-  x ∨ y = x ∨[ A ] y
+    _∨_ : ∣ A ∣F → ∣ A ∣F → ∣ A ∣F
+    x ∨ y = x ∨[ A ] y
 
-  _∧_ : ∣ A ∣F → ∣ A ∣F → ∣ A ∣F
-  x ∧ y = x ⊓[ A ] y
+    _∧_ : ∣ A ∣F → ∣ A ∣F → ∣ A ∣F
+    x ∧ y = x ⊓[ A ] y
 
-  _≤_ : ∣ A ∣F → ∣ A ∣F → hProp 𝓥
-  x ≤ y = x ⊑[ pos A ] y 
+    _≤_ : ∣ A ∣F → ∣ A ∣F → hProp 𝓥
+    x ≤ y = x ⊑[ pos A ] y
 
-  𝟏 : ∣ A ∣F
-  𝟏 = ⊤[ A ]
+    𝟏 : ∣ A ∣F
+    𝟏 = ⊤[ A ]
 ```
 
 We now construct an isomorphism
