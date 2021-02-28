@@ -2,6 +2,7 @@
 title: Nucleus
 ---
 
+<!--
 ```agda
 {-# OPTIONS --cubical --safe #-}
 
@@ -12,19 +13,33 @@ open import Poset
 open import Frame
 open import Prenucleus
 open import Cubical.Foundations.HLevels using (isProp×; isProp×2; isProp×3)
+```
+-->
 
--- A predicate expressing whether a function is a nucleus.
+## Definition of nuclei
+
+We first write down what it means for a function to be “nuclear”.
+
+```agda
 isNuclear : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (∣ L ∣F → ∣ L ∣F) → Type (ℓ-max ℓ₀ ℓ₁)
 isNuclear L j = N₀ × N₁ × N₂
   where
     N₀ = (x y : ∣ L ∣F) → j (x ⊓[ L ] y) ≡ (j x) ⊓[ L ] (j y)
     N₁ = (x   : ∣ L ∣F) → [ x ⊑[ pos L ] (j x) ]
     N₂ = (x   : ∣ L ∣F) → [ j (j x) ⊑[ pos L ] j x ]
+```
 
--- The type of nuclei.
+A nucleus is a nuclear endofunction on a frame. Notice that it is *not*
+required to be a homomorphism.
+
+```agda
 Nucleus : Frame ℓ₀ ℓ₁ ℓ₂ → Type (ℓ-max ℓ₀ ℓ₁)
 Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
+```
 
+Some projections for convenience.
+
+```agda
 𝓃₀ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
    → (x y : ∣ F ∣F) → j (x ⊓[ F ] y) ≡ (j x) ⊓[ F ] (j y)
 𝓃₀ F (_ , n₀ , _) = n₀
@@ -36,7 +51,11 @@ Nucleus L = Σ (∣ L ∣F → ∣ L ∣F) (isNuclear L)
 𝓃₂ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus F)
    → (x : ∣ F ∣F) → [ j (j x) ⊑[ pos F ] j x ]
 𝓃₂ F (_ , _ , _ , n₂) = n₂
+```
 
+The nuclearity property is an h-proposition.
+
+```agda
 isNuclear-prop : (L : Frame ℓ₀ ℓ₁ ℓ₂) (j : ∣ L ∣F → ∣ L ∣F)
                → isProp (isNuclear L j)
 isNuclear-prop L j = isProp×2 N₀-prop N₁-prop N₂-prop
@@ -54,7 +73,11 @@ Nucleus-set : (F : Frame ℓ₀ ℓ₁ ℓ₂) → isSet (Nucleus F)
 Nucleus-set F = isSetΣ
                   (isSetΠ (λ _ → carrier-is-set (pos F))) λ j →
                   isProp→isSet (isNuclear-prop F j)
+```
 
+## Record-based definition of nuclei
+
+```agda
 record Nucleusᵣ (F : Frame 𝓤 𝓥 𝓦) : (𝓤 ∨ 𝓥) ̇ where
   constructor nucl
   field
@@ -78,16 +101,27 @@ Nucleus≃Nucleusᵣ F = isoToEquiv (iso to from sec ret)
 
   ret : retract to from
   ret (_ , _ , _ , _) = refl
+```
 
--- The top element is fixed point for every nucleus.
+## Properties of nuclei
+
+Every nucleus respects the top element.
+
+```agda
 nuclei-resp-⊤ : (L : Frame ℓ₀ ℓ₁ ℓ₂) ((j , _) : Nucleus L) → j ⊤[ L ] ≡ ⊤[ L ]
 nuclei-resp-⊤ L (j , N₀ , N₁ , N₂) = ⊑[ pos L ]-antisym _ _ (⊤[ L ]-top _) (N₁ _)
+```
 
--- Every nucleus is idempotent.
+Every nucleus is idempotent.
+
+```agda
 idem : (L : Frame ℓ₀ ℓ₁ ℓ₂) → ((j , _) : Nucleus L) → (x : ∣ L ∣F) → j (j x) ≡ j x
 idem L (j , N₀ , N₁ , N₂) x = ⊑[ pos L ]-antisym _ _ (N₂ x) (N₁ (j x))
+```
 
--- Every nucleus is monotonic.
+Every nucleus is a monotonic map.
+
+```agda
 mono : (L : Frame ℓ₀ ℓ₁ ℓ₂) ((j , _) : Nucleus L)
      → (x y : ∣ L ∣F) → [ x ⊑[ pos L ] y ] → [ (j x) ⊑[ pos L ] (j y) ]
 mono L (j , N₀ , N₁ , N₂) x y x⊑y =
@@ -97,7 +131,11 @@ mono L (j , N₀ , N₁ , N₂) x y x⊑y =
   j y             ■
   where
     open PosetReasoning (pos L)
+```
 
+## Some more lemmas about nuclei
+
+```agda
 module Nucleus-∨-Lemmata (L : Frame ℓ₀ ℓ₁ ℓ₂) (𝒿 : Nucleus L) where
 
   open PosetReasoning (pos L)
@@ -116,15 +154,18 @@ module Nucleus-∨-Lemmata (L : Frame ℓ₀ ℓ₁ ℓ₂) (𝒿 : Nucleus L) w
 
   nucleus-∨-lemma₁ : (x y : ∣ L ∣F)
                    → [ j (x ∨[ L ] j y) ⊑[ pos L ] j (j x ∨[ L ] j y) ]
-  nucleus-∨-lemma₁ x y = mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (x ⊑⟨ n₁ x ⟩ j x ⊑⟨ ⊔[ L ]-upper₀ _ _ ⟩ _ ■) (⊔[ L ]-upper₁ _ _))
+  nucleus-∨-lemma₁ x y =
+    mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (x ⊑⟨ n₁ x ⟩ j x ⊑⟨ ⊔[ L ]-upper₀ _ _ ⟩ _ ■) (⊔[ L ]-upper₁ _ _))
 
   nucleus-∨-lemma₂ : (x y : ∣ L ∣F)
                    → [ j (j x ∨[ L ] j y) ⊑[ pos L ] j (j (x ∨[ L ] y)) ]
-  nucleus-∨-lemma₂ x y = mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (mono L 𝒿 _ _ (⊔[ L ]-upper₀ x y)) (mono L 𝒿 _ _ (⊔[ L ]-upper₁ x y)))
+  nucleus-∨-lemma₂ x y =
+    mono L 𝒿 _ _ (⊔[ L ]-least _ _ _ (mono L 𝒿 _ _ (⊔[ L ]-upper₀ x y)) (mono L 𝒿 _ _ (⊔[ L ]-upper₁ x y)))
 
   nucleus-∨-thm₀ : (x y : ∣ L ∣F)
                  → j (x ∨[ L ] y) ≡ j (j x ∨[ L ] j y)
-  nucleus-∨-thm₀ x y = ⊑[ pos L ]-antisym _ _ nts₀ nts₁
+  nucleus-∨-thm₀ x y =
+    ⊑[ pos L ]-antisym _ _ nts₀ nts₁
     where
       nts₀ : _
       nts₀ = j (x ∨[ L ] y)     ⊑⟨ nucleus-∨-lemma₀ x y ⟩
@@ -135,9 +176,12 @@ module Nucleus-∨-Lemmata (L : Frame ℓ₀ ℓ₁ ℓ₂) (𝒿 : Nucleus L) w
       nts₁ = j (j x ∨[ L ] j y) ⊑⟨ nucleus-∨-lemma₂ x y ⟩
              j (j (x ∨[ L ] y)) ⊑⟨ n₂ (x ∨[ L ] y)      ⟩
              j (x ∨[ L ] y)     ■
+```
 
--- The set of fixed points for nucleus `j` is equivalent hence equal to its image.
--- This is essentially due to the fact that j (j ())
+The set of fixed points for nucleus `j` is equivalent hence equal to its image.
+This is essentially due to the fact that j (j ())
+
+```agda
 nuclear-image : (L : Frame ℓ₀ ℓ₁ ℓ₂)
               → let ∣L∣ = ∣ L ∣F in (j : ∣L∣ → ∣L∣)
               → isNuclear L j
@@ -164,8 +208,13 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
 
     ret-f-g : retract f g
     ret-f-g (x , p) = Σ≡Prop (λ y → ∥∥-prop (Σ[ a ∈ ∣ L ∣F ] y ≡ j a)) refl
+```
 
--- The set of fixed points for a nucleus `j` forms a poset.
+## The frame of nuclei fixed points
+
+The set of fixed points for a nucleus `j` forms a poset.
+
+```agda
 𝔣𝔦𝔵-pos : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (N : Nucleus L) → Poset ℓ₀ ℓ₁
 𝔣𝔦𝔵-pos {ℓ₀ = ℓ₀} {ℓ₁} L (j , N₀ , N₁ , N₂) =
   𝔽 , _≤_ , 𝔽-set , ≤-refl , ≤-trans , ≤-antisym
@@ -191,9 +240,12 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
     ≤-antisym : [ isAntisym 𝔽-set _≤_ ]
     ≤-antisym (x , _) (y , _) x≤y y≤x =
       Σ≡Prop (λ z → A-set (j z) z) (⊑[ P ]-antisym x y x≤y y≤x)
+```
 
--- The set of fixed points of a nucleus `j` forms a frame.
--- The join of this frame is define as ⊔ᵢ Uᵢ := j (⊔′ᵢ Uᵢ) where ⊔′ denotes the join of L.
+The set of fixed points of a nucleus `j` forms a frame. The join of this frame
+is define as ⊔ᵢ Uᵢ := j (⊔′ᵢ Uᵢ) where ⊔′ denotes the join of L.
+
+```agda
 𝔣𝔦𝔵 : (L : Frame ℓ₀ ℓ₁ ℓ₂) → (N : Nucleus L) → Frame ℓ₀ ℓ₁ ℓ₂
 𝔣𝔦𝔵 {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} L N@(j , N₀ , N₁ , N₂) =
                           ∣ 𝔣𝔦𝔵-pos L N ∣ₚ
@@ -294,10 +346,14 @@ nuclear-image L j N@(n₀ , n₁ , n₂) = isoToPath (iso f g sec-f-g ret-f-g)
           π₀ (⋁⟨ i ⟩ (𝓍 ∧ (U $ i)))          ∎
 ```
 
+## Every nucleus is obviously a prenucleus
+
 ```agda
 nucleus⇒prenucleus : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Nucleus F → Prenucleus F
 nucleus⇒prenucleus F (j , n₀ , n₁ , _)= j , n₀ , n₁
 ```
+
+## The notion of sublocale
 
 ```agda
 isASublocaleOf : (S : Frame ℓ₀ ℓ₁ ℓ₂) (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type _
