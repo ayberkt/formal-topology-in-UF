@@ -55,6 +55,30 @@ Nucleus-set F = isSetΣ
                   (isSetΠ (λ _ → carrier-is-set (pos F))) λ j →
                   isProp→isSet (isNuclear-prop F j)
 
+record Nucleusᵣ (F : Frame 𝓤 𝓥 𝓦) : (𝓤 ∨ 𝓥) ̇ where
+  constructor nucl
+  field
+    j : ∣ F ∣F → ∣ F ∣F
+
+    meet-preservation : (x y : ∣ F ∣F) → j (x ⊓[ F ] y) ≡ j x ⊓[ F ] j y
+    inflationarity    : (x   : ∣ F ∣F) → [ x ⊑[ pos F ] j x ]
+    idempotency       : (x   : ∣ F ∣F) → [ j (j x) ⊑[ pos F ] j x ]
+
+Nucleus≃Nucleusᵣ : (F : Frame 𝓤 𝓥 𝓦) → Nucleus F ≃ Nucleusᵣ F
+Nucleus≃Nucleusᵣ F = isoToEquiv (iso to from sec ret)
+  where
+  to : Nucleus F → Nucleusᵣ F
+  to (j , mp , inf , i) = nucl j mp inf i
+
+  from : Nucleusᵣ F → Nucleus F
+  from (nucl j mp inf i) = j , mp , inf , i
+
+  sec : section to from
+  sec (nucl _ _ _ _) = refl
+
+  ret : retract to from
+  ret (_ , _ , _ , _) = refl
+
 -- The top element is fixed point for every nucleus.
 nuclei-resp-⊤ : (L : Frame ℓ₀ ℓ₁ ℓ₂) ((j , _) : Nucleus L) → j ⊤[ L ] ≡ ⊤[ L ]
 nuclei-resp-⊤ L (j , N₀ , N₁ , N₂) = ⊑[ pos L ]-antisym _ _ (⊤[ L ]-top _) (N₁ _)
