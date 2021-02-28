@@ -279,3 +279,13 @@ nucleus⇒prenucleus F (j , n₀ , n₁ , _)= j , n₀ , n₁
 isASublocaleOf : (S : Frame ℓ₀ ℓ₁ ℓ₂) (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type _
 isASublocaleOf S F = Σ[ j ∈ Nucleus F ] S ≡ 𝔣𝔦𝔵 F j
 ```
+
+## The identity nucleus
+
+```agda
+idn : (F : Frame 𝓤 𝓥 𝓦) → Nucleus F
+π₀ (idn F)           = id ∣ F ∣F
+π₀ (π₁ (idn F)) _ _  = refl
+π₀ (π₁ (π₁ (idn F))) = ⊑[ pos F ]-refl
+π₁ (π₁ (π₁ (idn F))) = ⊑[ pos F ]-refl
+```
