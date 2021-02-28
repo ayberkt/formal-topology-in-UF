@@ -188,7 +188,7 @@ is the same thing as the downwards-closure of `η false`.
 
 ```agda
 𝟏=η-false : ⊤[ 𝕊 ] ≡ η false
-𝟏=η-false = 𝕊-equality ⊤[ 𝕊 ] (η false) (⊆-antisym goal λ _ _ → tt) 
+𝟏=η-false = 𝕊-equality ⊤[ 𝕊 ] (η false) (⊆-antisym goal λ _ _ → tt)
   where
   goal : [ ⦅ ⊤[ 𝕊 ] ⦆ ⊆ ⦅ η false ⦆ ]
   goal true  _ = π₁ (π₀ (η false)) true _ (dir tt) tt
@@ -489,7 +489,7 @@ lemma:
 We now prove that `from` cancels `to`:
 
 ```agda
-  from∘to=id : (𝒻 : 𝕊 ─f→ A) → from (to 𝒻) ≡ 𝒻 
+  from∘to=id : (𝒻 : 𝕊 ─f→ A) → from (to 𝒻) ≡ 𝒻
   from∘to=id 𝒻@((f , f-mono) , f-resp-⊤ , _) =
     forget-homo 𝕊 A (from (to 𝒻)) 𝒻 goal
     where
@@ -502,7 +502,7 @@ We now prove that `from` cancels `to`:
       ub x (inl i , eq) = subst (λ - → [ - ≤ f 𝔘 ]) eq nts
         where
         ⦅𝟏⦆ : [ f ⁅true⁆ ≤ f 𝔘 ]
-        ⦅𝟏⦆ = f-mono _ _ (⊤-lemma 𝔘 i) 
+        ⦅𝟏⦆ = f-mono _ _ (⊤-lemma 𝔘 i)
 
         nts : [ (𝔨 (f ⁅true⁆) 𝔘 $ inl i) ≤ f 𝔘 ]
         nts = ⁅ f ⁅true⁆ ∣ _ ∶ [ true ∈ ⦅ 𝔘 ⦆ ] ⁆ $ i ⊑⟨ ≡⇒⊑ (pos A) refl ⟩
