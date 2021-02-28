@@ -79,6 +79,10 @@ ScottContNucleus = Σ[ j ∈ Nucleus F ] isScottCont j
 ScottContNucleus-set : isSet ScottContNucleus
 ScottContNucleus-set =
   isSetΣ (Nucleus-set F) (isProp→isSet ∘ isScottCont-prop)
+
+ScottContNucleus-eq : (𝒿 𝓀 : ScottContNucleus) → 𝒿 .fst .fst ≡ 𝓀 .fst .fst → 𝒿 ≡ 𝓀
+ScottContNucleus-eq ((j , _) , _) ((k , _) , _) =
+  Σ≡Prop isScottCont-prop ∘ Σ≡Prop (isNuclear-prop F)
 ```
 
 Poset of nuclei on `F` (`𝔑`)
