@@ -329,7 +329,7 @@ Equation 3.21.
 </pre>
 **Proposition 3.24**.
 
-<pre class="Agda"><a id="5028" href="Index.html#5028" class="Function">_</a> <a id="5030" class="Symbol">=</a> <a id="5032" href="Nucleus.html#1730" class="Function">Nucleus.nuclei-resp-⊤</a>
+<pre class="Agda"><a id="5028" href="Index.html#5028" class="Function">_</a> <a id="5030" class="Symbol">=</a> <a id="5032" href="Nucleus.html#2419" class="Function">Nucleus.nuclei-resp-⊤</a>
 </pre>
 **Lemma 3.25**. This is broken up into two functions in the Agda formalisatoin.
 
@@ -338,15 +338,15 @@ Equation 3.21.
 </pre>
 **Proposition 3.26**.
 
-<pre class="Agda"><a id="5224" href="Index.html#5224" class="Function">_</a> <a id="5226" class="Symbol">=</a> <a id="5228" href="Nucleus.html#2110" class="Function">Nucleus.mono</a>
+<pre class="Agda"><a id="5224" href="Index.html#5224" class="Function">_</a> <a id="5226" class="Symbol">=</a> <a id="5228" href="Nucleus.html#2799" class="Function">Nucleus.mono</a>
 </pre>
 **Proposition 3.27**.
 
-<pre class="Agda"><a id="5277" href="Index.html#5277" class="Function">_</a> <a id="5279" class="Symbol">=</a> <a id="5281" href="Nucleus.html#5137" class="Function">Nucleus.𝔣𝔦𝔵-pos</a>
+<pre class="Agda"><a id="5277" href="Index.html#5277" class="Function">_</a> <a id="5279" class="Symbol">=</a> <a id="5281" href="Nucleus.html#5826" class="Function">Nucleus.𝔣𝔦𝔵-pos</a>
 </pre>
 **Theorem 3.28**.
 
-<pre class="Agda"><a id="5329" href="Index.html#5329" class="Function">_</a> <a id="5331" class="Symbol">=</a> <a id="5333" href="Nucleus.html#6053" class="Function">Nucleus.𝔣𝔦𝔵</a>
+<pre class="Agda"><a id="5329" href="Index.html#5329" class="Function">_</a> <a id="5331" class="Symbol">=</a> <a id="5333" href="Nucleus.html#6742" class="Function">Nucleus.𝔣𝔦𝔵</a>
 </pre>
 ## Chapter 4: Formal Topology
 
