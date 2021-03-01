@@ -284,6 +284,12 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
       NTS : ⋁⟨ b ⟩ (x ⊓[ F ] (𝒰′ $ b)) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
       NTS = cong (λ - → ⋁[ F ] (Bool ℓ₂ , -)) (funExt λ { true → refl ; false → refl })
 
+  absorption : (x y : ∣ F ∣F) → x ∨[ F ] (x ⊓[ F ] y) ≡ x
+  absorption x y = ⊑[ pos F ]-antisym _ _ nts₀ (⊔[_]-upper₀ x (x ⊓[ F ] y))
+    where
+    nts₀ : ⟨ x ∨[ F ] (x ⊓[ F ] y) ⊑[ pos F ] x ⟩
+    nts₀ = ⊔[_]-least x (x ⊓[ F ] y) x (⊑[ pos F ]-refl x) (⊓[_]-lower₀ x y)
+
   comm : (x y : ∣ F ∣F) → x ⊓[ F ] y ≡ y ⊓[ F ] x
   comm x y = ⊓-unique y x _ (⊓[_]-lower₁ x y) (⊓[_]-lower₀ x y) NTS
     where
