@@ -14,6 +14,7 @@ open import Frame
 module WayBelow (F : Frame 𝓤 𝓥 𝓦) where
 
 open import Poset
+open import Cubical.Data.Sigma hiding (_∨_)
 open import Nucleus
 ```
 -->
@@ -55,4 +56,12 @@ isCompactOpen x = x ≪ x
 ```agda
 isCompact : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 isCompact = isCompactOpen ⊤[ F ]
+```
+
+## Continuity
+
+```agda
+isContinuous : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
+isContinuous =
+  ∀[ x ∶ ∣ F ∣F ] isSup (pos F) ((Σ[ y ∈ ∣ F ∣F ] [ x ≪ y ]) , fst) x
 ```
