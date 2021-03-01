@@ -300,6 +300,9 @@ data ∥_∥ (A : Type ℓ) : Type ℓ where
 ∥∥-prop : (A : Type ℓ) → isProp ∥ A ∥
 ∥∥-prop _ = squash
 
+∥_∥Ω : (A : 𝓤 ̇) → hProp 𝓤
+∥ A ∥Ω = ∥ A ∥ , ∥∥-prop A
+
 ∥∥-rec : {X : Type ℓ} {Y : Type ℓ₀} → isProp Y → (X → Y) → ∥ X ∥ → Y
 ∥∥-rec Y-prop f ∣ x ∣                = f x
 ∥∥-rec Y-prop f (squash ∣x∣₀ ∣x∣₁ i) =
