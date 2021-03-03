@@ -123,6 +123,13 @@ carrier-is-set (_ , _ , is-set , _) = is-set
 
 ## Partial order reasoning
 
+```agda
+module PosetNotation (P : Poset 𝓤 𝓥) where
+
+  _≤_ : ∣ P ∣ₚ → ∣ P ∣ₚ → hProp 𝓥
+  x ≤ y = x ⊑[ P ] y
+```
+
 Some convenient notation for carrying out inequality reasoning.
 
 ```agda

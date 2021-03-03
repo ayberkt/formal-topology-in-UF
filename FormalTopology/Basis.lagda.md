@@ -109,6 +109,9 @@ data Unit (ℓ : Level) : Type ℓ where
 
 Unit-prop : {ℓ : Level} → isProp (Unit ℓ)
 Unit-prop tt tt = refl
+
+top : (𝓤 : Universe) → hProp 𝓤
+top 𝓤 = Unit 𝓤 , Unit-prop
 ```
 
 ## Bottom
