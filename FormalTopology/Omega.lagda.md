@@ -97,7 +97,7 @@ We now construct, for each frame $A$, a frame homomorphism ‼ : Ω → A. Let u
 start by writing down the underlying function:
 
 ```agda
-∣‼∣ : (A : Frame 𝓤 𝓥 𝓤) → hProp 𝓤 → ∣ A ∣F
+∣‼∣ : (A : Frame 𝓦 𝓥 𝓤) → hProp 𝓤 → ∣ A ∣F
 ∣‼∣ A P = ⋁[ A ] ⁅ ⊤[ A ] ∣ _ ∶ [ P ] ⁆
 ```
 
@@ -106,7 +106,7 @@ start by writing down the underlying function:
 This is a monotonic map between the underlying frames:
 
 ```agda
-∣‼∣-mono : (A : Frame 𝓤 𝓥 𝓤) → isMonotonic (ΩP 𝓤) (pos A) (∣‼∣ A)
+∣‼∣-mono : (A : Frame 𝓦 𝓥 𝓤) → isMonotonic (ΩP 𝓤) (pos A) (∣‼∣ A)
 ∣‼∣-mono A P Q P≤Q =
   ⋁[ A ]-least _ (∣‼∣ A Q) nts
   where
@@ -115,20 +115,20 @@ This is a monotonic map between the underlying frames:
 ```
 
 ```agda
-‼m : (A : Frame 𝓤 𝓥 𝓤) → ΩP 𝓤 ─m→ pos A
+‼m : (A : Frame 𝓦 𝓥 𝓤) → ΩP 𝓤 ─m→ pos A
 ‼m A = ∣‼∣ A , ∣‼∣-mono A
 ```
 
 ### ‼ is a frame homomorphism
 
 ```agda
-∣‼∣-resp-⊤ : (A : Frame 𝓤 𝓥 𝓤) → ∣‼∣ A (top 𝓤) ≡ ⊤[ A ]
+∣‼∣-resp-⊤ : (A : Frame 𝓦 𝓥 𝓤) → ∣‼∣ A (top 𝓤) ≡ ⊤[ A ]
 ∣‼∣-resp-⊤ A =
   ⊑[ pos A ]-antisym _ _ (⊤[ A ]-top _) (⋁[ A ]-upper _ _ (tt , refl))
 ```
 
 ```agda
-∣‼∣-resp-∧ : (A : Frame 𝓤 𝓥 𝓤) (P Q : hProp 𝓤)
+∣‼∣-resp-∧ : (A : Frame 𝓦 𝓥 𝓤) (P Q : hProp 𝓤)
            → ∣‼∣ A (P ⊓ Q) ≡ (∣‼∣ A P) ⊓[ A ] (∣‼∣ A Q)
 ∣‼∣-resp-∧ {𝓤 = 𝓤} A P Q =
   ∣‼∣ A (P ⊓ Q)                    ≡⟨ refl                           ⟩
@@ -146,14 +146,14 @@ This is a monotonic map between the underlying frames:
 ```
 
 ```agda
-∣‼∣-resp-⋁ : (A : Frame 𝓤 𝓥 𝓤) (U : Fam 𝓤 (hProp 𝓤))
+∣‼∣-resp-⋁ : (A : Frame 𝓦 𝓥 𝓤) (U : Fam 𝓤 (hProp 𝓤))
            → ∣‼∣ A (⋁[ Ω 𝓤 ] U) ≡ ⋁[ A ] ⁅ ∣‼∣ A x ∣ x ε U ⁆
 ∣‼∣-resp-⋁ A U = ⊑[ pos A ]-antisym _ _ below above
   where
   open PosetNotation  (pos A) using () renaming (_≤_ to _⊑_)
 
   below : [ ∣‼∣ A (⋁[ Ω _ ] U) ⊑ (⋁[ A ] ⁅ ∣‼∣ A P ∣ P ε U ⁆) ]
-  below = ⋁[ A ]-least _ _ goal  
+  below = ⋁[ A ]-least _ _ goal
     where
     goal : _
     goal x (q , eq) = ∥∥-rec (isProp[] (_ ⊑[ pos A ] _)) rem q
@@ -168,7 +168,7 @@ This is a monotonic map between the underlying frames:
         δ w q = q x (p , eq)
 
   above : [ (⋁[ A ] ⁅ ∣‼∣ A P ∣ P ε U ⁆) ⊑ ∣‼∣ A (⋁[ Ω _ ] U) ]
-  above = ⋁[ A ]-least _ _ goal 
+  above = ⋁[ A ]-least _ _ goal
     where
     goal : _
     goal x (i , eq) = subst (λ - → [ - ⊑[ pos A ] _ ]) eq nts
@@ -183,7 +183,7 @@ This is a monotonic map between the underlying frames:
 ## Definition of ‼
 
 ```agda
-‼ : (𝓤 : Universe) (A : Frame 𝓤 𝓥 𝓤) → Ω 𝓤 ─f→ A
+‼ : (𝓤 : Universe) (A : Frame 𝓦 𝓥 𝓤) → Ω 𝓤 ─f→ A
 ‼ 𝓤 A = ‼m A , ∣‼∣-resp-⊤ A , ∣‼∣-resp-∧ A , ∣‼∣-resp-⋁ A
 ```
 
@@ -201,7 +201,7 @@ We now prove uniqueness: given any other frame homomorphism ⁇ out of Ω, ‼ i
 equal to ⁇:
 
 ```agda
-‼-is-unique : (A : Frame 𝓤 𝓥 𝓤) → (⁇ : (Ω 𝓤) ─f→ A) → ‼ 𝓤 A ≡ ⁇
+‼-is-unique : (A : Frame 𝓦 𝓥 𝓤) → (⁇ : (Ω 𝓤) ─f→ A) → ‼ 𝓤 A ≡ ⁇
 ‼-is-unique {𝓤 = 𝓤} A ⁇@((∣⁇∣ , ⁇-mono) , (⁇-resp-⊤ , ⁇-resp-∧ , ⁇-resp-⋁)) =
   forget-homo (Ω 𝓤) A (‼ 𝓤 A) ⁇ (sym ∘ goal)
   where
@@ -233,6 +233,6 @@ equal to ⁇:
 ```
 
 ```agda
-ΩF-initial : (A : Frame 𝓤 𝓥 𝓤) → isContr (Ω 𝓤 ─f→ A)
+ΩF-initial : (A : Frame 𝓦 𝓥 𝓤) → isContr (Ω 𝓤 ─f→ A)
 ΩF-initial {𝓤 = 𝓤} A = ‼ 𝓤 A , ‼-is-unique A
 ```
