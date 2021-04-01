@@ -290,10 +290,65 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
     nts₀ : ⟨ x ∨[ F ] (x ⊓[ F ] y) ⊑[ pos F ] x ⟩
     nts₀ = ⊔[_]-least x (x ⊓[ F ] y) x (⊑[ pos F ]-refl x) (⊓[_]-lower₀ x y)
 
+  absorption-op : (x y : ∣ F ∣F) → (x ⊓[ F ] (x ∨[ F ] y)) ≡ x
+  absorption-op x y = ⊑[ pos F ]-antisym _ _ α β
+    where
+    α : [ x ⊓[ F ] (x ∨[ F ] y) ⊑[ pos F ] x ]
+    α = ⊓[_]-lower₀ x (x ∨[ F ] y)
+
+    β : [ x ⊑[ pos F ] x ⊓[ F ] (x ∨[ F ] y) ]
+    β = ⊓[_]-greatest x (x ∨[ F ] y) x (⊑[ pos F ]-refl x) (⊔[_]-upper₀ x y)
+
   comm : (x y : ∣ F ∣F) → x ⊓[ F ] y ≡ y ⊓[ F ] x
   comm x y = ⊓-unique y x _ (⊓[_]-lower₁ x y) (⊓[_]-lower₀ x y) NTS
     where
       NTS = λ w w⊑y w⊑x → ⊓[_]-greatest x y w w⊑x w⊑y
+
+  ∨[_]-assoc : (x y z : ∣ F ∣F)
+             → (x ∨[ F ] y) ∨[ F ] z ≡ x ∨[ F ] (y ∨[ F ] z)
+  ∨[_]-assoc x y z = ⋁-unique ⁅ x , (y ∨[ F ] z) ⁆ _ α β
+    where
+    open PosetReasoning (pos F)
+
+    α : (w : ∣ F ∣F)
+      → w ε ⁅ x , (y ∨[ F ] z) ⁆ → ⟨ w ⊑ ((x ∨[ F ] y) ∨[ F ] z) ⟩
+    α w (true  , p) = w                      ⊑⟨ ≡⇒⊑ (pos F) (sym p)          ⟩
+                      x                      ⊑⟨ ⋁[_]-upper _ _ (true , refl) ⟩
+                      x ∨[ F ] y             ⊑⟨ ⋁[_]-upper _ _ (true , refl) ⟩
+                      (x ∨[ F ] y) ∨[ F ] z  ■
+    α w (false , p) = w                      ⊑⟨ ≡⇒⊑ (pos F) (sym p)          ⟩
+                      y ∨[ F ] z             ⊑⟨ ⋁[_]-least _ _ γ             ⟩
+                      (x ∨[ F ] y) ∨[ F ] z  ■
+      where
+      γ : ⟨ ∀[ w ε ⁅ y , z ⁆ ] (w ⊑ ((x ∨[ F ] y) ∨[ F ] z)) ⟩
+      γ w (true  , q) = w                     ⊑⟨ ≡⇒⊑ (pos F) (sym q)           ⟩
+                        y                     ⊑⟨ ⋁[_]-upper _ _ (false , refl) ⟩
+                        x ∨[ F ] y            ⊑⟨ ⋁[_]-upper _ _ (true  , refl) ⟩
+                        (x ∨[ F ] y) ∨[ F ] z ■
+      γ w (false , q) = w                     ⊑⟨ ≡⇒⊑ (pos F) (sym q)           ⟩
+                        z                     ⊑⟨ ⋁[_]-upper _ _ (false , refl) ⟩
+                        (x ∨[ F ] y) ∨[ F ] z ■
+
+    β : (w : ∣ F ∣F)
+      → ((o : ∣ F ∣F) → o ε ⁅ x , (y ∨[ F ] z) ⁆ → ⟨ o ⊑ w ⟩)
+      → [ ((x ∨[ F ] y) ∨[ F ] z) ⊑ w ]
+    β w p = ⋁[_]-least _ _ δ
+      where
+      δ : ⟨ ∀[ v ε ⁅ (x ∨[ F ] y) , z ⁆ ] (v ⊑ w) ⟩
+      δ v (true  , q) = v           ⊑⟨ ≡⇒⊑ (pos F) (sym q) ⟩
+                        x ∨[ F ] y  ⊑⟨ ⋁[_]-least _ _ ε ⟩
+                        w           ■
+        where
+        ε : ⟨ ∀[ v ε ⁅ x , y ⁆ ] (v ⊑ w) ⟩
+        ε v (true  , r) = subst (λ - → [ - ⊑ w ]) r (p x (true , refl))
+        ε v (false , r) = v          ⊑⟨ ≡⇒⊑ (pos F) (sym r)           ⟩
+                          y          ⊑⟨ ⋁[_]-upper _ _ (true , refl)  ⟩
+                          y ∨[ F ] z ⊑⟨ p (y ∨[ F ] z) (false , refl) ⟩
+                          w          ■
+      δ v (false , q) = v           ⊑⟨ ≡⇒⊑ (pos F) (sym q)           ⟩
+                        z           ⊑⟨ ⋁[_]-upper _ _ (false , refl) ⟩
+                        y ∨[ F ] z  ⊑⟨ p (y ∨[ F ] z) (false , refl) ⟩
+                        w           ■
 
   ⊓[_]-assoc : (x y z : ∣ F ∣F) → (x ⊓[ F ] y) ⊓[ F ] z ≡ x ⊓[ F ] (y ⊓[ F ] z)
   ⊓[_]-assoc x y z = ⊑[ pos F ]-antisym _ _ down up
@@ -929,3 +984,7 @@ frame-is-univ-str = SNS→UnivalentStr isHomoEqv frame-is-SNS
 
 ≅ₚ≃≅f : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≅f G)
 ≅ₚ≃≅f F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≅f F G ⟩ F ≅f G 𝔔𝔈𝔇
+
+-- --}
+-- --}
+-- --}
