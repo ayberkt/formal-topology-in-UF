@@ -20,4 +20,5 @@ open import GaloisConnection
 open import Regular
 open import PatchFrame
 open import Omega
+open import ClosedNuclei
 ```
