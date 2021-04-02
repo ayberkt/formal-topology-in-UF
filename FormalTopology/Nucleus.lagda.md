@@ -250,7 +250,7 @@ is define as ⊔ᵢ Uᵢ := j (⊔′ᵢ Uᵢ) where ⊔′ denotes the join of 
 𝔣𝔦𝔵 {ℓ₁ = ℓ₁} {ℓ₂ = ℓ₂} L N@(j , N₀ , N₁ , N₂) =
                           ∣ 𝔣𝔦𝔵-pos L N ∣ₚ
   , (strₚ (𝔣𝔦𝔵-pos L N) , (⊤[ L ] , nuclei-resp-⊤ L N) , _∧_ , ⋁_)
-  , top
+  , ⊤-top
   , ( (λ x y → ⊓-lower₀ x y , ⊓-lower₁ x y)
     , λ { x y z (z⊑x , x⊑y) → ⊓-greatest x y z z⊑x x⊑y })
   , ((⊔-upper , ⊔-least) , distr)
@@ -290,8 +290,8 @@ is define as ⊔ᵢ Uᵢ := j (⊔′ᵢ Uᵢ) where ⊔′ denotes the join of 
 
     open JoinSyntax 𝒜 ⋁_
 
-    top : (o : 𝒜) → [ o ⊑N (⊤[ L ] , nuclei-resp-⊤ L N) ]
-    top = ⊤[ L ]-top ∘ π₀
+    ⊤-top : (o : 𝒜) → [ o ⊑N (⊤[ L ] , nuclei-resp-⊤ L N) ]
+    ⊤-top = ⊤[ L ]-top ∘ π₀
 
     ⊓-lower₀ : (o p : 𝒜) → [ (o ∧ p) ⊑N o ]
     ⊓-lower₀ (o , _) (p , _) = ⊓[ L ]-lower₀ o p
