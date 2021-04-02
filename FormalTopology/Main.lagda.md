@@ -19,4 +19,5 @@ open import Sierpinski
 open import GaloisConnection
 open import Regular
 open import PatchFrame
+open import Omega
 ```
