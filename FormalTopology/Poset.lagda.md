@@ -263,6 +263,15 @@ isDirected P U@(I , _) =
     U-inhabited = ∥ index U ∥ , (∥∥-prop I)
 ```
 
+```agda
+isDirectedᵒᵖ : {𝓦 : Universe} → (P : Poset 𝓤 𝓥) → Fam 𝓦 ∣ P ∣ₚ → hProp (𝓥 ∨ 𝓦)
+isDirectedᵒᵖ P U@(I , _) =
+  U-inhabited ⊓ (∀[ i ∶ I ] ∀[ j ∶ I ] ∥ Σ[ k ∈ I ] [ (U $ k) ⊑[ P ] (U $ i) ] × [ (U $ k) ⊑[ P ] (U $ j) ] ∥ , ∥∥-prop _)
+  where
+    U-inhabited : hProp _
+    U-inhabited = ∥ index U ∥ , (∥∥-prop I)
+```
+
 ## Product of two posets
 
 ```agda

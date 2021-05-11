@@ -784,8 +784,8 @@ The definition of the frame
 𝟏sc-top : [ ∀[ j ∶ ScottContNucleus ] j ⊑[ 𝔖 ] 𝟏 ]
 𝟏sc-top ((j , _) , _) x = ⊤[ F ]-top (j x)
 
-ScottContNucleiFrame : Frame (𝒰 ∨ 𝒱 ∨ 𝒲 ⁺) (𝒰 ∨ 𝒱) 𝒲
-fst ScottContNucleiFrame = ScottContNucleus
-snd ScottContNucleiFrame =
+Patch : Frame (𝒰 ∨ 𝒱 ∨ 𝒲 ⁺) (𝒰 ∨ 𝒱) 𝒲
+fst Patch = ScottContNucleus
+snd Patch =
   (snd 𝔖 , 𝟏 , _⊓sc_ , ⋁n_) , 𝟏sc-top , ⊓sc-meet , ⋁sc-join , sc-dist
 ```

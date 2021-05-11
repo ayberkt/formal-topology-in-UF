@@ -37,11 +37,13 @@ infix 8 ⋁_
 
 ## Definition of way below
 
+Definition copied from Escardó and de Jong.
+
 ```agda
 _≪_ : ∣ F ∣F → ∣ F ∣F → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 x ≪ y =
   ∀[ S ∶ Fam 𝓦 ∣ F ∣F ]
-    isDirected (pos F) S ⇒ y ≤ ⋁ S ⇒ ∥ Σ[ s ∈ ∣ F ∣F ] s ε S × [ x ≤ s ] ∥Ω
+    isDirected (pos F) S ⇒ y ≤ ⋁ S ⇒ ∥ Σ[ i ∈ index S  ] [ x ≤ (S $ i) ] ∥Ω
 ```
 
 ## Definition of a compact element
@@ -63,5 +65,5 @@ isCompact = isCompactOpen ⊤[ F ]
 ```agda
 isContinuous : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 isContinuous =
-  ∀[ x ∶ ∣ F ∣F ] isSup (pos F) ((Σ[ y ∈ ∣ F ∣F ] [ x ≪ y ]) , fst) x
+  ∀[ x ∶ ∣ F ∣F ] isSup (pos F) ((Σ[ y ∈ ∣ F ∣F ] [ y ≪ x ]) , fst) x
 ```
