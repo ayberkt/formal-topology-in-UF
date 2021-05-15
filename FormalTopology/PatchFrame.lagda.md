@@ -12,7 +12,7 @@ open import Nucleus
 open import Prenucleus
 open import Cubical.Functions.Logic      hiding   (_⊓_)
 open import Cubical.Data.Sigma           using    (Σ≡Prop; _×_)
-open import Cubical.Foundations.Function using    (const; _∘_; idfun; uncurry)
+open import Cubical.Foundations.Function using    (const; _∘_; idfun; uncurry; curry)
 open import Cubical.Data.List            hiding   ([_])
 open import Cubical.Data.List.Properties
 open import Basis                        renaming (_⊓_ to _∧_; π₀ to fst; π₁ to snd) hiding (J)
@@ -788,4 +788,26 @@ Patch : Frame (𝒰 ∨ 𝒱 ∨ 𝒲 ⁺) (𝒰 ∨ 𝒱) 𝒲
 fst Patch = ScottContNucleus
 snd Patch =
   (snd 𝔖 , 𝟏 , _⊓sc_ , ⋁n_) , 𝟏sc-top , ⊓sc-meet , ⋁sc-join , sc-dist
+```
+
+```agda
+⊥-Patch-foo : (x : ∣ F ∣F)
+           → fst (fst ⊥[ Patch ]) x
+           ≡ ⋁[ F ] (List (𝟘 𝒲) , λ is → ℜ (𝟘 𝒲 , λ ()) is x)
+⊥-Patch-foo x = refl
+```
+
+```agda
+⊥-Patch-id : (x : ∣ F ∣F)
+           → fst (fst ⊥[ Patch ]) x
+           ≡ x
+⊥-Patch-id x = sym (⋁-unique F _ _ β γ)
+  where
+  β : _
+  β y (is , eq) with is
+  β y (is , eq) | []    = ≡⇒⊑ (pos F) (sym eq)
+  β y (is , eq) | () ∷ _
+
+  γ : _
+  γ w ϕ = ϕ x ([] , refl)
 ```

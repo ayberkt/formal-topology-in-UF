@@ -12,6 +12,7 @@ open import Frame
 
 module ClosedNuclei where
 
+open import Cubical.Data.List using (_∷_; [])
 open import Poset
 open import Nucleus
 open import HeytingImplication
@@ -213,18 +214,42 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
   openn U U-comp = ¬‘ U ’ , ¬“”-sc U U-comp
 
   close : (U : ∣ F ∣F) → ∣ Patch ∣F
-  close U = ʻ U ’ , ‘’-sc F U 
+  close U = ʻ U ’ , ‘’-sc F U
 
-  -- complement-thm : (U : ∣ F ∣F) (γ : [ U ≪ U ])
-  --                → complements Patch (openn U γ) (close U)
-  -- complement-thm U γ = nts₀ , nts₁
-  --   where
-  --   rem : _
-  --   rem V = {!!}
+  complement-thm : (U : ∣ F ∣F) (γ : [ U ≪ U ])
+                 → complements Patch (openn U γ) (close U)
+  complement-thm U γ = nts₀ , nts₁
+    where
+    open PosetReasoning (pos Patch) renaming (_⊑⟨_⟩_ to _⊑P⟨_⟩_; _■ to _■P)
 
-  --   nts₀ : (openn U γ) ⊓[ Patch ] (close U) ≡ ⊥[ Patch ]
-  --   nts₀ = Σ≡Prop isScottCont-prop (Σ≡Prop {!!} (funExt rem)) 
+    rem : (V : ∣ F ∣F) → [ (¬“ U ” V ⊓[ F ] “ U ” V) ⊑[ pos F ] π₀ (π₀ ⊥[ Patch ]) V ]
+    rem V = subst (λ - → [ rel (pos F) (¬“ U ” V ⊓[ F ] “ U ” V) - ]) (sym (⊥-Patch-id V)) nts
+      where
+      fin′ : _
+      fin′ W (true , eq) = W ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ (U ==> V) ⊓[ F ] U ⊑⟨ mp-op U V ⟩ V ■
+      fin′ W (false , eq) = subst (λ - → [ - ⊑[ pos F ] V ]) eq (⊓[ F ]-lower₁ (U ==> V) V)
 
-  --   nts₁ : (openn U γ) ∨[ Patch ] (close U) ≡ ⊤[ Patch ]
-  --   nts₁ = {!!}
+      fin : [ rel (pos F) (bin-join F (glb-of F (U ==> V) U) (glb-of F (U ==> V) V)) V ]
+      fin = ⋁[ F ]-least ⁅ glb-of F (U ==> V) U , glb-of F (U ==> V) V ⁆ V fin′
+
+      nts : [ ((¬“ U ” V) ⊓[ F ] (“ U ” V)) ⊑[ pos F ] V ]
+      nts =
+          (U ==> V) ⊓[ F ] (U ∨[ F ] V)                     ⊑⟨ ≡⇒⊑ (pos F) (bin-dist F (U ==> V) U V) ⟩
+          ((U ==> V) ⊓[ F ] U) ∨[ F ] ((U ==> V) ⊓[ F ] V)  ⊑⟨ fin ⟩
+          V                                                 ■
+
+
+    nts₀ : (openn U γ) ⊓[ Patch ] (close U) ≡ ⊥[ Patch ]
+    nts₀ = ⊑[ pos Patch ]-antisym _ _ rem (⊥[ Patch ]-bottom ((openn U γ) ⊓[ Patch ] (close U)))
+
+    rem₁ : [ ⊤[ Patch ] ⊑[ pos Patch ] (openn U γ) ∨[ Patch ] (close U)  ]
+    rem₁ V = ⊤[ F ]                                   ⊑⟨ δ ⟩
+             U ==> (U ∨[ F ] V)                       ⊑⟨ ⋁[ F ]-upper _ _ (false ∷ true ∷ [] , refl) ⟩
+             π₀ (π₀ (openn U γ ∨[ Patch ] close U)) V ■
+      where
+      δ : _
+      δ = π₁ (==>-is-HI U (bin-join F U V) ⊤[ F ]) (U ⊓[ F ] ⊤[ F ] ⊑⟨ ⊓[ F ]-lower₀ U ⊤[ F ] ⟩ U ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩ U ∨[ F ] V ■)
+
+    nts₁ : (openn U γ) ∨[ Patch ] (close U) ≡ ⊤[ Patch ]
+    nts₁ = ⊑[ pos Patch ]-antisym _ _ (⊤[ Patch ]-top ((openn U γ) ∨[ Patch ] (close U))) rem₁
 ```

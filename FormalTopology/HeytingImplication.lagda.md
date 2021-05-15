@@ -148,6 +148,13 @@ Of course, the first thing we prove is modus ponens:
 
     γ : _
     γ z ((_ , q) , eq) = subst (λ - → [ - ⊑[ pos F ] _ ]) eq q
+
+  mp-op : (x y : ∣ F ∣F) → [ (x ==> y) ⊓[ F ] x ⊑[ pos F ] y ]
+  mp-op x y = (x ==> y) ⊓[ F ] x ⊑⟨ ≡⇒⊑ (pos F) (comm F (x ==> y) x) ⟩
+              x ⊓[ F ] (x ==> y) ⊑⟨ mp x y                           ⟩
+              y                  ■
+    where
+    open PosetReasoning (pos F)
 ```
 
 We now proceed to prove that this is the Heyting implication:

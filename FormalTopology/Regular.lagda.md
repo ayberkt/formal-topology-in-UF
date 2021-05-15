@@ -49,6 +49,11 @@ isRegular F = ∀[ x ∶ ∣ F ∣F ] isSup (pos F) (⇊ F x) x
 ## Some properties
 
 ```agda
+complements : (F : Frame 𝓤 𝓥 𝓦) → ∣ F ∣F → ∣ F ∣F → Type 𝓤
+complements F x y = (x ⊓[ F ] y ≡ ⊥[ F ]) × (x ∨[ F ] y ≡ ⊤[ F ])
+```
+
+```agda
 -- In other words, x is clopen.
 hasComplement : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Type ℓ₀
 hasComplement F x =
