@@ -144,9 +144,28 @@ continuity-lemma spec f mono comp U U-dir =
 
   γ : [ (⋁[ F ] ⁅ f x ∣ x ε U ⁆) ⊑[ pos F ] f (⋁[ F ] U) ]
   γ = ⋁[ F ]-least ⁅ f x ∣ x ε U ⁆ (f (⋁[ F ] U)) δ
+
+  -- function-lemma : (f g : ∣ F ∣F → ∣ F ∣F)
+  --                → isMonotonic (pos F) (pos F) f
+  --                → isMonotonic (pos F) (pos F) g
+  --                → ((b : ∣ F ∣F) → [ isCompactOpen F b ] → f b ≡ g b)
+  --                → (x : ∣ F ∣F)
+  --                → f x ≡ g x
+  -- function-lemma f g f-sc g-sc ϕ x =
+  --   f x ≡⟨ {!!} ⟩ f (⋁⟨ i ⟩ (b $ i)) ≡⟨ {!!} ⟩ {!f (⋁⟨ i ⟩ (b $ i))!} ≡⟨ {!!} ⟩ g x ∎
+  --   where
+  --   open JoinSyntax ∣ F ∣F (λ - → ⋁[ F ] -)
+
+  --   b = π₀ (π₀ spec x)
+```
+
+```agda
+-- patch-is-stone : [ isStone Patch ]
+-- patch-is-stone = patch-is-compact , ∣ {!!} ∣
 ```
 
 TODO:
 
 1. Prove 3.3.(i)
 2. Patch(A) is a Stone locale for every spectral A.
+n

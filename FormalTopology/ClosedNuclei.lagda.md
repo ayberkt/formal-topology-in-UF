@@ -93,12 +93,20 @@ module OpenNuclei (F : Frame 𝓤 𝓥 𝓦) where
 ```
 
 ```agda
+isScottContinuous : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
+                  → (f : ∣ F ∣F → ∣ G ∣F)
+                  → _ ̇
+isScottContinuous F G f =
+  (U : Fam _ ∣ F ∣F) →
+    [ isDirected (pos F) U ] →
+      [ isSup (pos G) ⁅ f x ∣ x ε U ⁆ (f (⋁[ F ] U)) ]
+
 module _ (F : Frame 𝓤 𝓥 𝓦) where
 
-  open import PatchFrame hiding (𝟏)
   open OpenNuclei F
+  open import PatchFrame F
 
-  ‘’-sc : (U : ∣ F ∣F) → isScottCont F ʻ U ’
+  ‘’-sc : (U : ∣ F ∣F) → isScottCont ʻ U ’
   ‘’-sc U α α-dir = ⋁-unique F _ _ γ ε
     where
     open PosetReasoning (pos F)
@@ -123,11 +131,55 @@ module _ (F : Frame 𝓤 𝓥 𝓦) where
       ζ i = ⋁[ F ]-least _ _ η
         where
         η : _
-        η x (true , eq) = x ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ U ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩ U ∨[ F ] (α $ i) ⊑⟨ ϕ _ (i , refl) ⟩ w ■
-        η x (false , eq) = x ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ ⋁[ F ] α ⊑⟨ ⋁[ F ]-least _ _ rem ⟩ ⋁[ F ] ⁅ (U ∨[ F ] a) ∣ a ε α ⁆ ⊑⟨ ⋁[ F ]-least _ _ ϕ ⟩ w ■
+        η x (true , eq) =
+          x                ⊑⟨ ≡⇒⊑ (pos F) (sym eq)           ⟩
+          U                ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩
+          U ∨[ F ] (α $ i) ⊑⟨ ϕ _ (i , refl)                 ⟩
+          w                ■
+        η x (false , eq) =
+          x                               ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
+          ⋁[ F ] α                        ⊑⟨ ⋁[ F ]-least _ _ rem ⟩
+          ⋁[ F ] ⁅ (U ∨[ F ] a) ∣ a ε α ⁆ ⊑⟨ ⋁[ F ]-least _ _ ϕ   ⟩
+          w                               ■
           where
           rem : _
-          rem y (j , eq) = y ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ α $ j ⊑⟨ ⋁[ F ]-upper _ _ (false , refl) ⟩ U ∨[ F ] (α $ j) ⊑⟨ ⋁[ F ]-upper _ _ (j , refl) ⟩ _ ■
+          rem y (j , eq) =
+            y                ⊑⟨ ≡⇒⊑ (pos F) (sym eq)            ⟩
+            α $ j            ⊑⟨ ⋁[ F ]-upper _ _ (false , refl) ⟩
+            U ∨[ F ] (α $ j) ⊑⟨ ⋁[ F ]-upper _ _ (j , refl)     ⟩
+            _ ■
+
+  εε : ∣ F ∣F → ∣ Patch ∣F
+  εε U = ʻ U ’ , ‘’-sc U
+
+  εε-sc : isScottContinuous F Patch εε
+  εε-sc U U-dir = nts₀ , nts₁
+    where
+    open PosetReasoning (pos F) using (_⊑⟨_⟩_; _■)
+
+    nts₀ : [ ∀[ V ε ⁅ εε x ∣ x ε U ⁆ ] (V ⊑[ pos Patch ] εε (⋁[ F ] U)) ]
+    nts₀ ((j , _) , _) (i , eq) = subst (λ - → [ - ⊑[ pos Patch ] (εε (⋁[ F ] U)) ]) eq rem₀
+      where
+      rem₀ : [ (π₁ (⁅ εε x ∣ x ε U ⁆) i) ⊑[ pos Patch ] (εε (⋁[ F ] U)) ]
+      rem₀ W = (U $ i) ∨[ F ] W ⊑⟨ ⋁[ F ]-least _ _ γ ⟩ (⋁[ F ] U) ∨[ F ] W ■
+        where
+        γ : _
+        γ x (true  , eq) = x ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ U $ i ⊑⟨ ⋁[ F ]-upper _ _ (i , refl) ⟩ ⋁[ F ] U ⊑⟨ ⊔[ F ]-upper₀ _ _ ⟩ (⋁[ F ] U) ∨[ F ] W ■
+        γ x (false , eq) = x ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ W ⊑⟨ ⊔[ F ]-upper₁ _ _ ⟩ _ ■
+
+    nts₁ : (j : ∣ pos Patch ∣ₚ)
+         → [ ∀[ V ε (fmap εε U) ] (V ⊑[ pos Patch ] j) ]
+         → [ εε (⋁[ F ] U) ⊑[ pos Patch ] j ] 
+    nts₁ 𝕛@(𝒿@(j , _) , _) ϕ T = ⋁[ F ]-least _ _ rem₁
+      where
+      rem₁ : _
+      rem₁ S (true , eq) = subst (λ - → [ - ⊑[ pos F ] j T ]) eq (⋁[ F ]-least _ _ γ)
+        where
+        γ : _
+        γ Z (i , eq) =
+          subst (λ - → [ - ⊑[ pos F ] j T ]) eq
+            (U $ i ⊑⟨ ⊔[ F ]-upper₀ _ _ ⟩ (U $ i) ∨[ F ] T ⊑⟨ ϕ (εε (U $ i)) (i , refl) T ⟩ j T ■)
+      rem₁ S (false , eq) = subst (λ - → [ - ⊑[ pos F ] j T ]) eq (𝓃₁ F 𝒿 T)
 ```
 
 ## Complements
@@ -136,6 +188,8 @@ module _ (F : Frame 𝓤 𝓥 𝓦) where
 module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : hasBasis F) where
 
   open Definition F basis
+  open import WayBelow F
+  open import PatchFrame F hiding (𝟏)
 
   ¬“_” : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
   ¬“ U ” = U ==>_
@@ -144,8 +198,6 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
   open HeytingImplicationProperties F
 
   open PosetReasoning (pos F)
-
-  open import PatchFrame F hiding (𝟏)
 
   ¬“”-preserves-meets : (U V W : ∣ F ∣F)
                       → ¬“ U ” (V ⊓[ F ] W) ≡ ¬“ U ” V ⊓[ F ] ¬“ U ” W
@@ -182,8 +234,6 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
 
   ¬‘_’-monotone : (U : ∣ F ∣F) → isMonotonic (pos F) (pos F) ¬“ U ”
   ¬‘_’-monotone U = mono F ¬‘ U ’
-
-  open import WayBelow F hiding (⋁_)
 
   main-lemma : (U : ∣ F ∣F) → [ U ≪ U ] → (V W : ∣ F ∣F) → [ V ≪ V ]
              → [ V ⊑[ pos F ] (¬“ U ” W) ]
@@ -253,3 +303,66 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
     nts₁ : (openn U γ) ∨[ Patch ] (close U) ≡ ⊤[ Patch ]
     nts₁ = ⊑[ pos Patch ]-antisym _ _ (⊤[ Patch ]-top ((openn U γ) ∨[ Patch ] (close U))) rem₁
 ```
+
+```agda
+module SomeMoreResults (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : hasBasis F) where
+
+  open OpenNuclei F
+
+  open import WayBelow
+  open import PatchFrame
+
+  -- sc-lemma : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
+  --          → (f : ∣ F ∣F → ∣ G ∣F)
+  --          → isScottContinuous F G f
+  --          → (x : ∣ F ∣F) (y : ∣ G ∣F)
+  --          → [ _≪_ G y (f x) ] ↔ (Σ[ w ∈ ∣ F ∣F ] [ _≪_ G y (f w) ])
+  -- sc-lemma F G f sc x y = forward , backward
+  --   where
+  --   forward : [ _≪_ G y (f x) ] → Σ[ w ∈ ∣ F ∣F ] [ _≪_ G y (f w) ]
+  --   forward y≪fx = x , {!!}
+
+  --   backward : Σ[ w ∈ ∣ F ∣F ] [ _≪_ G y (f w) ] → [ _≪_ G y (f x) ]
+  --   backward (w , y≪fw) S S-dir ϕ = y≪fw S S-dir nts
+  --     where
+  --     foo : [ f x ⊑[ pos G ] (⋁[ G ] S) ]
+  --     foo = ϕ
+
+  --     nts : [ f w ⊑[ pos G ] (⋁[ G ] S) ]
+  --     nts = {!!}
+
+  -- compactness-lemma : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
+  --                   → [ isCompact F ]
+  --                   → (f : ∣ F ∣F → ∣ G ∣F)
+  --                   → isScottContinuous F G f
+  --                   → [ isCompact G ]
+  -- compactness-lemma F G F-comp f f-sc S S-dir ϕ =
+  --   {! !}
+
+  -- patch-is-compact : (F : Frame 𝓤 𝓥 𝓦) → isSpectral F → [ isCompact (Patch F) ]
+  -- patch-is-compact F (_ , comp , _) =
+  --   compactness-lemma F (Patch F) comp (εε F) (εε-sc F)
+
+  graph : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
+        → (f : ∣ F ∣F → ∣ G ∣F)
+        → ∣ F ∣F × ∣ G ∣F → _ ̇
+  graph F G f (a , b) = [ isCompactOpen F a ]
+                      × [ isCompactOpen G b ]
+                      × [ b ⊑[ pos G ] f a ]
+
+  -- graph-thm : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
+  --           → (f : ∣ F ∣F → ∣ G ∣F)
+  --           → (x : ∣ F ∣F)
+  --           → f x ≡ (⋁[ G ] ((Σ[ b ∈ ∣ G ∣F ] (Σ[ a ∈ ∣ F ∣F ] [ a ⊑[ pos F ] x ] × {!graph F G f ?!})) , π₀))
+  -- graph-thm = {!!}
+  open Complements F spec basis
+  open DefnOfHeytingImplication F
+  open Definition F basis
+
+  -- nucleus-lemma : (j : ScottContNucleus F)
+  --               → (x : ∣ F ∣F)
+  --               → π₀ (π₀ j) x ≡ ⋁[ F ] ({!!} , {!!})
+  -- nucleus-lemma (j , _) = {!!}
+```
+
+Given some f : F → G where F is a compact frame, if f is Scott-continuous then G is compact as well.

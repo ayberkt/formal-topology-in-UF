@@ -162,7 +162,7 @@ We now proceed to prove that this is the Heyting implication:
 ```agda
   lemma : (x y : ∣ F ∣F) (c : ℬ)
         → [ (x ∧ β c ≤ y) ⇒ (β c ≤ x ==> y) ]
-  lemma x y c p = ⋁[ F ]-upper _ _ ((c , p) , refl)
+  lemma x y c p = ⋁[ F ]-upper _ (β c) ((c , p) , refl)
 
   ==>-is-HI : [ isHeytingImplication _==>_ ]
   ==>-is-HI x y z = forward , backward
@@ -188,13 +188,13 @@ We now proceed to prove that this is the Heyting implication:
         lub = π₁ (π₁ basis z)
 
       nts : _
-      nts w (i , eq) = w          ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
-                       β (VV $ i) ⊑⟨ lemma x y (VV $ i) δ ⟩
+      nts w (i , eq) = w          ⊑⟨ ≡⇒⊑ (pos F) (sym eq)                              ⟩
+                       β (VV $ i) ⊑⟨ ⋁[ F ]-upper _ (β (VV $ i)) ((VV $ i , δ) , refl) ⟩
                        x ==> y    ■
         where
         δ : [ x ⊓[ F ] β (VV $ i) ≤ y ]
         δ = x ∧ β (VV $ i)                ⊑⟨ cright F _ (⋁[ F ]-upper _ _ (i , refl)) ⟩
-            x ∧ (⋁[ F ] ⁅ β v ∣ v ε VV ⁆) ⊑⟨ cright F _ (≡⇒⊑ (pos F) (sym ε)) ⟩
-            x ∧ z                         ⊑⟨ p ⟩
+            x ∧ (⋁[ F ] ⁅ β v ∣ v ε VV ⁆) ⊑⟨ cright F _ (≡⇒⊑ (pos F) (sym ε))         ⟩
+            x ∧ z                         ⊑⟨ p                                         ⟩
             y                             ■
 ```

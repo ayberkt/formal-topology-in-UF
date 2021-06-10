@@ -16,6 +16,8 @@ open import Cubical.Foundations.Function using    (const; _∘_; idfun; uncurry;
 open import Cubical.Data.List            hiding   ([_])
 open import Cubical.Data.List.Properties
 open import Basis                        renaming (_⊓_ to _∧_; π₀ to fst; π₁ to snd) hiding (J)
+open import Stone
+open import WayBelow hiding (⋁_)
 ```
 -->
 
@@ -788,6 +790,70 @@ Patch : Frame (𝒰 ∨ 𝒱 ∨ 𝒲 ⁺) (𝒰 ∨ 𝒱) 𝒲
 fst Patch = ScottContNucleus
 snd Patch =
   (snd 𝔖 , 𝟏 , _⊓sc_ , ⋁n_) , 𝟏sc-top , ⊓sc-meet , ⋁sc-join , sc-dist
+
+directed-lemma : (J : Fam 𝒲 (Nucleus F))
+               → [ isDirected 𝔑 J ]
+               → (is : List (index J))
+               → ∥ Σ[ i ∈ index J ] [ (J *⦅ is ⦆_) ⊑f (J ⦅ i ⦆_) ] ∥
+directed-lemma J J-dir [] = ∥∥-rec (∥∥-prop _) rem (fst J-dir)
+  where
+  rem : index J
+      → ∥ Σ[ i ∈ index J ] [ (J *⦅ [] ⦆_) ⊑f _⦅_⦆_ J i ] ∥
+  rem j = ∣ j , 𝓃₁ F (J $ j) ∣
+directed-lemma J J-dir (i ∷ is) =
+  ∥∥-rec (∥∥-prop _) nts (directed-lemma J J-dir is)
+  where
+  open PosetReasoning (pos Patch) renaming (_⊑⟨_⟩_ to _⊑P⟨_⟩_; _■ to _■P)
+  nts : _
+  nts (j , ψ) = ∥∥-rec (∥∥-prop _) rem (snd J-dir i j)
+    where
+    rem : Σ-syntax (fst J)
+            (λ k →
+               [
+               rel₂ 𝔑 ((fst J , snd J) $ i) ((fst J , snd J) $ j)
+               ((fst J , snd J) $ k)
+               ]) →
+            ∥ Σ-syntax (index J) (λ i₁ → [ _*⦅_⦆_ J (i ∷ is) ⊑f _⦅_⦆_ J i₁ ]) ∥
+    rem (k , ϕ) = ∣ k , rem′ ∣
+      where
+      rem′ : [ _*⦅_⦆_ J (i ∷ is) ⊑f _⦅_⦆_ J k ]
+      rem′ x = (J *⦅ i ∷ is ⦆ x)   ⊑⟨ ψ (J ⦅ i ⦆ x)     ⟩
+               J ⦅ j ⦆ (J ⦅ i ⦆ x) ⊑⟨ snd ϕ (J ⦅ i ⦆ x) ⟩
+               J ⦅ k ⦆ (J ⦅ i ⦆ x) ⊑⟨ ⦅𝟏⦆               ⟩
+               J ⦅ k ⦆ (J ⦅ k ⦆ x) ⊑⟨ 𝓃₂ F (J $ k) x    ⟩
+               J ⦅ k ⦆ x           ■
+        where
+        ⦅𝟏⦆ : _
+        ⦅𝟏⦆ = mono F (J $ k) (J ⦅ i ⦆ x) (J ⦅ k ⦆ x) (fst ϕ x)
+
+-- ε : ∣ Patch ∣F → ∣ F ∣F
+-- ε ((j , _) , _) = j ⊥[ F ]
+
+-- ε-sc : (U : Fam 𝒲 ∣ Patch ∣F) → [ isDirected (pos Patch) U ]
+--      → ε (⋁[ Patch ] U) ≡ ⋁[ F ] ⁅ ε x ∣ x ε U ⁆
+-- ε-sc J J-dir = ⋁-unique F _ _ β γ
+--   where
+--   β : _
+--   β x (i , eq) = x ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
+--                  fst (fst (J $ i)) ⊥[ F ] ⊑⟨ ⋁[ F ]-upper _ _ ((i ∷ []) , refl) ⟩
+--                  ε (⋁[ Patch ] J) ■
+
+--   J₀ : Fam 𝒲 (Nucleus F)
+--   J₀ = fst ⟨$⟩ J
+
+--   γ : _
+--   γ y ϕ = ⋁[ F ]-least _ _ rem
+--     where
+--     rem : _
+--     rem x (is , eq) = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) nts (directed-lemma J₀ J-dir is)
+--       where
+--       nts : Σ[ i ∈ index J₀ ] [ _*⦅_⦆_ J₀ is ⊑f _⦅_⦆_ J₀ i ]
+--           → [ x ⊑[ pos F ] y ]
+--       nts (i , ψ) =
+--         x                  ⊑⟨ ≡⇒⊑ (pos F) (sym eq)           ⟩
+--         J₀ *⦅ is ⦆ ⊥[ F ]  ⊑⟨ ψ ⊥[ F ]                       ⟩
+--         J₀ ⦅ i ⦆ ⊥[ F ]    ⊑⟨ ϕ (J₀ ⦅ i ⦆ ⊥[ F ]) (i , refl) ⟩
+--         y                  ■
 ```
 
 ```agda
