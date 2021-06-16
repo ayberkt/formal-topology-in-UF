@@ -10,7 +10,6 @@ author: Ayberk Tosun (j.w.w. Martín Escardó)
 open import Basis
 open import Poset
 open import Frame
-open import Spectral
 
 module RightAdjoint where
 ```
@@ -102,7 +101,7 @@ module AdjointFunctorTheorem (F G : Frame 𝓤 𝓥 𝓥) (basis : hasBasis F) w
         where
         𝒥 = π₀ (π₁ basis x)
 
-        rem : [ ⋁[ G ] (⁅ f $ₘ (π₁ ℬ-F i) ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆) ⊑[ pos G ] y ] 
+        rem : [ ⋁[ G ] (⁅ f $ₘ (π₁ ℬ-F i) ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆) ⊑[ pos G ] y ]
         rem = ⋁[ G ]-least _ _ goal
           where
           goal : [ ∀[ z ε ⁅ f $ₘ (π₁ ℬ-F i) ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆ ] (z ⊑[ pos G ] y) ]
