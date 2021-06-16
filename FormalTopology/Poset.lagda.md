@@ -362,6 +362,14 @@ module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
           NTS₁ : [ g₁ $ₘ y ⊑[ P ] g₀ $ₘ y ]
           NTS₁ = π₀ φ (π₁ ψ (⊑[ P ]-refl _))
 
+  _hasRightAdjoint : (P ─m→ Q) → hProp (ℓ-max ℓ₀ ℓ₁)
+  f hasRightAdjoint = (Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]) , prop
+    where
+    prop : isOfHLevel 1 (Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ])
+    prop (g₀ , f⊣g₀) (g₁ , f⊣g₁) =
+      Σ≡Prop (isProp[] ∘ f ⊣_) (⊣-unique-right f g₀ g₁ f⊣g₀ f⊣g₁)
+
+
   GaloisConnection : Type (ℓ-max ℓ₀ ℓ₁)
   GaloisConnection = Σ[ f ∈ P ─m→ Q  ] Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]
 ```
