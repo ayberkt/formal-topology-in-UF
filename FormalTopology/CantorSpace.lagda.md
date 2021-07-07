@@ -5,21 +5,27 @@ module CantorSpace where
 
 open import Basis                     hiding (A; B)
 open import Cubical.Data.Empty.Base   using (⊥; rec)
-open import Cubical.Data.Bool.Base    using (true; false; _≟_) renaming (Bool to 𝔹)
-open import Cubical.Data.List         using (List; _∷_; [])    renaming (_++_ to _^_)
+open import Cubical.Data.Empty.Properties using (isProp⊥)
+open import Cubical.Data.Bool.Base    using (true; false; _≟_; not) renaming (Bool to 𝔹)
+open import Cubical.Data.List         using (List; _∷_; []; foldr; length)    renaming (_++_ to _^_)
+open import Cubical.Data.Nat          using (ℕ; predℕ)
+open import Cubical.Relation.Nullary  using (Dec; yes; no)
+open import Cubical.Functions.Logic   using (_⊔_)
 open import Frame
 open import Nucleus
 open import CoverFormsNucleus
 open import Cover
 open import Poset
+open import Regular
 open import FormalTopology
+open import UniversalProperty using (compr; main-lemma)
 open import Compactness
 ```
 
 We open the `SnocList` module with the type `𝔹` of booleans.
 
 ```
-open import SnocList 𝔹  _≟_  renaming (SnocList to ℂ; SnocList-set to ℂ-set)
+open import SnocList 𝔹  _≟_  renaming (SnocList to ℂ; SnocList-set to ℂ-set; SnocList-discrete to _≐_)
 ```
 
 The empty list and the snoc operator are called `[]` and `⌢` respectively. Concatenation
@@ -51,11 +57,12 @@ As `_≤_` is a partial order, we package it up as a poset.
     ≤-trans xs ys zs (as , p) (bs , q) =
       (bs ++ as) , NTS
       where
-        NTS : xs ≡ zs ++ (bs ++ as)
-        NTS = xs               ≡⟨ p                      ⟩
-              ys ++ as         ≡⟨ cong (λ - → - ++ as) q ⟩
-              (zs ++ bs) ++ as ≡⟨ sym (assoc zs bs as)   ⟩
-              zs ++ (bs ++ as) ∎
+        abstract
+          NTS : xs ≡ zs ++ (bs ++ as)
+          NTS = xs               ≡⟨ p                      ⟩
+                ys ++ as         ≡⟨ cong (λ - → - ++ as) q ⟩
+                (zs ++ bs) ++ as ≡⟨ sym (assoc zs bs as)   ⟩
+                zs ++ (bs ++ as) ∎
 
     ≤-antisym : (xs ys : ℂ) → [ xs ≤ ys ] → [ ys ≤ xs ] → xs ≡ ys
     ≤-antisym xs ys ([]     , p) ([]      , q) = p
@@ -64,11 +71,16 @@ As `_≤_` is a partial order, we package it up as a poset.
     ≤-antisym xs ys (as ⌢ a , p) (bs ⌢ b  , q) =
       rec (lemma3 NTS)
       where
-        NTS : xs ≡ xs ++ ((bs ⌢ b) ++ (as ⌢ a))
-        NTS = xs                           ≡⟨ p                                ⟩
-              ys ++ (as ⌢ a)               ≡⟨ cong (λ - → - ++ as ⌢ a) q       ⟩
-              (xs ++ (bs ⌢ b)) ++ (as ⌢ a) ≡⟨ sym (assoc xs (bs ⌢ b) (as ⌢ a)) ⟩
-              xs ++ ((bs ⌢ b) ++ (as ⌢ a)) ∎
+        abstract
+          NTS : xs ≡ xs ++ ((bs ⌢ b) ++ (as ⌢ a))
+          NTS = xs                           ≡⟨ p                                ⟩
+                ys ++ (as ⌢ a)               ≡⟨ cong (λ - → - ++ as ⌢ a) q       ⟩
+                (xs ++ (bs ⌢ b)) ++ (as ⌢ a) ≡⟨ sym (assoc xs (bs ⌢ b) (as ⌢ a)) ⟩
+                xs ++ ((bs ⌢ b) ++ (as ⌢ a)) ∎
+
+[]-bot : (xs : ℂ) → [ xs ≤ [] ]
+[]-bot []       = ⊑[ ℂ-pos ]-refl []
+[]-bot (xs ⌢ x) = ⊑[ ℂ-pos ]-trans (xs ⌢ x) xs [] ([] ⌢ x , refl) ([]-bot xs)
 ```
 
 ## The Cantor formal topology
@@ -113,17 +125,18 @@ and simulation properties (given in `ℂ-mono` and `ℂ-sim`).
     NTS b₁ = b₁ , subst (λ - → [ (xs ⌢ b₁) ≤ (- ⌢ b₁) ]) p (⊑[ ℂ-pos ]-refl _)
 ℂ-sim xs ys xs≤ys@(zs ⌢ z , p) tt = tt , NTS
   where
-    NTS : (c₀ : 𝔹) → Σ[ c ∈ 𝔹 ] [ (xs ⌢ c₀) ≤ (ys ⌢ c) ]
-    NTS c₀ =
-      head (zs ⌢ z) tt , subst (λ - → [ (- ⌢ c₀) ≤ _ ]) (sym p) NTS′
-      where
-        φ    = cong (λ - → ys ++ (- ⌢ c₀)) (sym (hd-tl-lemma (zs ⌢ z) tt))
-        ψ    = cong (λ - → - ⌢ c₀) (sym (snoc-lemma ys _ _))
-        rem  = (ys ++ zs) ⌢ z ⌢ c₀                                          ≡⟨ φ ⟩
-                (ys ++ (([] ⌢ head (zs ⌢ z) tt) ++ (tail (zs ⌢ z) tt))) ⌢ c₀ ≡⟨ ψ ⟩
-                ((ys ⌢ head (zs ⌢ z) tt) ++ tail (zs ⌢ z) tt) ⌢ c₀ ∎
-        NTS′ : [ ((ys ++ zs) ⌢ z ⌢ c₀) ≤ (ys ⌢ head (zs ⌢ z) tt) ]
-        NTS′ = ((tail (zs ⌢ z) tt) ⌢ c₀) , rem
+    abstract
+      NTS : (c₀ : 𝔹) → Σ[ c ∈ 𝔹 ] [ (xs ⌢ c₀) ≤ (ys ⌢ c) ]
+      NTS c₀ =
+        head (zs ⌢ z) tt , subst (λ - → [ (- ⌢ c₀) ≤ _ ]) (sym p) NTS′
+        where
+          φ    = cong (λ - → ys ++ (- ⌢ c₀)) (sym (hd-tl-lemma (zs ⌢ z) tt))
+          ψ    = cong (λ - → - ⌢ c₀) (sym (snoc-lemma ys _ _))
+          rem  = (ys ++ zs) ⌢ z ⌢ c₀                                          ≡⟨ φ ⟩
+                  (ys ++ (([] ⌢ head (zs ⌢ z) tt) ++ (tail (zs ⌢ z) tt))) ⌢ c₀ ≡⟨ ψ ⟩
+                  ((ys ⌢ head (zs ⌢ z) tt) ++ tail (zs ⌢ z) tt) ⌢ c₀ ∎
+          NTS′ : [ ((ys ++ zs) ⌢ z ⌢ c₀) ≤ (ys ⌢ head (zs ⌢ z) tt) ]
+          NTS′ = ((tail (zs ⌢ z) tt) ⌢ c₀) , rem
 ```
 
 We finally package up all this as a formal topology
@@ -132,16 +145,19 @@ We finally package up all this as a formal topology
 cantor : FormalTopology ℓ-zero ℓ-zero
 cantor = ℂ-pos , ℂ-IS , ℂ-mono , ℂ-sim
 
-open NucleusFrom cantor using () renaming (L to cantor-frame)
+open NucleusFrom cantor using (η; ⦅_⦆) renaming (L to cantor-frame) public
 
 _ : Frame (ℓ-suc ℓ-zero) ℓ-zero ℓ-zero
 _ = cantor-frame
+
+cantor-pos : Poset (ℓ-suc ℓ-zero) ℓ-zero
+cantor-pos = Frame.pos cantor-frame
 ```
 
 from which we get a covering relation
 
 ```
-open CoverFromFormalTopology cantor renaming (_◁_ to _<ℂ|_)
+open CoverFromFormalTopology cantor renaming (_◁_ to _<ℂ|_) public
 
 _ : ℂ → (ℂ → hProp ℓ-zero) → Type ℓ-zero
 _ = _<ℂ|_
@@ -294,18 +310,119 @@ containing-true = (W , W-dc) , fixing
     lemma (xs ⌢ x) f | false = lemma xs λ { false → f false ; true → tt }
     lemma (xs ⌢ x) f | true  = tt
 
-    fixing : NucleusFrom.𝕛 cantor (W , W-dc) ≡ (W , W-dc)
-    fixing =
-      Σ≡Prop
-        (isProp[] ∘ isDownwardsClosed ℂ-pos)
-        (funExt λ xs → ⇔toPath (fixing₀ xs) (fixing₁ xs))
-      where
-        fixing₀ : (xs : ℂ) → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ] → [ xs ∈ W ]
-        fixing₀ xs (dir p)        = p
-        fixing₀ xs (branch b f)   = lemma xs (λ x → fixing₀ (xs ⌢ x) (f x))
-        fixing₀ xs (squash p q i) = isProp[] (W xs) (fixing₀ xs p) (fixing₀ xs q) i
+    abstract
+      fixing : NucleusFrom.𝕛 cantor (W , W-dc) ≡ (W , W-dc)
+      fixing =
+        Σ≡Prop
+          (isProp[] ∘ isDownwardsClosed ℂ-pos)
+          (funExt λ xs → ⇔toPath (fixing₀ xs) (fixing₁ xs))
+        where
+          fixing₀ : (xs : ℂ) → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ] → [ xs ∈ W ]
+          fixing₀ xs (dir p)        = p
+          fixing₀ xs (branch b f)   = lemma xs (λ x → fixing₀ (xs ⌢ x) (f x))
+          fixing₀ xs (squash p q i) = isProp[] (W xs) (fixing₀ xs p) (fixing₀ xs q) i
 
-        fixing₁ : (xs : ℂ) → [ xs ∈ W ] → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ]
-        fixing₁ xs xs∈W = dir xs∈W
+          fixing₁ : (xs : ℂ) → [ xs ∈ W ] → [ xs ∈ (NucleusFrom.𝕛 cantor (W , W-dc) .π₀) ]
+          fixing₁ xs xs∈W = dir xs∈W
 ```
 
+## Compact
+
+## Regular
+
+```agda
+map : List ℂ → (ℂ → ℂ) → List ℂ
+map []       f = []
+map (x ∷ xs) f = f x ∷ map xs f
+
+siblings-aux : ℂ → List ℂ
+siblings-aux []       = [] ∷ []
+siblings-aux (xs ⌢ x) = map xs-sib (λ ys → ys ⌢ true) ^ map xs-sib (λ ys → ys ⌢ false)
+  where
+    xs-sib = siblings-aux xs
+
+remove : ℂ → List ℂ → List ℂ
+remove xs [] = []
+remove xs (xs′ ∷ xss) with xs ≐ xs′
+remove xs (xs′ ∷ xss) | yes  p = remove xs xss
+remove xs (xs′ ∷ xss) | no  ¬p = xs′ ∷ remove xs xss
+
+siblings : ℂ → List ℂ
+siblings xs = remove xs (siblings-aux xs)
+
+_∈L_ : ℂ → List ℂ → hProp ℓ-zero
+xs ∈L []          = bot ℓ-zero
+xs ∈L (xs′ ∷ xss) with xs ≐ xs′
+xs ∈L (xs′ ∷ xss) | yes _ = Unit ℓ-zero , Unit-prop
+xs ∈L (xs′ ∷ xss) | no  _ = xs ∈L xss
+
+_sib_ : ℂ → 𝒫 ℂ
+xs sib ys = [ xs ∈L siblings ys ] , isProp[] (xs ∈L siblings ys)
+
+_^* : ℂ → ∣ cantor-frame ∣F
+xs ^* = ⋁[ cantor-frame ] ⁅ η xs* ∣ xs* ∈ (_sib_ xs)  ⁆
+
+bar : ℂ → 𝒫 ℂ
+bar xs = λ ys → ∥ (Σ[ b ∈ Bool _ ] [ ys ∈ ⦅ if b then η xs else (xs ^*) ⦆ ]) ∥ , ∥∥-prop _
+  where
+    W : Fam ℓ-zero _
+    W = (Bool _) , λ b → if b then ⦅ η xs ⦆ else ⦅ xs ^* ⦆
+
+bar-dc : (xs : ℂ) → [ isDownwardsClosed ℂ-pos (bar xs) ]
+bar-dc xs ys zs ys∈bar-xs zs⊑ys =
+  ∥∥-rec (isProp[] (zs ∈ bar xs)) NTS ys∈bar-xs
+  where
+    NTS : Σ[ b ∈ Bool ℓ-zero ] [ ys ∈ ⦅ if b then η xs else (xs ^*) ⦆ ] → [ zs ∈ bar xs ]
+    NTS (true  , p) = ∣ true , (π₁ (π₀ (η xs)) ys zs p zs⊑ys) ∣
+    NTS (false , p) = ∣ false , π₁ (π₀ (xs ^*)) ys zs p zs⊑ys ∣
+
+⊥-lemma : (xs : ℂ) → [ xs ∈ ⦅ ⊥[ cantor-frame ] ⦆ ] → ⊥
+⊥-lemma xs (dir p)                = ∥∥-rec isProp⊥ (λ ()) p
+⊥-lemma xs (branch tt f)          = ⊥-lemma (xs ⌢ true) (f true)
+⊥-lemma xs (squash xs∈∅₀ xs∈∅₁ i) = isProp⊥ (⊥-lemma xs xs∈∅₀) (⊥-lemma xs xs∈∅₁) i
+
+CF = cantor-frame
+
+comp-∧-lemma : (xs ys : ℂ) → [ ys ∈ ⦅ η xs ⦆ ] → [ ys ∈ ⦅ xs ^* ⦆ ] → ⊥
+comp-∧-lemma xs ys p q = {!!}
+
+comp-∧ : (xs : ℂ) → (η xs) ⊓[ CF ] (xs ^*) ≡ ⊥[ CF ]
+comp-∧ xs = ⊑[ cantor-pos ]-antisym _ _ NTS (⊥[ CF ]-bottom (η xs ⊓[ CF ] (xs ^*)))
+  where
+    NTS : [ (η xs) ⊓[ CF ] (xs ^*) ⊑[ cantor-pos ] ⊥[ CF ] ]
+    NTS ys (ys∈η-xs , ys∈xs*) = rec (comp-∧-lemma xs ys ys∈η-xs ys∈xs*)
+
+comp-∨-lemma : (xs zs : ℂ) → zs <ℂ| bar xs
+comp-∨-lemma []       zs       = dir ∣ true , dir ([]-bot zs) ∣
+comp-∨-lemma (xs ⌢ x) []       = NTS
+  where
+    NTS : [] <ℂ| bar (xs ⌢ x)
+    NTS = {!!}
+comp-∨-lemma (xs ⌢ x) (zs ⌢ z) = branch tt f
+  where
+    IH : zs <ℂ| bar (xs ⌢ x)
+    IH = comp-∨-lemma (xs ⌢ x) zs
+
+    f : (b : 𝔹) → ((zs ⌢ z) ⌢ b) <ℂ| bar (xs ⌢ x)
+    f b = ◁-lem₁ (bar-dc (xs ⌢ x)) (([] ⌢ z ⌢ b) , refl) IH
+
+comp-∨ : (xs : ℂ) → (η xs) ∨[ cantor-frame ] (xs ^*) ≡ ⊤[ cantor-frame ]
+comp-∨ xs =
+  ⊑[ cantor-pos ]-antisym _ _ (⊤[ CF ]-top (η xs ∨[ CF ] (xs ^*))) (λ ys _ → comp-∨-lemma xs ys)
+```
+
+```agda
+cantor-regular : [ isRegular cantor-frame ]
+cantor-regular =
+  isZeroDimensional→isRegular cantor-frame cantor-has-clopen-basis where
+
+    cantor-has-clopen-basis : isZeroDimensional cantor-frame
+    cantor-has-clopen-basis 𝔘 = ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ , comps , main-lemma cantor 𝔘
+      where
+        comps : (U : ∣ cantor-frame ∣F)
+              → U ε ⁅ η u ∣ u ∈ ⦅ 𝔘 ⦆ ⁆ → hasComplement cantor-frame U
+        comps U ((xs , xs∈U) , eq) = subst (hasComplement cantor-frame) eq nts
+          where
+            nts : hasComplement cantor-frame (η xs)
+            nts = (xs ^*) , (comp-∧ xs) , (comp-∨ xs)
+```
