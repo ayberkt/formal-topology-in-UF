@@ -12,7 +12,7 @@ open import Cubical.Foundations.Function using (uncurry)
 open import Cubical.Foundations.SIP
 open import Cubical.Structures.Axioms
 open import Cubical.Foundations.Equiv    using (_≃⟨_⟩_)   renaming (_■ to _𝔔𝔈𝔇)
-open import Poset
+open import Poset hiding (isTop)
 
 module JoinSyntax (A : Type ℓ₀) {ℓ₂ : Level} (join : Fam ℓ₂ A → A) where
 

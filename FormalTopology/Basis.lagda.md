@@ -53,6 +53,14 @@ open import Cubical.Relation.Nullary using (Discrete; yes; no; Dec)
 variable
   ℓ ℓ′ ℓ₀ ℓ₁ ℓ₂ ℓ₃ ℓ₀′ ℓ₁′ ℓ₂′ ℓ₀′′ ℓ₁′′ ℓ₂′′ : Level
 
+_⁺ : Level → Level
+ℓ ⁺ = ℓ-suc ℓ
+
+_⊔_ : Level → Level → Level
+ℓ₀ ⊔ ℓ₁ = ℓ-max ℓ₀ ℓ₁
+
+infixl 2 _⊔_
+
 variable
   A    : Type ℓ₀
   B    : A → Type ℓ₀

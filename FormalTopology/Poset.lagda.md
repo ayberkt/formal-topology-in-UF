@@ -154,6 +154,26 @@ are below each other so let us make note of the following trivial fact.
 ≡⇒⊑ P {x = x} p = subst (λ z → [ x ⊑[ P ] z ]) p (⊑[ P ]-refl x)
 ```
 
+## Meets and joins
+
+```agda
+isTop : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → hProp (ℓ-max ℓ₀ ℓ₁)
+isTop P x = ∀[ y ∶ ∣ P ∣ₚ ] y ⊑[ P ] x
+```
+
+```agda
+isBottom : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → hProp (ℓ-max ℓ₀ ℓ₁)
+isBottom P x = ∀[ y ∶ ∣ P ∣ₚ ] x ⊑[ P ] y
+```
+
+```agda
+isJoinOf : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp (ℓ-max ℓ₀ ℓ₁)
+isJoinOf {ℓ₀} {ℓ₁} P z x y = ⟨ x , y ⟩⊑[ P ] z ⊓ least
+  where
+    least : hProp (ℓ-max ℓ₀ ℓ₁)
+    least = ∀[ z′ ∶ ∣ P ∣ₚ ] ⟨ x , y ⟩⊑[ P ] z′ ⇒ z ⊑[ P ] z′
+```
+
 ## Monotonic functions
 
 We can define the notion preserving the order of a order structure for all types with
