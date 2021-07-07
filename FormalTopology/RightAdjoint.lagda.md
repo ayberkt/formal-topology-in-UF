@@ -20,14 +20,14 @@ formsBasis : (F : Frame 𝓤 𝓥 𝓦) → Fam 𝓦 ∣ F ∣F → (𝓤 ∨ �
 formsBasis {𝓥 = 𝓥} {𝓦} F B =
   ((x : ∣ F ∣F) →
      Σ[ U ∈ Fam 𝓦 (index B) ]
-       [ isSup (pos F) ⁅ B $ u ∣ u ε U ⁆ x ])
+       [ isDirected (pos F) ⁅ B $ u ∣ u ε U ⁆ ⊓ isSup (pos F) ⁅ B $ u ∣ u ε U ⁆ x ])
 
 hasBasis : (F : Frame 𝓤 𝓥 𝓦) → (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 hasBasis {𝓦 = 𝓦} F = Σ[ B ∈ Fam 𝓦 ∣ F ∣F ] formsBasis F B
 ```
 
 ```agda
-module AdjointFunctorTheorem (F G : Frame 𝓤 𝓥 𝓥) (basis : hasBasis F) where
+module AdjointFunctorTheorem (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 𝓥) (basis : hasBasis F) where
 
   open GaloisConnection (pos F) (pos G)
 
@@ -72,10 +72,10 @@ module AdjointFunctorTheorem (F G : Frame 𝓤 𝓥 𝓥) (basis : hasBasis F) w
         𝒥 = π₀ (π₁ basis x)
 
         ϕ : _
-        ϕ = π₀ (π₁ (π₁ basis x))
+        ϕ = π₀ (π₁ (π₁ (π₁ basis x)))
 
         ψ : _
-        ψ = π₁ (π₁ (π₁ basis x))
+        ψ = π₁ (π₁ (π₁ (π₁ basis x)))
 
         x-eq : (⋁[ F ] fmap (λ j → π₁ ℬ-F j) 𝒥) ≡ x
         x-eq = sym (⋁-unique F _ _ ϕ ψ)
@@ -106,4 +106,13 @@ module AdjointFunctorTheorem (F G : Frame 𝓤 𝓥 𝓥) (basis : hasBasis F) w
           where
           goal : [ ∀[ z ε ⁅ f $ₘ (π₁ ℬ-F i) ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆ ] (z ⊑[ pos G ] y) ]
           goal z ((i , p) , eq) = subst (λ - → [ - ⊑[ pos G ] y ]) eq p
+
+  _^*ᴹ : (f : pos F ─m→ pos G) → ((S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ f $ₘ (⋁[ F ] S)) → pos G ─m→ pos F
+  _^*ᴹ f rem = (π₀ (aft-2 f rem))
+
+  _^* : (f : pos F ─m→ pos G) → ((S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ f $ₘ (⋁[ F ] S)) → ∣ G ∣F → ∣ F ∣F
+  _^* f rem = π₀ (π₀ (aft-2 f rem))
+
+  ^*-RA : (f : pos F ─m→ pos G) → (rem : (S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ f $ₘ (⋁[ F ] S)) → [ f ⊣ (_^*ᴹ f rem) ]
+  ^*-RA f = π₁ ∘ aft-2 f
 ```

@@ -27,7 +27,12 @@ formsBasis : (F : Frame 𝓤 𝓥 𝓦) → Fam 𝓦 ∣ F ∣F → (𝓤 ∨ �
 formsBasis {𝓥 = 𝓥} {𝓦} F B =
   ((x : ∣ F ∣F) →
      Σ[ U ∈ Fam 𝓦 (index B) ]
-       [ isSup (pos F) ⁅ B $ u ∣ u ε U ⁆ x ])
+       [ isDirected (pos F) ⁅ B $ u ∣ u ε U ⁆ ⊓ isSup (pos F) ⁅ B $ u ∣ u ε U ⁆ x ])
+
+-- F has a compact basis iff there is some 𝓦-family B s.t.
+--
+--   1. what I now have in `formsBasis`,
+--   2. the compact elements form a meet-sublattice.
 
 hasBasis : (F : Frame 𝓤 𝓥 𝓦) → (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 hasBasis {𝓦 = 𝓦} F = Σ[ B ∈ Fam 𝓦 ∣ F ∣F ] formsBasis F B
@@ -185,7 +190,7 @@ We now proceed to prove that this is the Heyting implication:
       ε : z ≡ ⋁[ F ] ⁅ β v ∣ v ε VV ⁆
       ε = ⋁-unique F ⁅ β v ∣ v ε VV ⁆ _ (π₀ lub) (π₁ lub)
         where
-        lub = π₁ (π₁ basis z)
+        lub = π₁ (π₁ (π₁ basis z))
 
       nts : _
       nts w (i , eq) = w          ⊑⟨ ≡⇒⊑ (pos F) (sym eq)                              ⟩

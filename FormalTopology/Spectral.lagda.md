@@ -35,7 +35,12 @@ isSpectral : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 isSpectral =
     ((x : ∣ F ∣F) → Σ[ U ∈ Fam 𝓦 ∣ F ∣F ] [ isSup (pos F) U x ] × [ ∀[ y ε U ] isCompactOpen F y ])
   × [ isCompactOpen F ⊤[ F ] ]
-  × ((x y : ∣ F ∣F) → [ isCompactOpen F x ] → [ isCompactOpen F y ] → [ isCompactOpen F (x ⊓[ F ] y) ])
+  × ((x y : ∣ F ∣F) →
+       [ isCompactOpen F x ] → [ isCompactOpen F y ] → [ isCompactOpen F (x ⊓[ F ] y) ])
+
+-- TODO.
+-- The definition of spectral should be the same as Stone but the requirement of clopen
+-- basis replaced with the requirement of a compact basis.
 ```
 
 ```agda

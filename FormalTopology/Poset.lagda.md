@@ -270,6 +270,21 @@ isDirectedᵒᵖ P U@(I , _) =
   where
     U-inhabited : hProp _
     U-inhabited = ∥ index U ∥ , (∥∥-prop I)
+
+directed-image-lemma : (P : Poset ℓ₀ ℓ₁)
+                     → (Q : Poset ℓ₀′ ℓ₁′)
+                     → (f : P ─m→ Q)
+                     → (S : Fam 𝓦 ∣ P ∣ₚ)
+                     → [ isDirected P S ]
+                     → [ isDirected Q ⁅ f $ₘ s ∣ s ε S ⁆ ]
+directed-image-lemma P Q (f , f-mono) S (ϕ , ψ) = ϕ , γ
+  where
+  γ : _
+  γ i j = ∥∥-rec (∥∥-prop _) δ (ψ i j)
+    where
+    δ : _
+    δ (k , sᵢ≤sₖ , sⱼ≤sₖ) = ∣ k , f-mono _ _ sᵢ≤sₖ , f-mono _ _ sⱼ≤sₖ ∣
+
 ```
 
 ## Product of two posets
@@ -332,9 +347,9 @@ yoneda P x y = forwards , backwards
 ## Galois connections
 
 ```agda
-module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
+module GaloisConnection (P : Poset ℓ₀ ℓ₁) (Q : Poset ℓ₀′ ℓ₁′) where
 
-  _⊣_ : (P ─m→ Q) → (Q ─m→ P) → hProp (ℓ-max ℓ₀ ℓ₁)
+  _⊣_ : (P ─m→ Q) → (Q ─m→ P) → hProp (ℓ-max (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₀′) ℓ₁′)
   f ⊣ g = ∀[ x ∶ ∣ P ∣ₚ ] ∀[ y ∶ ∣ Q ∣ₚ ] f $ₘ x ⊑[ Q ] y ⇔ x ⊑[ P ] g $ₘ y
 
   ⊣-unique-right : (f : P ─m→ Q) (g₀ g₁ : Q ─m→ P)
@@ -362,7 +377,7 @@ module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
           NTS₁ : [ g₁ $ₘ y ⊑[ P ] g₀ $ₘ y ]
           NTS₁ = π₀ φ (π₁ ψ (⊑[ P ]-refl _))
 
-  _hasRightAdjoint : (P ─m→ Q) → hProp (ℓ-max ℓ₀ ℓ₁)
+  _hasRightAdjoint : (P ─m→ Q) → hProp (ℓ-max (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₀′) ℓ₁′)
   f hasRightAdjoint = (Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]) , prop
     where
     prop : isOfHLevel 1 (Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ])
@@ -370,7 +385,7 @@ module GaloisConnection (P Q : Poset ℓ₀ ℓ₁) where
       Σ≡Prop (isProp[] ∘ f ⊣_) (⊣-unique-right f g₀ g₁ f⊣g₀ f⊣g₁)
 
 
-  GaloisConnection : Type (ℓ-max ℓ₀ ℓ₁)
+  GaloisConnection : Type (ℓ-max (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₀′) ℓ₁′)
   GaloisConnection = Σ[ f ∈ P ─m→ Q  ] Σ[ g ∈ Q ─m→ P ] [ f ⊣ g ]
 ```
 

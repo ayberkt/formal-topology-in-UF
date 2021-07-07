@@ -826,6 +826,35 @@ directed-lemma J J-dir (i ∷ is) =
         ⦅𝟏⦆ : _
         ⦅𝟏⦆ = mono F (J $ k) (J ⦅ i ⦆ x) (J ⦅ k ⦆ x) (fst ϕ x)
 
+directed-computed-pointwise : (J : Fam 𝒲 ∣ Patch ∣F)
+                            → [ isDirected (pos Patch) J ]
+                            → (x : ∣ F ∣F)
+                            → (fst ∘ fst) (⋁[ Patch ] J) x ≡ ⋁[ F ] ⁅ j x ∣ ((j , _) , _) ε J ⁆
+directed-computed-pointwise J J-dir x = ⋁-unique F _ _ G𝟏 G𝟐
+  where
+  G𝟏 : [ ∀[ y ε ⁅ j x ∣ ((j , _) , _) ε J ⁆ ] (y ⊑[ pos F ] (fst ∘ fst) (⋁[ Patch ] J) x) ]
+  G𝟏 y (i , eq) = subst (λ - → [ - ⊑[ pos F ] (fst ∘ fst) (⋁[ Patch ] J) x ]) eq G𝟏a
+    where
+    G𝟏a : [ (fst ∘ fst) (J $ i) x ⊑[ pos F ] (fst ∘ fst) (⋁[ Patch ] J) x ]
+    G𝟏a = ⋁[ Patch ]-upper J (J $ i) (i , refl) x
+
+  G𝟐 : (z : ∣ F ∣F)
+     → [ ∀[ y ε ⁅ j x ∣ ((j , _) , _) ε J ⁆ ] (y ⊑[ pos F ] z) ]
+     → [ (fst ∘ fst) (⋁[ Patch ] J) x ⊑[ pos F ] z ]
+  G𝟐 z ϕ = ⋁[ F ]-least (⁅ α x ∣ α ε ℜ-fam J₀ ⁆) z G𝟐a
+    where
+    J₁ = fst ⟨$⟩ J
+    J₀ = fst ⟨$⟩ J₁
+
+    G𝟐a : [ ∀[ k ε ⁅ α x ∣ α ε ℜ-fam J₀ ⁆ ] (k ⊑[ pos F ] z) ]
+    G𝟐a w (is , eq) = subst (λ - → [ - ⊑[ pos F ] z ]) eq (G𝟐b is)
+      where
+      G𝟐b : (is : List (index J)) → [ (fst ⟨$⟩ J) *⦅ is ⦆ x ⊑[ pos F ] z ]
+      G𝟐b is = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) G𝟐c (directed-lemma J₁ J-dir is)
+        where
+        G𝟐c : Σ-syntax (index J₁) (λ i → [ _*⦅_⦆_ J₁ is ⊑f _⦅_⦆_ J₁ i ]) → [ rel (pos F) (J₁ *⦅ is ⦆ x) z ]
+        G𝟐c (k , ψ) = J₁ *⦅ is ⦆ x ⊑⟨ ψ x ⟩ J₁ ⦅ k ⦆ x ⊑⟨ ϕ (J₁ ⦅ k ⦆ x) (k , refl) ⟩ z ■
+
 -- ε : ∣ Patch ∣F → ∣ F ∣F
 -- ε ((j , _) , _) = j ⊥[ F ]
 
@@ -877,3 +906,6 @@ directed-lemma J J-dir (i ∷ is) =
   γ : _
   γ w ϕ = ϕ x ([] , refl)
 ```
+
+As there are some universe problems with this definition of `Patch`, we give an
+alternative definition
