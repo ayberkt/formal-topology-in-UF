@@ -5,6 +5,12 @@
 /* license.                                                                  */
 
 @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+@font-face {
+  font-family: "PragmataPro Mono Liga";
+  src: url("fonts/PragmataPro_Mono_R_liga_0828.woff2") format('woff');
+}
 
 /* Aspects. */
 .Comment       { color: #B22222 }
@@ -140,19 +146,17 @@ h1, h2, h3 {
 }
 
 pre code, textarea, div.string {
-  font-family: 'Fira Mono', monospace;
-  font-size: 90;
+  font-family: 'PragmataPro Mono Liga', monospace;
+  font-size: 100;
 }
 
 pre.Agda {
-  font-family: 'Fira Mono', monospace;
+  font-family: 'PragmataPro Mono Liga', monospace;
   line-height: 120%;
-  font-size: 90%;
 }
 
 pre.normal, pre.normal code, code, .error, input {
-  font-family: 'Fira Mono', monospace;
-  font-size: 90%;
+  font-family: 'PragmataPro Mono Liga', monospace;
 }
 
 
