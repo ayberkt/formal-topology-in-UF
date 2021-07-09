@@ -719,8 +719,8 @@ lemma-δ : (𝒿 : Nucleus F) (𝒦 : Fam 𝒲 (Nucleus F))
 lemma-δ 𝒿@(j , n₀ , n₁ , n₂) 𝒦 x []       = n₁ x
 lemma-δ 𝒿@(j , n₀ , n₁ , n₂) 𝒦 x (i ∷ is) =
   ((_⊓n_ 𝒿 ⟨$⟩ 𝒦) *⦅ is ⦆ (j x ⊓ (𝒦 ⦅ i ⦆ x))) ⊑⟨ lemma-δ 𝒿 𝒦 ((j x) ⊓[ F ] (𝒦 ⦅ i ⦆ x)) is ⟩
-  j (j x ⊓ (𝒦 ⦅ i ⦆ x))                        ⊑⟨ ≡⇒⊑ (pos F ) (n₀ (j x) (𝒦 ⦅ i ⦆ x))  ⟩
-  j (j x) ⊓ j (𝒦 ⦅ i ⦆ x)                      ⊑⟨ ⊓[ F ]-lower₀ _ _ ⟩
+  j (j x ⊓ (𝒦 ⦅ i ⦆ x))                        ⊑⟨ ≡⇒⊑ (pos F ) (n₀ (j x) (𝒦 ⦅ i ⦆ x))       ⟩
+  j (j x) ⊓ j (𝒦 ⦅ i ⦆ x)                      ⊑⟨ ⊓[ F ]-lower₀ _ _                         ⟩
   j (j x)                                      ⊑⟨ ≡⇒⊑ (pos F) (idem F 𝒿 x)  ⟩
   j x ■
 

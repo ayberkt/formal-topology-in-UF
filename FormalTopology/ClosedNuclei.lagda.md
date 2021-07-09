@@ -587,7 +587,7 @@ We now prove that `Patch` and `Patch′` are equivalent
 
   open GaloisConnection (pos F) (pos Patch′)
 
-  ζ : ∣ Patch′ ∣F → ∣ F ∣F
+  ζ : ∣ Patch F ∣F → ∣ F ∣F
   ζ ((j , _) , _) = j ⊥[ F ]
 
   ζ-mono : isMonotonic (pos Patch′) (pos F) ζ
@@ -622,14 +622,13 @@ We now prove that `Patch` and `Patch′` are equivalent
         G𝟐b w (true  , eq) = w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ x ⊑⟨ p ⟩ j ⊥[ F ] ⊑⟨ † ⟩ j z ■
         G𝟐b w (false , eq) = w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ z ⊑⟨ 𝓃₁ z ⟩ j z ■
 
-  𝟎-lemma : (𝒿 : ∣ Patch′ ∣F) → δ* 𝒿 ≡ ζ 𝒿
-  𝟎-lemma 𝒿@(jm , p) = funExt⁻ (π₀ (PathΣ→ΣPathTransport _ _ (⊣-unique-right (π₀ δδδ) (δ* , δ*-mono) ζζ G𝟏 G𝟐))) 𝒿
+  𝟎-lemma : (𝒿 : ∣ Patch F ∣F) → δ* 𝒿 ≡ ζ 𝒿
+  𝟎-lemma 𝒿@(jm , p) =
+    funExt⁻
+      (π₀ (PathΣ→ΣPathTransport _ _ (⊣-unique-right (π₀ δδδ) (δ* , δ*-mono) ζζ G𝟏 δ⊣ζ))) 𝒿
     where
     G𝟏 : [ π₀ δδδ ⊣ (δ* , δ*-mono) ]
     G𝟏 = ^*-RA (π₀ δδδ) (sym ∘ π₁ (π₁ (π₁ δδδ)))
-
-    G𝟐 : [ π₀ δδδ ⊣ ζζ ]
-    G𝟐 = δ⊣ζ
 
   δδδ-lemma : (J : Fam 𝓤 ∣ Patch F ∣F) → [ isDirected (pos (Patch F)) J ]
             → δ* (⋁[ Patch′ ] J) ≡ ⋁[ F ] ⁅ δ* j ∣ j ε J ⁆
@@ -693,7 +692,6 @@ We now prove that `Patch` and `Patch′` are equivalent
   patch-is-compact : [ isCompact (Patch F) ]
   patch-is-compact 𝒥 𝒥-dir p = ∥∥-rec (∥∥-prop Θ) G𝟏 (patch′-is-compact 𝒥 dir′ G𝟐)
     where
-
     Θ : 𝓤 ⁺ ̇
     Θ = Σ[ i ∈ index 𝒥 ] [ ⊤[ Patch F ] ⊑[ pos (Patch F) ] (𝒥 $ i) ]
 
@@ -714,7 +712,7 @@ We now prove that `Patch` and `Patch′` are equivalent
     G𝟏 (i , q) = ∣ i , π₁ (⊑patch↔⊑s ⊤[ Patch F ] (𝒥 $ i)) q ∣
 
     G𝟐 : [ ⊤[ Patch′ ] ⊑[ pos Patch′ ] ((WayBelow.⋁ Patch′) 𝒥) ]
-    G𝟐 = π₀ (⊑patch↔⊑s ⊤[ Patch′ ] (⋁[ Patch′ ] 𝒥)) p 
+    G𝟐 = π₀ (⊑patch↔⊑s ⊤[ Patch′ ] (⋁[ Patch′ ] 𝒥)) p
 
   graph : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
         → (f : ∣ F ∣F → ∣ G ∣F)
