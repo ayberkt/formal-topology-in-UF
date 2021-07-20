@@ -82,6 +82,12 @@ isSup {ℓ₀} {ℓ₁} {ℓ₂} P U u = sup , sup-prop
       isPropΣ (isProp[] (∀[ x ε U ] (x ⊑[ P ] u))) λ _ →
         isPropΠ λ y → isPropΠ λ _ → isProp[] (u ⊑[ P ] y)
 
+isInf : (P : Poset ℓ₀ ℓ₁) → ∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ → hProp (ℓ-max ℓ₀ ℓ₁)
+isInf P l x y =
+    (l ⊑[ P ] x ⊓ l ⊑[ P ] y)                                -- is a lower bound
+  ⊓ (∀[ z ∶ ∣ P ∣ₚ ] (z ⊑[ P ] x ⊓ z ⊑[ P ] y) ⇒ z ⊑[ P ] l) -- is greater than any other
+                                                             -- lower bound.
+
 isDist : (P : Poset ℓ₀ ℓ₁)
        → (∣ P ∣ₚ → ∣ P ∣ₚ → ∣ P ∣ₚ)
        → (Fam ℓ₂ ∣ P ∣ₚ → ∣ P ∣ₚ)

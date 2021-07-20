@@ -33,10 +33,133 @@ compact.
 ```agda
 isSpectral : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 isSpectral =
-    ((x : ∣ F ∣F) → Σ[ U ∈ Fam 𝓦 ∣ F ∣F ] [ isSup (pos F) U x ] × [ ∀[ y ε U ] isCompactOpen F y ])
+    ((x : ∣ F ∣F) → ∥ Σ[ U ∈ Fam 𝓦 ∣ F ∣F ] [ isSup (pos F) U x ] × [ ∀[ y ε U ] isCompactOpen F y ] ∥)
   × [ isCompactOpen F ⊤[ F ] ]
   × ((x y : ∣ F ∣F) →
        [ isCompactOpen F x ] → [ isCompactOpen F y ] → [ isCompactOpen F (x ⊓[ F ] y) ])
+
+isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
+isSpectral′ =
+  ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ]
+      ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
+    × ((x : ∣ F ∣F) →
+         Σ[ I ∈ Fam 𝓦 (index ℬ) ]
+            [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ ]
+          × [ isSup (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ x ])
+    × (Σ[ i ∈ index ℬ ] [ isTop (pos F) (ℬ $ i) ])
+    × ((i j : index ℬ) → Σ[ k ∈ index ℬ ] [ isInf (pos F) (ℬ $ k) (ℬ $ i) (ℬ $ j) ]) ∥
+
+∥∥-functorial : {A : Type 𝓤} {B : Type 𝓥} → ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
+∥∥-functorial {B = B} f x = ∥∥-rec (∥∥-prop B) (λ g → ∥∥-rec (∥∥-prop B) (λ y → ∣ g y ∣) x) f
+
+spec′→spec : isSpectral′ → isSpectral
+spec′→spec spec′ = G𝟏 , G𝟐 , G𝟑
+  where
+  G𝟏 : (x : ∣ F ∣F)
+     → ∥ Σ[ U ∈ Fam 𝓦 ∣ F ∣F ] [ isSup (pos F) U x ] × [ ∀[ x ε U ] (isCompactOpen F x) ] ∥
+  G𝟏 x = ∥∥-rec (∥∥-prop _) G𝟏a spec′
+    where
+    G𝟏a : Σ-syntax (Fam 𝓦 ∣ F ∣F)
+            (λ ℬ →
+               ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ]) ×
+               ((x₁ : ∣ F ∣F) →
+                Σ-syntax (Fam 𝓦 (index ℬ))
+                (λ I →
+                   [ isDirected (pos F) (fmap (_$_ ℬ) I) ] ×
+                   [ isSup (pos F) (fmap (_$_ ℬ) I) x₁ ]))
+               ×
+               Σ-syntax (index ℬ) (λ i → [ isTop (pos F) (ℬ $ i) ]) ×
+               ((i j : index ℬ) →
+                Σ-syntax (index ℬ)
+                (λ k → [ isInf (pos F) (ℬ $ k) (ℬ $ i) (ℬ $ j) ]))) →
+            ∥
+            Σ-syntax (Fam 𝓦 ∣ F ∣F)
+            (λ U → [ isSup (pos F) U x ] × [ fam-forall U (isCompactOpen F) ])
+            ∥
+    G𝟏a (ℬ , ϕ , J , _) =
+      ∣ ⁅ ℬ $ j ∣ j ε π₀ (J x) ⁆
+      , (π₁ (π₁ (J x)) , λ b (i , p) → subst ([_] ∘ isCompactOpen F) p (ϕ (π₀ (J x) $ i))) ∣
+
+  G𝟐 : [ isCompactOpen F ⊤[ F ] ]
+  G𝟐 = ∥∥-rec (isProp[] (isCompactOpen F ⊤[ F ])) G𝟐a spec′
+    where
+    G𝟐a : _ → [ isCompactOpen F ⊤[ F ] ]
+    G𝟐a (ℬ , (ϕ , _ , (i , p) , r)) = subst ([_] ∘ isCompactOpen F) G𝟐b (ϕ i)
+      where
+      G𝟐b : ℬ $ i ≡ ⊤[ F ]
+      G𝟐b = top-unique F (ℬ $ i) p
+
+  G𝟑 : (x y : ∣ F ∣F)
+     → [ isCompactOpen F x ] → [ isCompactOpen F y ] → [ isCompactOpen F (x ⊓[ F ] y) ]
+  G𝟑 x y x-comp y-comp =
+    ∥∥-rec (isProp[] (isCompactOpen F (x ⊓[ F ] y))) G𝟑a spec′
+    where
+    G𝟑a : _ → [ isCompactOpen F (x ⊓[ F ] y) ]
+    G𝟑a (ℬ , κ , (ϕ , ψ)) =
+      ∥∥-rec (isProp[] (isCompactOpen F (x ⊓[ F ] y))) G𝟑b (∥∥-× (x-comp ⁅ ℬ $ i ∣ i ε ℐ ⁆ dir₀ cover₀) (y-comp ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ dir₁ cover₁))
+      where
+      ℐ : Fam 𝓦 (index ℬ)
+      ℐ = π₀ (ϕ x)
+
+      𝒥 : Fam 𝓦 (index ℬ)
+      𝒥 = π₀ (ϕ y)
+
+      υ₀ : [ isSup (pos F) ⁅ ℬ $ i ∣ i ε ℐ ⁆ x ]
+      υ₀ = π₁ (π₁ (ϕ x))
+
+      υ₁ : [ isSup (pos F) ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ y ]
+      υ₁ = π₁ (π₁ (ϕ y))
+
+      dir₀ : [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε ℐ ⁆ ]
+      dir₀ = π₀ (π₁ (ϕ x))
+
+      dir₁ : [ isDirected (pos F) ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ ]
+      dir₁ = π₀ (π₁ (ϕ y))
+
+      cover₀ : [ x ⊑[ pos F ] ⋁[ F ] ⁅ ℬ $ i ∣ i ε ℐ ⁆ ]
+      cover₀ = ≡⇒⊑ (pos F) (⋁-unique F _ _ (π₀ υ₀) (π₁ υ₀))
+
+      cover₁ : [ y ⊑[ pos F ] ⋁[ F ] ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ ]
+      cover₁ = ≡⇒⊑ (pos F) (⋁-unique F _ _ (π₀ υ₁) (π₁ υ₁))
+
+      G𝟑b : _ → [ isCompactOpen F (x ⊓[ F ] y) ]
+      G𝟑b ((𝒾 , p) , (𝒿 , q)) = subst ([_] ∘ isCompactOpen F) G𝟑c (κ k)
+        where
+        open PosetReasoning (pos F)
+
+        i : index ℬ
+        i = π₀ (ϕ x) $ 𝒾
+
+        j : index ℬ
+        j = π₀ (ϕ y) $ 𝒿
+
+        k : index ℬ
+        k = π₀ (π₁ ψ ((π₀ (ϕ x)) $ 𝒾) ((π₀ (ϕ y)) $ 𝒿))
+
+        foo : x ≡ ℬ $ i
+        foo = ⊑[ pos F ]-antisym x (ℬ $ i) p nts
+          where
+          nts : [ (ℬ $ i) ⊑[ pos F ] x ]
+          nts = ℬ $ i                            ⊑⟨ ⋁[ F ]-upper _ _ (𝒾  , refl) ⟩
+                ⋁[ F ] ⁅ ℬ $ j ∣ j ε π₀ (ϕ x) ⁆  ⊑⟨ ≡⇒⊑ (pos F) (sym (⋁-unique F _ _ (π₀ υ₀) (π₁ υ₀))) ⟩
+                x                                ■
+
+        bar : y ≡ ℬ $ j
+        bar = ⊑[ pos F ]-antisym y (ℬ $ j) q nts
+          where
+          nts : [ (ℬ $ j) ⊑[ pos F ] y ]
+          nts =
+            ℬ $ j                            ⊑⟨ ⋁[ F ]-upper _ _ (𝒿 , refl) ⟩
+            ⋁[ F ] ⁅ ℬ $ j ∣ j ε π₀ (ϕ y) ⁆  ⊑⟨ ≡⇒⊑ (pos F) (sym (⋁-unique F _ _ (π₀ υ₁) (π₁ υ₁))) ⟩
+            y                                ■
+
+        G𝟑c : ℬ $ k ≡ x ⊓[ F ] y
+        G𝟑c = ℬ $ k                  ≡⟨ ⊓-unique F _ _ _ (π₀ (π₀ (π₁ (π₁ ψ i j)))) ((π₁ (π₀ (π₁ (π₁ ψ i j))))) (λ w p q → π₁ (π₁ (π₁ ψ i j)) w (p , q)) ⟩
+              (ℬ $ i) ⊓[ F ] (ℬ $ j) ≡⟨ cong (λ - → - ⊓[ F ] (ℬ $ j)) (sym foo) ⟩
+              x ⊓[ F ] (ℬ $ j)       ≡⟨ cong (λ - → x ⊓[ F ] -) (sym bar) ⟩
+              x ⊓[ F ] y             ∎
+
+
 
 -- TODO.
 -- The definition of spectral should be the same as Stone but the requirement of clopen
@@ -44,6 +167,7 @@ isSpectral =
 ```
 
 ```agda
+{--
 compact-yoneda : isSpectral
                → (x y : ∣ F ∣F)
                → ((b : ∣ F ∣F) → [ isCompactOpen F b ] →
@@ -57,7 +181,7 @@ compact-yoneda spec x y ϕ =
   open PosetReasoning (pos F)
 
   W : Fam 𝓦 ∣ F ∣F
-  W = π₀ (π₀ spec x)
+  W = ?
 
   β : x ≡ ⋁[ F ] W
   β = uncurry (⋁-unique F W x) (π₀ (π₁ (π₀ spec x)))
@@ -167,6 +291,7 @@ continuity-lemma spec f mono comp U U-dir =
 ```agda
 -- patch-is-stone : [ isStone Patch ]
 -- patch-is-stone = patch-is-compact , ∣ {!!} ∣
+--}
 ```
 
 TODO:
