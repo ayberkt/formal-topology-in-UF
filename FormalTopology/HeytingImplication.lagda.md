@@ -11,6 +11,7 @@ open import Basis
 open import Poset
 open import Frame
 open import Spectral
+open import Nucleus
 
 module HeytingImplication where
 ```
@@ -200,6 +201,85 @@ We now proceed to prove that this is the Heyting implication:
         δ : [ x ⊓[ F ] β (VV $ i) ≤ y ]
         δ = x ∧ β (VV $ i)                ⊑⟨ cright F _ (⋁[ F ]-upper _ _ (i , refl)) ⟩
             x ∧ (⋁[ F ] ⁅ β v ∣ v ε VV ⁆) ⊑⟨ cright F _ (≡⇒⊑ (pos F) (sym ε))         ⟩
-            x ∧ z                         ⊑⟨ p                                         ⟩
+            x ∧ z                         ⊑⟨ p                                        ⟩
             y                             ■
+
+  ==>-id : (x : ∣ F ∣F) → x ==> x ≡ ⊤[ F ]
+  ==>-id x = ⊑[ pos F ]-antisym (x ==> x) ⊤[ F ] (⊤[ F ]-top (x ==> x)) G𝟐
+    where
+    G𝟐 : [ ⊤[ F ] ⊑[ pos F ] (x ==> x) ]
+    G𝟐 = π₁ (==>-is-HI x x ⊤[ F ]) (⊓[ F ]-lower₀ x ⊤[ F ])
+
+  ==>-nucleus-lemma : (x y : ∣ F ∣F) (j : Nucleus F)
+                    → [ (x ==> y) ⊑[ pos F ] (π₀ j x ==> π₀ j y) ]
+  ==>-nucleus-lemma x y 𝒿@(j , 𝓃₀ , 𝓃₁ , 𝓃₂) =
+    (x ==> y)      ⊑⟨ ⦅𝟏⦆ ⟩
+    (x ==> j y)    ⊑⟨ ⦅𝟐⦆ ⟩
+    (j x ==> j y)  ■
+    where
+    open PosetReasoning (pos F)
+
+    ⦅𝟏⦆ : [ (x ==> y) ⊑[ pos F ] (x ==> j y) ]
+    ⦅𝟏⦆ = π₁ (==>-is-HI x (j y) (x ==> y)) (_ ⊑⟨ mp x y ⟩ y ⊑⟨ 𝓃₁ y ⟩ j y ■)
+
+    ⦅𝟐⦆ : [ (x ==> j y) ⊑[ pos F ] (j x ==> j y) ]
+    ⦅𝟐⦆ = π₁ (==>-is-HI (j x) (j y) (x ==> j y)) ⦅𝟐a⦆
+      where
+      ⦅𝟐a⦆ : [ j x ⊓[ F ] (x ==> j y) ⊑[ pos F ] (j y) ]
+      ⦅𝟐a⦆ =
+        j x ⊓[ F ] (x ==> j y)   ⊑⟨ cright F (j x) (𝓃₁ (x ==> j y))      ⟩
+        j x ⊓[ F ] j (x ==> j y) ⊑⟨ ≡⇒⊑ (pos F) (sym (𝓃₀ x (x ==> j y))) ⟩
+        j (x ⊓[ F ] (x ==> j y)) ⊑⟨ mono F 𝒿 _ _ (mp x (j y))            ⟩
+        j (j y)                  ⊑⟨ 𝓃₂ y                                 ⟩
+        j y                      ■
+
+  ∨-cright : (x y z : ∣ F ∣F)
+           → [ y ⊑[ pos F ] z ] → [ (x ∨[ F ] y) ⊑[ pos F ] (x ∨[ F ] z) ]
+  ∨-cright x y z p = ⋁[ F ]-least _ _ nts
+    where
+    open PosetReasoning (pos F)
+
+    nts : _
+    nts w (true  , eq) =
+      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ x ⊑⟨ ⊔[ F ]-upper₀ x z ⟩ x ∨[ F ] z ■
+    nts w (false , eq) =
+      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ y ⊑⟨ p ⟩  z ⊑⟨ ⊔[ F ]-upper₁ x z ⟩ x ∨[ F ] z ■
+
+  ∨-cleft : (x y z : ∣ F ∣F)
+          → [ x ⊑[ pos F ] y ] → [ (x ∨[ F ] z) ⊑[ pos F ] (y ∨[ F ] z)  ]
+  ∨-cleft x y z p = ⋁[ F ]-least _ _ nts
+    where
+    open PosetReasoning (pos F)
+
+    nts : _
+    nts w (true  , eq) = w            ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
+                         x            ⊑⟨ p                    ⟩
+                         y            ⊑⟨ ⊔[ F ]-upper₀ y z    ⟩
+                         y ∨[ F ] z   ■
+    nts w (false , eq) = w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ z ⊑⟨ ⊔[ F ]-upper₁ y z ⟩ y ∨[ F ] z ■
+
+  ==>-∨-lemma : (x y z : ∣ F ∣F)
+              → [ ((x ==> z) ⊓[ F ] (y ==> z)) ⊑[ pos F ] ((x ∨[ F ] y) ==> z) ]
+  ==>-∨-lemma x y z = π₁ (==>-is-HI _ _ _) G𝟏
+    where
+    open PosetReasoning (pos F)
+
+    G𝟏 : [ (x ∨[ F ] y) ⊓[ F ] ((x ==> z) ⊓[ F ] (y ==> z)) ⊑[ pos F ] z ]
+    G𝟏 = (x ∨[ F ] y) ⊓[ F ] ((x ==> z) ⊓[ F ] (y ==> z))   ⊑⟨ ≡⇒⊑ (pos F) (comm F _ _) ⟩
+         ((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ](x ∨[ F ] y)    ⊑⟨ ≡⇒⊑ (pos F) (bin-dist F ((x ==> z) ⊓[ F ] (y ==> z)) x y)  ⟩
+         (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] x) ∨[ F ] (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] y) ⊑⟨ ⦅𝟏⦆ ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] y) ⊑⟨ ⦅𝟐⦆ ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] ((y ==> z) ⊓[ F ] y) ⊑⟨ ∨-cright _ _ _ (≡⇒⊑ (pos F) (comm F (y ==> z) y)) ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] (y ⊓[ F ] (y ==> z)) ⊑⟨ ∨-cright _ _ _ (mp y z) ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] z                    ⊑⟨ ∨-cleft _ _ _ (≡⇒⊑ (pos F) (comm F _ _)) ⟩
+         (x ⊓[ F ] (x ==> z)) ∨[ F ] z                    ⊑⟨ ∨-cleft _ _ _ (mp x z) ⟩
+         z ∨[ F ] z                                       ⊑⟨ ≡⇒⊑ (pos F) (x∨x=x F z) ⟩
+         z                                                ■
+      where
+      G𝟐 = ∨-cright z _ _ (mp y z)
+
+      ⦅𝟏⦆ = ∨-cleft _ _ _ (cleft F _ (⊓[ F ]-lower₀ _ _))
+
+      ⦅𝟐⦆ : _
+      ⦅𝟐⦆ = ∨-cright _ _ _ (cleft F _ (⊓[ F ]-lower₁ _ _))
 ```

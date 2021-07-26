@@ -17,6 +17,7 @@ open import Poset
 open import Nucleus
 open import Prenucleus
 open import HeytingImplication
+open import Frame
 open import Spectral
 open import Regular
 open import RightAdjoint hiding (hasBasis)
@@ -441,7 +442,7 @@ module CompactnessLemma (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 𝓥)
 ```
 
 ```agda
-module SomeMoreResults (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec : isSpectral F) (basis : hasBasis F) where
+module SomeMoreResults (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F) (basis : hasBasis F) where
 
   open OpenNuclei F
 
@@ -451,6 +452,9 @@ module SomeMoreResults (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec : isSpectral F) (b
   private
     ℬ : Fam 𝓤 ∣ F ∣F
     ℬ = π₀ basis
+
+  spec : isSpectral F
+  spec = spec′→spec F spec′
 
   _⊑s_ : ScottContNucleus F → ScottContNucleus F → hProp 𝓤
   ((j , _) , _) ⊑s ((k , _) , _) = ∀[ i ∶ index ℬ ] j (ℬ $ i) ⊑[ pos F ] k (ℬ $ i)
@@ -714,18 +718,6 @@ We now prove that `Patch` and `Patch′` are equivalent
     G𝟐 : [ ⊤[ Patch′ ] ⊑[ pos Patch′ ] ((WayBelow.⋁ Patch′) 𝒥) ]
     G𝟐 = π₀ (⊑patch↔⊑s ⊤[ Patch′ ] (⋁[ Patch′ ] 𝒥)) p
 
-  graph : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
-        → (f : ∣ F ∣F → ∣ G ∣F)
-        → ∣ F ∣F × ∣ G ∣F → _ ̇
-  graph F G f (a , b) = [ isCompactOpen F a ]
-                      × [ isCompactOpen G b ]
-                      × [ b ⊑[ pos G ] f a ]
-
-  -- graph-thm : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦′)
-  --           → (f : ∣ F ∣F → ∣ G ∣F)
-  --           → (x : ∣ F ∣F)
-  --           → f x ≡ (⋁[ G ] ((Σ[ b ∈ ∣ G ∣F ] (Σ[ a ∈ ∣ F ∣F ] [ a ⊑[ pos F ] x ] × {!graph F G f ?!})) , π₀))
-  -- graph-thm = {!!}
   open Complements F spec basis
   open DefnOfHeytingImplication F
   open Definition F basis
@@ -737,8 +729,196 @@ We now prove that `Patch` and `Patch′` are equivalent
   ℬ-C = (Σ[ i ∈ index ℬ-F ] [ _≪_ F (ℬ-F $ i) (ℬ-F $ i) ]) , λ p → ℬ-F $ (π₀ p)
 
   -- nucleus-lemma : (j : ∣ Patch F ∣F)
-  --               → j ≡ (⋁[ Patch F ] ⁅ εε F b ∨[ Patch F ] {!¬‘ b ’!} ∣ b ε ℬ-F ⁆)
+  --               → [ isSup (pos (Patch F)) {!⁅ ‘ π₀ (π₀ j) b ’ ⊓[ F ] ¬‘ b ’ ∣ !} {!!} ]
   -- nucleus-lemma = {!!}
+
+  -- nucleus-lemma : (j : ∣ Patch F ∣F)
+  --               → j ≡ (⋁[ Patch F ] ⁅ εε F b ∨[ Patch F ] {!!} ∣ b ε ℬ-F ⁆)
+  -- nucleus-lemma = {!!}
+```
+
+```agda
+module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F) where
+
+  sp : isSpectral F
+  sp = spec′→spec F spec′
+
+  clopen-basis : ∥ hasClopenBasis F ∥
+  clopen-basis = ∥∥-rec (∥∥-prop (hasClopenBasis F)) G𝟏 spec′
+    where
+    G𝟏 : _ → ∥ hasClopenBasis F ∥
+    G𝟏 (ℬ , p , (q , f)) = {!!}
+      where
+      basis : hasBasis F
+      basis = ℬ , q
+
+      open SomeMoreResults F spec′ basis
+      open import PatchFrame F
+      open OpenNuclei F
+      open Complements F
+      open import WayBelow F
+      open Definition F basis hiding (ℬ)
+      open PosetReasoning (pos F)
+
+      ℬ-comp : [ ∀[ b ε ℬ ] (b ≪ b) ]
+      ℬ-comp b (i , eq) = subst (λ - → [ - ≪ - ]) eq (p i)
+
+      perfect-nucleus-lemma : (j k : ∣ Patch ∣F)
+                            → ((x : ∣ F ∣F) → [ x ≪ x ] → π₀ (π₀ j) x ≡ π₀ (π₀ k) x)
+                            → (x : ∣ F ∣F) → π₀ (π₀ j) x ≡ π₀ (π₀ k) x
+      perfect-nucleus-lemma ((j , j-n) , j-sc) ((k , k-n) , k-sc) ϕ x =
+        j x                      ≡⟨ cong j eq ⟩
+        j (⋁[ F ] W)             ≡⟨ j-sc W W-dir ⟩
+        ⋁[ F ] ⁅ j w ∣ w ε W ⁆   ≡⟨ cong (λ - → ⋁[ F ] (index W , -)) (funExt (λ i → ϕ (W $ i) (p ((π₀ (q x)) $ i)))) ⟩
+        ⋁[ F ] ⁅ k w ∣ w ε W ⁆   ≡⟨ sym (k-sc W W-dir) ⟩
+        k (⋁[ F ] W)             ≡⟨ cong k (sym eq) ⟩
+        k x                      ∎
+        where
+        W : Fam 𝓤 (π₀ F)
+        W = ⁅ ℬ $ i ∣ i ε (π₀ (q x)) ⁆
+
+        W-dir : [ isDirected (pos F) W ]
+        W-dir = π₀ (π₁ (q x))
+
+        eq : x ≡ ⋁[ F ] W
+        eq = ⋁-unique F _ _ (π₀ (π₁ (π₁ (q x)))) (π₁ (π₁ (π₁ (q x))))
+
+      perfect-nucleus-lemma₀ : (j k : ∣ Patch ∣F)
+                             → ((x : ∣ F ∣F) → [ x ≪ x ] → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ])
+                             → (x : ∣ F ∣F) → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ]
+      perfect-nucleus-lemma₀  𝒿@((j , j-n) , j-sc) 𝓀@((k , k-n) , k-sc) ρ x =
+        j x                    ⊑⟨ ≡⇒⊑ (pos F) (cong j eq) ⟩
+        j (⋁[ F ] W)           ⊑⟨ ≡⇒⊑ (pos F) (j-sc W W-dir) ⟩
+        ⋁[ F ] ⁅ j w ∣ w ε W ⁆ ⊑⟨ nts ⟩
+        ⋁[ F ] ⁅ k w ∣ w ε W ⁆ ⊑⟨ ≡⇒⊑ (pos F) (sym (k-sc W W-dir)) ⟩
+        k (⋁[ F ] W)           ⊑⟨ ≡⇒⊑ (pos F) (cong k (sym eq)) ⟩
+        k x                    ■
+        where
+        W : Fam 𝓤 (π₀ F)
+        W = ⁅ ℬ $ i ∣ i ε (π₀ (q x)) ⁆
+
+        W-dir : [ isDirected (pos F) W ]
+        W-dir = π₀ (π₁ (q x))
+
+        eq : x ≡ ⋁[ F ] W
+        eq = ⋁-unique F _ _ (π₀ (π₁ (π₁ (q x)))) (π₁ (π₁ (π₁ (q x))))
+
+        goal : _
+        goal z (i , eq)  = z                       ⊑⟨ ≡⇒⊑ (pos F) (sym eq)         ⟩
+                           j (W $ i)               ⊑⟨ ρ (W $ i) (p (π₀ (q x) $ i)) ⟩
+                           k (W $ i)               ⊑⟨ ⋁[ F ]-upper _ _ (i , refl)  ⟩
+                           ⋁[ F ] ⁅ k w ∣ w ε W ⁆  ■
+
+        nts = ⋁[ F ]-least _ _ goal
+
+      nucleus-lemma : (j : ∣ Patch ∣F)
+                    → j ≡ ⋁[ Patch ] ⁅ εε F (π₀ (π₀ j) (ℬ $ i)) ⊓[ Patch ] μ sp basis (ℬ $ i) (p i) ∣ i ∶ index ℬ ⁆
+      nucleus-lemma 𝒿@((j , j-n) , j-sc) = G𝟐′
+        where
+        𝕜 : index ℬ → ∣ Patch ∣F
+        𝕜 i = εε F (j (ℬ $ i)) ⊓[ Patch ] μ sp basis (ℬ $ i) (p i)
+
+        𝕜₀ : index ℬ → ∣ F ∣F → ∣ F ∣F
+        𝕜₀ i x = π₀ (π₀ (𝕜 i)) x
+
+        foo : (i : index ℬ) → 𝕜₀ i (ℬ $ i) ≡ j (ℬ $ i)
+        foo i =
+          π₀ (π₀ (𝕜 i)) (ℬ $ i)                                   ≡⟨ refl                ⟩
+          (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] ((ℬ $ i) ==> (ℬ $ i)) ≡⟨ ⦅𝟏⦆                 ⟩
+          (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] ⊤[ F ]                ≡⟨ cong (λ - → - ⊓[ F ] ⊤[ F ]) ⦅𝟐⦆ ⟩
+          j (ℬ $ i) ⊓[ F ] ⊤[ F ]                                 ≡⟨ x∧⊤=x F (j (ℬ $ i)) ⟩
+          j (ℬ $ i)                                               ∎
+          where
+          ⦅𝟏⦆ : _
+          ⦅𝟏⦆ = cong (λ - → (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] -) (==>-id (ℬ $ i))
+
+          ⦅𝟐⦆ : j (ℬ $ i) ∨[ F ] (ℬ $ i) ≡ j (ℬ $ i)
+          ⦅𝟐⦆ = ⊑[ pos F ]-antisym _ _ ⦅𝟐a⦆ ⦅𝟐b⦆
+            where
+            ⦅𝟐a⦆ : [ j (ℬ $ i) ∨[ F ] (ℬ $ i) ⊑[ pos F ] j (ℬ $ i) ]
+            ⦅𝟐a⦆ = ⋁[ F ]-least _ _ nts
+              where
+              nts : [ ∀[ x ε ⁅ j (ℬ $ i) , (ℬ $ i) ⁆ ] (x ⊑[ pos F ] j (ℬ $ i)) ]
+              nts x (true  , eq) = subst (λ - → [ - ⊑[ pos F ] j (ℬ $ i) ]) eq (⊑[ pos F ]-refl _)
+              nts x (false , eq) =
+               x         ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
+               ℬ $ i     ⊑⟨ π₀ (π₁ j-n) (ℬ $ i) ⟩
+               j (ℬ $ i) ■
+
+            ⦅𝟐b⦆ : [ j (ℬ $ i) ⊑[ pos F ] j (ℬ $ i) ∨[ F ] (ℬ $ i) ]
+            ⦅𝟐b⦆ = ⋁[ F ]-upper _ (j (ℬ $ i)) (true , refl)
+
+        lemma-js : (i : index ℬ) → [ 𝕜 i ⊑[ pos Patch ] 𝒿 ]
+        lemma-js i x =
+          𝕜₀ i x                                                     ⊑⟨ ⊑[ pos F ]-refl _ ⟩
+          (j (ℬ $ i) ∨[ F ] x) ⊓[ F ] ((ℬ $ i) ==> x)                ⊑⟨ ⦅𝟏⦆               ⟩
+          (j (ℬ $ i) ∨[ F ] x) ⊓[ F ] ((j (ℬ $ i) ∨[ F ] x) ==> j x) ⊑⟨ mp _ _            ⟩
+          j x                                                        ■
+          where
+          ⦅𝟏b⦆ : [ ⊤[ F ] ⊑[ pos F ] (x ==> j x) ]
+          ⦅𝟏b⦆ = π₁ (==>-is-HI x (j x) ⊤[ F ])
+                 (x ⊓[ F ] ⊤[ F ] ⊑⟨ ⊓[ F ]-lower₀ _ _ ⟩ x ⊑⟨ 𝓃₁ F (π₀ 𝒿) x ⟩ j x ■)
+
+          ⦅𝟏a⦆ : [ ((ℬ $ i) ==> x) ⊑[ pos F ] ((j (ℬ $ i) ∨[ F ] x) ==> j x) ]
+          ⦅𝟏a⦆ =
+            (ℬ $ i) ==> x                          ⊑⟨ ==>-nucleus-lemma (ℬ $ i) x (j , j-n)           ⟩
+            j (ℬ $ i) ==> j x                      ⊑⟨ ≡⇒⊑ (pos F) (sym (x∧⊤=x F (j (ℬ $ i) ==> j x))) ⟩
+            (j (ℬ $ i) ==> j x) ⊓[ F ] ⊤[ F ]      ⊑⟨ cright F (j (ℬ $ i) ==> j x) ⦅𝟏b⦆               ⟩
+            (j (ℬ $ i) ==> j x) ⊓[ F ] (x ==> j x) ⊑⟨ ==>-∨-lemma (j (ℬ $ i)) x (j x) ⟩
+            (j (ℬ $ i) ∨[ F ] x) ==> j x           ■
+
+          ⦅𝟏⦆ : _
+          ⦅𝟏⦆ = cright F _ ⦅𝟏a⦆
+
+        k : ∣ Patch ∣F
+        k = ⋁[ Patch ] ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆
+
+        G𝟐′ : 𝒿 ≡ k
+        G𝟐′ = ⋁-unique Patch _ _ G𝟐′a G𝟐′b
+          where
+          G𝟐′a : [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos Patch ] 𝒿) ]
+          G𝟐′a z (i , eq) = subst (λ - → [ - ⊑[ pos Patch ] 𝒿 ]) eq (lemma-js i)
+
+          G𝟐′b : (𝓀 : ∣ Patch ∣F)
+               → [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos Patch ] 𝓀) ]
+               → [ 𝒿 ⊑[ pos Patch ] 𝓀 ]
+          G𝟐′b 𝓀@((k , k-n) , k-sc) θ x =
+            perfect-nucleus-lemma₀ 𝒿 𝓀 ξ x
+            where
+            ξ : (y : ∣ F ∣F) → [ y ≪ y ] → [ j y ⊑[ pos F ] k y ]
+            ξ y y-comp = ∥∥-rec (isProp[] (_ ⊑[ pos F ] _)) final (y-comp ((fmap (λ i → ℬ $ i)) 𝒥) 𝒥-dir cover)
+              where
+              𝒥 : Fam 𝓤 (index ℬ)
+              𝒥 = π₀ (q y)
+
+              υ : [ isSup (pos F) ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ y ]
+              υ = π₁ (π₁ (q y))
+
+              cover : [ y ⊑[ pos F ] ⋁[ F ] ⁅ ℬ $ i ∣ i ε 𝒥 ⁆ ]
+              cover = ≡⇒⊑ (pos F) (⋁-unique F _ _ (π₀ υ) (π₁ υ))
+
+              𝒥-dir : [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε 𝒥 ⁆ ]
+              𝒥-dir = π₀ (π₁ (q y))
+
+              final : _ → [ j y ⊑[ pos F ] k y ]
+              final (𝒾 , p) = subst (λ - → [ j - ⊑[ pos F ] k - ]) eq rem
+                where
+                iy : index ℬ
+                iy = π₀ (q y) $ 𝒾
+
+                eq : ℬ $ iy ≡ y
+                eq = ⊑[ pos F ]-antisym _ _ eq₀ p
+                  where
+                  eq₀ : [ (ℬ $ iy) ⊑[ pos F ] y ]
+                  eq₀ = ℬ $ iy ⊑⟨ ⋁[ F ]-upper _ _ (𝒾 , refl) ⟩ ⋁[ F ] ⁅ ℬ $ i ∣ i ε 𝒥 ⁆ ⊑⟨ ≡⇒⊑ (pos F) (sym (⋁-unique F _ _ (π₀ υ) (π₁ υ))) ⟩ y ■
+
+                goal : [ 𝕜₀ iy (ℬ $ iy) ⊑[ pos F ] k (ℬ $ iy) ]
+                goal = θ (𝕜 iy) (iy , refl) (ℬ $ iy)
+
+                rem : [ j (ℬ $ iy) ⊑[ pos F ] k (ℬ $ iy) ]
+                rem = j (ℬ $ iy)     ⊑⟨ ≡⇒⊑ (pos F) (sym (foo iy)) ⟩
+                      𝕜₀ iy (ℬ $ iy) ⊑⟨ goal                       ⟩
+                      k (ℬ $ iy)     ■
 ```
 
 Given some f : F → G where F is a compact frame, if f is Scott-continuous then G is compact as well.

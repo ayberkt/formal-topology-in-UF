@@ -167,38 +167,39 @@ spec′→spec spec′ = G𝟏 , G𝟐 , G𝟑
 ```
 
 ```agda
-{--
 compact-yoneda : isSpectral
                → (x y : ∣ F ∣F)
                → ((b : ∣ F ∣F) → [ isCompactOpen F b ] →
                     [ b ⊑[ pos F ] x ] → [ b ⊑[ pos F ] y ])
                → [ x ⊑[ pos F ] y ]
 compact-yoneda spec x y ϕ =
-  x        ⊑⟨ ≡⇒⊑ (pos F) β ⟩
-  ⋁[ F ] W ⊑⟨ γ          ⟩
-  y        ■
+  ∥∥-rec (isProp[] (x ⊑[ pos F ] y)) G𝟏 (π₀ spec x)
   where
   open PosetReasoning (pos F)
 
-  W : Fam 𝓦 ∣ F ∣F
-  W = ?
-
-  β : x ≡ ⋁[ F ] W
-  β = uncurry (⋁-unique F W x) (π₀ (π₁ (π₀ spec x)))
-
-  γ : [ ⋁[ F ] W ⊑[ pos F ] y ]
-  γ = ⋁[ F ]-least W y nts
+  G𝟏 : Σ[ U ∈ Fam 𝓦 ∣ F ∣F ] ([ isSup (pos F) U x ] × [ ∀[ x ε U ] isCompactOpen F x ])
+     → [ x ⊑[ pos F ] y ]
+  G𝟏 (W , p , ψ)  =
+    x        ⊑⟨ ≡⇒⊑ (pos F) β ⟩
+    ⋁[ F ] W ⊑⟨ γ ⟩
+    y        ■
     where
-    nts : (z : ∣ F ∣F) → z ε W → [ z ⊑[ pos F ] y ]
-    nts z (i , eq) = subst (λ - → [ - ⊑[ pos F ] y ]) eq rem
-      where
-      δ : [ (W $ i) ⊑[ pos F ] x ]
-      δ = W $ i    ⊑⟨ ⋁[ F ]-upper W (W $ i) (i , refl) ⟩
-          ⋁[ F ] W ⊑⟨ ≡⇒⊑ (pos F) (sym β)               ⟩
-          x        ■
+    β : x ≡ ⋁[ F ] W
+    β = uncurry (⋁-unique F W x) p
 
-      rem : [ (W $ i) ⊑[ pos F ] y ]
-      rem = ϕ (W $ i) (π₁ (π₁ (π₀ spec x)) (W $ i) (i , refl)) δ
+    γ : [ ⋁[ F ] W ⊑[ pos F ] y ]
+    γ = ⋁[ F ]-least W y nts
+      where
+      nts : (z : ∣ F ∣F) → z ε W → [ z ⊑[ pos F ] y ]
+      nts z (i , eq) = subst (λ - → [ - ⊑[ pos F ] y ]) eq rem
+        where
+        δ : [ (W $ i) ⊑[ pos F ] x ]
+        δ = W $ i    ⊑⟨ ⋁[ F ]-upper W (W $ i) (i , refl) ⟩
+            ⋁[ F ] W ⊑⟨ ≡⇒⊑ (pos F) (sym β)               ⟩
+            x        ■
+
+        rem : [ (W $ i) ⊑[ pos F ] y ]
+        rem = ϕ (W $ i) (ψ (W $ i) (i , refl)) δ
 
 compact-yoneda₁ : isSpectral
                 → (x y : ∣ F ∣F)
@@ -291,7 +292,6 @@ continuity-lemma spec f mono comp U U-dir =
 ```agda
 -- patch-is-stone : [ isStone Patch ]
 -- patch-is-stone = patch-is-compact , ∣ {!!} ∣
---}
 ```
 
 TODO:

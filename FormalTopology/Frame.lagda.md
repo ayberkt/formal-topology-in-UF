@@ -264,6 +264,17 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   x∨⊥=x : (x : ∣ F ∣F) → ⊥[ F ] ∨[ F ] x ≡ x
   x∨⊥=x = sym ∘ x⊑y⇒y=x∨y ∘ ⊥[_]-bottom
 
+  x∨x=x : (x : ∣ F ∣F) → x ∨[ F ] x ≡ x
+  x∨x=x x = ⊑[ pos F ]-antisym _ _ G𝟏 G𝟐
+    where
+    G𝟏 : [ (x ∨[ F ] x) ⊑[ pos F ] x ]
+    G𝟏 = ⋁[_]-least _ _ λ { z (true  , p) → subst (λ - → [ - ⊑[ pos F ] x ]) p (⊑[ pos F ]-refl x)
+                          ; z (false , p) → subst (λ - → [ - ⊑[ pos F ] x ]) p (⊑[ pos F ]-refl x)
+                          }
+
+    G𝟐 : [ x ⊑[ pos F ] (x ∨[ F ] x) ]
+    G𝟐 = ⊔[_]-upper₀ x x
+
   x∧⊥=⊥ : (x : ∣ F ∣F) → x ⊓[ F ] ⊥[ F ] ≡ ⊥[ F ]
   x∧⊥=⊥ x =
     ⊑[ pos F ]-antisym (glb-of F x ⊥[ F ]) ⊥[ F ] (⊓[_]-lower₁ _ _) (⊥[_]-bottom _)
