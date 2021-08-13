@@ -246,6 +246,13 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
     where
       open PosetReasoning (pos F)
 
+  y=x∨y⇒x⊑y : {x y : ∣ F ∣F} → y ≡ x ∨[ F ] y → [ x ⊑ y ]
+  y=x∨y⇒x⊑y {x = x} {y} p = x          ⊑⟨ ⊔[_]-upper₀ x y     ⟩
+                            x ∨[ F ] y ⊑⟨ ≡⇒⊑ (pos F) (sym p) ⟩
+                            y          ■
+    where
+    open PosetReasoning (pos F)
+
   ⋁-constant-id : (I : Type ℓ₂) (x : ∣ F ∣F) → ∥ I ∥ → ⋁[ F ] ⁅ x ∣ _ ∶ I ⁆ ≡ x
   ⋁-constant-id I x ∣i∣ = ∥∥-rec (carrier-is-set (pos F) _ _) f ∣i∣
     where
@@ -491,7 +498,7 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   cright : (x : ∣ F ∣F) {y y′ : ∣ F ∣F}
          → [ y ⊑[ pos F ] y′ ] → [ x ⊓[ F ] y ⊑[ pos F ] x ⊓[ F ] y′ ]
   cright x {y = y} {y′} y⊑y′ =
-    ⊓[_]-greatest x y′ (x ⊓[ F ] y) (⊓[_]-lower₀ x y) x⊓y⊑y′ 
+    ⊓[_]-greatest x y′ (x ⊓[ F ] y) (⊓[_]-lower₀ x y) x⊓y⊑y′
     where
       open PosetReasoning (pos F)
 
@@ -508,6 +515,30 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
       x⊓y⊑x′ : [ x ⊓[ F ] y ⊑[ pos F ] x′ ]
       x⊓y⊑x′ = x ⊓[ F ] y ⊑⟨ ⊓[_]-lower₀ x y ⟩ x ⊑⟨ x⊑x′ ⟩ x′ ■
 
+  ∨-cleft : (x y z : ∣ F ∣F)
+          → [ x ⊑[ pos F ] y ] → [ (x ∨[ F ] z) ⊑[ pos F ] (y ∨[ F ] z)  ]
+  ∨-cleft x y z p = ⋁[_]-least _ _ nts
+    where
+    open PosetReasoning (pos F)
+
+    nts : _
+    nts w (true  , eq) = w            ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
+                         x            ⊑⟨ p                    ⟩
+                         y            ⊑⟨ ⊔[_]-upper₀ y z      ⟩
+                         y ∨[ F ] z   ■
+    nts w (false , eq) = w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ z ⊑⟨ ⊔[_]-upper₁ y z ⟩ y ∨[ F ] z ■
+
+  ∨-cright : (x y z : ∣ F ∣F)
+           → [ y ⊑[ pos F ] z ] → [ (x ∨[ F ] y) ⊑[ pos F ] (x ∨[ F ] z) ]
+  ∨-cright x y z p = ⋁[_]-least _ _ nts
+    where
+    open PosetReasoning (pos F)
+
+    nts : _
+    nts w (true  , eq) =
+      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ x ⊑⟨ ⊔[_]-upper₀ x z ⟩ x ∨[ F ] z ■
+    nts w (false , eq) =
+      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ y ⊑⟨ p ⟩  z ⊑⟨ ⊔[_]-upper₁ x z ⟩ x ∨[ F ] z ■
 
 isRawFrameHomo : (M : Σ[ A ∈ Type ℓ₀  ] RawFrameStr ℓ₁  ℓ₂ A)
                  (N : Σ[ B ∈ Type ℓ₀′ ] RawFrameStr ℓ₁′ ℓ₂ B)

@@ -233,31 +233,6 @@ We now proceed to prove that this is the Heyting implication:
         j (j y)                  ⊑⟨ 𝓃₂ y                                 ⟩
         j y                      ■
 
-  ∨-cright : (x y z : ∣ F ∣F)
-           → [ y ⊑[ pos F ] z ] → [ (x ∨[ F ] y) ⊑[ pos F ] (x ∨[ F ] z) ]
-  ∨-cright x y z p = ⋁[ F ]-least _ _ nts
-    where
-    open PosetReasoning (pos F)
-
-    nts : _
-    nts w (true  , eq) =
-      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ x ⊑⟨ ⊔[ F ]-upper₀ x z ⟩ x ∨[ F ] z ■
-    nts w (false , eq) =
-      w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ y ⊑⟨ p ⟩  z ⊑⟨ ⊔[ F ]-upper₁ x z ⟩ x ∨[ F ] z ■
-
-  ∨-cleft : (x y z : ∣ F ∣F)
-          → [ x ⊑[ pos F ] y ] → [ (x ∨[ F ] z) ⊑[ pos F ] (y ∨[ F ] z)  ]
-  ∨-cleft x y z p = ⋁[ F ]-least _ _ nts
-    where
-    open PosetReasoning (pos F)
-
-    nts : _
-    nts w (true  , eq) = w            ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
-                         x            ⊑⟨ p                    ⟩
-                         y            ⊑⟨ ⊔[ F ]-upper₀ y z    ⟩
-                         y ∨[ F ] z   ■
-    nts w (false , eq) = w ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ z ⊑⟨ ⊔[ F ]-upper₁ y z ⟩ y ∨[ F ] z ■
-
   ==>-∨-lemma : (x y z : ∣ F ∣F)
               → [ ((x ==> z) ⊓[ F ] (y ==> z)) ⊑[ pos F ] ((x ∨[ F ] y) ==> z) ]
   ==>-∨-lemma x y z = π₁ (==>-is-HI _ _ _) G𝟏
@@ -269,17 +244,17 @@ We now proceed to prove that this is the Heyting implication:
          ((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ](x ∨[ F ] y)    ⊑⟨ ≡⇒⊑ (pos F) (bin-dist F ((x ==> z) ⊓[ F ] (y ==> z)) x y)  ⟩
          (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] x) ∨[ F ] (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] y) ⊑⟨ ⦅𝟏⦆ ⟩
          ((x ==> z) ⊓[ F ] x) ∨[ F ] (((x ==> z) ⊓[ F ] (y ==> z)) ⊓[ F ] y) ⊑⟨ ⦅𝟐⦆ ⟩
-         ((x ==> z) ⊓[ F ] x) ∨[ F ] ((y ==> z) ⊓[ F ] y) ⊑⟨ ∨-cright _ _ _ (≡⇒⊑ (pos F) (comm F (y ==> z) y)) ⟩
-         ((x ==> z) ⊓[ F ] x) ∨[ F ] (y ⊓[ F ] (y ==> z)) ⊑⟨ ∨-cright _ _ _ (mp y z) ⟩
-         ((x ==> z) ⊓[ F ] x) ∨[ F ] z                    ⊑⟨ ∨-cleft _ _ _ (≡⇒⊑ (pos F) (comm F _ _)) ⟩
-         (x ⊓[ F ] (x ==> z)) ∨[ F ] z                    ⊑⟨ ∨-cleft _ _ _ (mp x z) ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] ((y ==> z) ⊓[ F ] y) ⊑⟨ ∨-cright F _ _ _ (≡⇒⊑ (pos F) (comm F (y ==> z) y)) ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] (y ⊓[ F ] (y ==> z)) ⊑⟨ ∨-cright F _ _ _ (mp y z) ⟩
+         ((x ==> z) ⊓[ F ] x) ∨[ F ] z                    ⊑⟨ ∨-cleft F _ _ _ (≡⇒⊑ (pos F) (comm F _ _)) ⟩
+         (x ⊓[ F ] (x ==> z)) ∨[ F ] z                    ⊑⟨ ∨-cleft F _ _ _ (mp x z) ⟩
          z ∨[ F ] z                                       ⊑⟨ ≡⇒⊑ (pos F) (x∨x=x F z) ⟩
          z                                                ■
       where
-      G𝟐 = ∨-cright z _ _ (mp y z)
+      G𝟐 = ∨-cright F z _ _ (mp y z)
 
-      ⦅𝟏⦆ = ∨-cleft _ _ _ (cleft F _ (⊓[ F ]-lower₀ _ _))
+      ⦅𝟏⦆ = ∨-cleft F _ _ _ (cleft F _ (⊓[ F ]-lower₀ _ _))
 
       ⦅𝟐⦆ : _
-      ⦅𝟐⦆ = ∨-cright _ _ _ (cleft F _ (⊓[ F ]-lower₁ _ _))
+      ⦅𝟐⦆ = ∨-cright F _ _ _ (cleft F _ (⊓[ F ]-lower₁ _ _))
 ```
