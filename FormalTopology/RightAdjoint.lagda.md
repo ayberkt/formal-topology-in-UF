@@ -34,6 +34,26 @@ module AdjointFunctorTheorem (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 
   open PosetReasoning (pos G)
   open PosetReasoning (pos F) using () renaming (_⊑⟨_⟩_ to _⊑F⟨_⟩_; _■ to _■F)
 
+  aft-1 : (f : pos F ─m→ pos G)
+        → [ f hasRightAdjoint ]
+        → ((S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ (π₀ f (⋁[ F ] S)))
+  aft-1 (f , f-mono) ((g , g-mono) , f⊣g) S = sym (⋁-unique G _ _ G𝟏 G𝟐)
+    where
+    G𝟏 : (x : ∣ G ∣F) → x ε (f ⟨$⟩ S) → [ x ⊑[ pos G ] (f (⋁[ F ] S)) ]
+    G𝟏 x (i , eq) = subst (λ - → [ - ⊑[ pos G ] f (⋁[ F ] S) ]) eq G𝟏a
+      where
+      G𝟏a : [ f (S $ i) ⊑[ pos G ] f (⋁[ F ] S) ]
+      G𝟏a = f-mono _ _ (⋁[ F ]-upper _ _ (i , refl))
+
+    G𝟐 : (z : ∣ G ∣F)
+       → ((x : ∣ G ∣F) → x ε (f ⟨$⟩ S) → [ x ⊑[ pos G ] z ])
+       → [ f (⋁[ F ] S) ⊑[ pos G ] z ]
+    G𝟐 z ϕ = π₁ (f⊣g (⋁[ F ] S) z) (⋁[ F ]-least _ _ G𝟐a)
+      where
+      G𝟐a : [ ∀[ s ε S ] (s ⊑[ pos F ] g z) ]
+      G𝟐a s (i , eq) =
+        subst (λ - → [ - ⊑[ pos F ] g z ]) eq (π₀ (f⊣g (π₁ S i) z) (ϕ (f (S $ i)) (i , refl)))
+
   aft-2 : (f : pos F ─m→ pos G)
         → ((S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ (π₀ f (⋁[ F ] S)))
         → [ f hasRightAdjoint ]
@@ -94,7 +114,7 @@ module AdjointFunctorTheorem (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 
 
       nts₁ : [ x ⊑[ pos F ] g y ⇒ f $ₘ x ⊑[ pos G ] y ]
       nts₁ x≤gy =
-        f $ₘ x                                                                                      ⊑⟨ π₁ f _ _ x≤gy ⟩
+        f $ₘ x ⊑⟨ π₁ f _ _ x≤gy ⟩
         f $ₘ (⋁[ F ] ⁅ π₁ ℬ-F i ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆)     ⊑⟨ ≡⇒⊑ (pos G) (sym (eq _)) ⟩
         (⋁[ G ] ⁅ f $ₘ (π₁ ℬ-F i) ∣ (i , _) ∶ Σ[ i ∈ π₀ ℬ-F ] [ f $ₘ (π₁ ℬ-F i) ⊑[ pos G ] y ] ⁆  ) ⊑⟨ rem ⟩
         y         ■
