@@ -25,3 +25,14 @@ open import Regular
 isStone : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 isStone = isCompact F ⊓ ∥ hasClopenBasis F ∥Ω
 ```
+
+```agda
+isComplemented : Fam 𝓦 ∣ F ∣F → (𝓤 ∨ 𝓦) ̇
+isComplemented S = (x : ∣ F ∣F) → x ε S → hasComplement F x
+```
+
+```agda
+isStone′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
+isStone′ =
+  ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ] isBasisFor F ℬ × isComplemented ℬ ∥
+```

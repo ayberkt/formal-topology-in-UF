@@ -1033,6 +1033,12 @@ frame-is-univ-str = SNS→UnivalentStr isHomoEqv frame-is-SNS
 ≅ₚ≃≅f : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≅f G)
 ≅ₚ≃≅f F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≅f F G ⟩ F ≅f G 𝔔𝔈𝔇
 
+isBasisFor : (F : Frame 𝓤 𝓥 𝓦) → Fam 𝓦 ∣ F ∣F → Type (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
+isBasisFor {𝓦 = 𝓦} F ℬ =
+  (x : ∣ F ∣F) →
+    Σ[ I ∈ Fam 𝓦 (index ℬ) ]
+      [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ ] × [ isSup (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ x ]
+
 -- --}
 -- --}
 -- --}

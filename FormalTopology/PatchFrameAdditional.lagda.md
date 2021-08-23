@@ -5,8 +5,13 @@
 open import Basis
 open import Poset
 open import Frame
-open import Regular
 open import WayBelow
+open import ClosedNuclei
+open import PatchFrame
+open import Spectral
+open import Stone
+open import Regular
+open import HeytingImplication
 
 module PatchFrameAdditional where
 ```
@@ -72,5 +77,75 @@ module PatchFrameAdditional where
 
     G𝟏 : [ x ⊑[ pos F ] (S $ i) ]
     G𝟏 = a⋜b→a⊑b x (S $ i) (z , (comp₀ , ϕ))
+```
 
+```agda
+⇊′ : (F : Frame 𝓤 𝓥 𝓦) → ∣ F ∣F → hasBasis F → Fam (𝓤 ∨ 𝓦) ∣ F ∣F
+⇊′ F x (ℬ , _) = ⁅ ℬ $ i ∣ (i , _) ∶ (Σ[ i ∈ index ℬ ] (ℬ $ i) ⋜[ F ] x ) ⁆
+```
+
+```agda
+clopen→compact-in-compact-locale : (F : Frame 𝓤 𝓥 𝓦)
+                                 → [ isCompact F ]
+                                 → (x : ∣ F ∣F)
+                                 → hasComplement F x
+                                 → [ _≪_ F x x ]
+clopen→compact-in-compact-locale F F-comp x x-clopen = ⋜→≪ F F-comp x x x-clopen
+```
+
+```agda
+isSpectralMap : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G) → _ ̇
+isSpectralMap F G ((f , _) , _) =
+  (x : ∣ F ∣F) → [ isCompactOpen F x ] → [ isCompactOpen G (f x) ]
+```
+
+```agda
+clopen↔compact-in-compact-locale : (F : Frame 𝓤 𝓥 𝓦)
+                                 → isStone′ F
+                                 → (x : ∣ F ∣F) → [ _≪_ F x x ] → hasComplement F x
+clopen↔compact-in-compact-locale {𝓦 = 𝓦} F F-stone x x≪x =
+  ∥∥-rec (hasComplement-prop F x) nts F-stone
+  where
+  nts : Σ[ ℬ ∈ Fam _ ∣ F ∣F ] (isBasisFor F ℬ × isComplemented F ℬ)
+      → hasComplement F x
+  nts (ℬ , b , comp) = ∥∥-rec (hasComplement-prop F x) nts′ (x≪x _ W-dir φ₀ )
+    where
+    𝒥 : Fam 𝓦 (index ℬ)
+    𝒥 = π₀ (b x)
+
+    W-dir : [ isDirected (pos F) ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ ]
+    W-dir = π₀ (π₁ (b x))
+
+    φ : x ≡ ⋁[ F ] ⁅ ℬ $ j ∣ j ε 𝒥 ⁆
+    φ = ⋁-unique F _ _ (π₀ (π₁ (π₁ (b x)))) (π₁ (π₁ (π₁ (b x))))
+
+    φ₀ : [ x ⊑[ pos F ] ⋁[ F ] ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ ]
+    φ₀ = ≡⇒⊑ (pos F) φ
+
+    nts′ : (Σ[ i ∈ index 𝒥 ] [ x ⊑[ pos F ] (ℬ $ (𝒥 $ i)) ]) → hasComplement F x
+    nts′ (i , p) = subst (λ - → hasComplement F -) (sym eq) (comp (ℬ $ 𝒥 $ i) (𝒥 $ i , refl))
+      where
+      eq : x ≡ ℬ $ (𝒥 $ i)
+      eq = ⊑[ pos F ]-antisym _ _ p (π₀ (π₁ (π₁ (b x))) (ℬ $ 𝒥 $ i) (i , refl))
+```
+
+```agda
+-- ε-is-mono : (F G : Frame 𝓤 𝓥 𝓦) (f g : (Patch F) ─f→ G)
+--           → isSpectralMap (Patch F) G f
+--           → isSpectralMap (Patch F) G g
+--           → ((x : ∣ F ∣F) → f .π₀ .π₀ (εε F x) ≡ g .π₀ .π₀ (εε F x))
+--           → f ≡ g
+-- ε-is-mono F G f g f-spec g-spec ψ =
+--   Σ≡Prop (isFrameHomomorphism-prop (Patch F) G)
+--   (Σ≡Prop (isMonotonic-prop (pos (Patch F)) (pos G)) (funExt nts))
+--   where
+--   ε-spectral : isSpectralMap F (Patch F) (εεε F)
+--   ε-spectral = {!!}
+
+--   main : ((x : ∣ F ∣F) → [ isCompactOpen F x ] → f .π₀ .π₀ (εε F x) ≡ g .π₀ .π₀ (εε F x))
+--        → f .π₀ .π₀ ≡ g .π₀ .π₀
+--   main = {!!}
+
+--   nts : (𝒿 : ∣ Patch F ∣F) → f .π₀ .π₀ 𝒿 ≡ g .π₀ .π₀ 𝒿
+--   nts 𝒿@((j , j-n) , j-sc) = {!!}
 ```
