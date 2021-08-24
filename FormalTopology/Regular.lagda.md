@@ -59,6 +59,30 @@ hasComplement : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Type ℓ₀
 hasComplement F x =
   Σ[ y ∈ ∣ F ∣F ] (x ⊓[ F ] y ≡ ⊥[ F ]) × (x ∨[ F ] y ≡ ⊤[ F ])
 
+hasComplement-prop : (F : Frame 𝓤 𝓥 𝓦) → (x : ∣ F ∣F) → isProp (hasComplement F x)
+hasComplement-prop F x (y , p , q) (y′ , p′ , q′) =
+  Σ≡Prop (λ w → isPropΣ (F-set _ _) λ _ → F-set _ _) nts
+  where
+  F-set : isSet ∣ F ∣F
+  F-set = carrier-is-set (pos F)
+
+  nts : y ≡ y′
+  nts =
+    y                                  ≡⟨ sym (x∧⊤=x F y)                                         ⟩
+    y ⊓[ F ] ⊤[ F ]                    ≡⟨ cong (λ - → y ⊓[ F ] -) (sym q′)                        ⟩
+    y ⊓[ F ] (x ∨[ F ] y′)             ≡⟨ bin-dist F y x y′                                       ⟩
+    (y ⊓[ F ] x) ∨[ F ] (y ⊓[ F ] y′)  ≡⟨ cong (λ - → - ∨[ F ] (y ⊓[ F ] y′)) (comm F y x)        ⟩
+    (x ⊓[ F ] y) ∨[ F ] (y ⊓[ F ] y′)  ≡⟨ cong (λ - → - ∨[ F ] (y ⊓[ F ] y′)) p                   ⟩
+    ⊥[ F ] ∨[ F ] (y ⊓[ F ] y′)        ≡⟨ cong (λ - → - ∨[ F ] (y ⊓[ F ] y′)) (sym p′)            ⟩
+    (x ⊓[ F ] y′) ∨[ F ] (y ⊓[ F ] y′) ≡⟨ cong (λ - → - ∨[ F ] (y ⊓[ F ] y′)) (comm F x y′)       ⟩
+    (y′ ⊓[ F ] x) ∨[ F ] (y ⊓[ F ] y′) ≡⟨ sym (cong (λ - → (y′ ⊓[ F ] x) ∨[ F ] -) (comm F y′ y)) ⟩
+    (y′ ⊓[ F ] x) ∨[ F ] (y′ ⊓[ F ] y) ≡⟨ sym (bin-dist F y′ x y)                                 ⟩
+    y′ ⊓[ F ] (x ∨[ F ] y)             ≡⟨ comm F y′ (x ∨[ F ] y)                                  ⟩
+    (x ∨[ F ] y) ⊓[ F ] y′             ≡⟨ cong (λ - → - ⊓[ F ] y′) q                              ⟩
+    ⊤[ F ] ⊓[ F ] y′                   ≡⟨ comm F ⊤[ F ] y′                                        ⟩
+    y′ ⊓[ F ] ⊤[ F ]                   ≡⟨ x∧⊤=x F y′                                              ⟩
+    y′                                 ∎
+
 module SomePropertiesOf⋜ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
 
   private
@@ -109,7 +133,7 @@ we can write down the alternative characterisation we mentioned.
 hasClopenBasis : (F : Frame ℓ₀ ℓ₁ ℓ₂) → Type (ℓ-max ℓ₀ (ℓ-suc ℓ₂))
 hasClopenBasis {ℓ₂ = ℓ₂} F =
   (x : ∣ F ∣F) →
-    Σ[ U ∈ Fam ℓ₂ _ ] ((y : ∣ F ∣F) → y ε U → hasComplement F y) × (x ≡ ⋁[ F ] U)
+    Σ[ U ∈ Fam ℓ₂ ∣ F ∣F ] ((y : ∣ F ∣F) → y ε U → hasComplement F y) × (x ≡ ⋁[ F ] U)
 ```
 
 ```agda
