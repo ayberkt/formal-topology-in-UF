@@ -16,8 +16,8 @@ module Spectral (F : Frame 𝓤 𝓥 𝓦) where
 
 open import Poset
 open import WayBelow
-open import Regular
 open import PatchFrame
+open import RightAdjoint
 ```
 -->
 
@@ -38,19 +38,29 @@ isSpectral =
   × ((x y : ∣ F ∣F) →
        [ isCompactOpen F x ] → [ isCompactOpen F y ] → [ isCompactOpen F (x ⊓[ F ] y) ])
 
+closedUnderFinMeets : Fam 𝓦 ∣ F ∣F → (𝓤 ∨ 𝓥 ∨ 𝓦) ̇
+closedUnderFinMeets U =
+    (Σ[ i ∈ index U ] [ isTop (pos F) (U $ i) ])
+  × (((i j : index U) → Σ[ k ∈ index U ] [ isInf (pos F) (U $ k) (U $ i) (U $ j) ]))
+
 isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 isSpectral′ =
   ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ]
       ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
-    × ((x : ∣ F ∣F) →
-         Σ[ I ∈ Fam 𝓦 (index ℬ) ]
-            [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ ]
-          × [ isSup (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ x ])
-    × (Σ[ i ∈ index ℬ ] [ isTop (pos F) (ℬ $ i) ])
-    × ((i j : index ℬ) → Σ[ k ∈ index ℬ ] [ isInf (pos F) (ℬ $ k) (ℬ $ i) (ℬ $ j) ]) ∥
+    × formsBasis F ℬ × closedUnderFinMeets ℬ ∥
 
 ∥∥-functorial : {A : Type 𝓤} {B : Type 𝓥} → ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
 ∥∥-functorial {B = B} f x = ∥∥-rec (∥∥-prop B) (λ g → ∥∥-rec (∥∥-prop B) (λ y → ∣ g y ∣) x) f
+
+spec′→basis : isSpectral′ → ∥ hasBasis F ∥
+spec′→basis sp = ∥∥-rec (∥∥-prop (hasBasis F)) nts sp
+  where
+  nts : Σ-syntax (Fam 𝓦 ∣ F ∣F)
+          (λ ℬ →
+             ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ]) ×
+             formsBasis F ℬ × closedUnderFinMeets ℬ) →
+          ∥ hasBasis F ∥
+  nts (ℬ , _ , fb , _)= ∣ ℬ , fb ∣
 
 spec′→spec : isSpectral′ → isSpectral
 spec′→spec spec′ = G𝟏 , G𝟐 , G𝟑
@@ -96,7 +106,10 @@ spec′→spec spec′ = G𝟏 , G𝟐 , G𝟑
     where
     G𝟑a : _ → [ isCompactOpen F (x ⊓[ F ] y) ]
     G𝟑a (ℬ , κ , (ϕ , ψ)) =
-      ∥∥-rec (isProp[] (isCompactOpen F (x ⊓[ F ] y))) G𝟑b (∥∥-× (x-comp ⁅ ℬ $ i ∣ i ε ℐ ⁆ dir₀ cover₀) (y-comp ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ dir₁ cover₁))
+      ∥∥-rec
+        (isProp[] (isCompactOpen F (x ⊓[ F ] y)))
+        G𝟑b
+        (∥∥-× (x-comp _ dir₀ cover₀) (y-comp _ dir₁ cover₁))
       where
       ℐ : Fam 𝓦 (index ℬ)
       ℐ = π₀ (ϕ x)

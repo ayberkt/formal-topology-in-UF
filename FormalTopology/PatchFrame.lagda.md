@@ -85,6 +85,9 @@ ScottContNucleus-set =
 ScottContNucleus-eq : (𝒿 𝓀 : ScottContNucleus) → 𝒿 .fst .fst ≡ 𝓀 .fst .fst → 𝒿 ≡ 𝓀
 ScottContNucleus-eq ((j , _) , _) ((k , _) , _) =
   Σ≡Prop isScottCont-prop ∘ Σ≡Prop (isNuclear-prop F)
+
+ScottContNucleus-eq⁻ : (𝒿 𝓀 : ScottContNucleus) → 𝒿 ≡ 𝓀 → (x : ∣ F ∣F) → 𝒿 .fst .fst x ≡ 𝓀 .fst .fst x
+ScottContNucleus-eq⁻ 𝒿 𝓀 eq x i = fst (fst (eq i)) x
 ```
 
 Poset of nuclei on `F` (`𝔑`)

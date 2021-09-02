@@ -21,4 +21,5 @@ open import Regular
 open import PatchFrame
 open import Omega
 open import ClosedNuclei
+open import PatchFrameNucleusLemma
 ```

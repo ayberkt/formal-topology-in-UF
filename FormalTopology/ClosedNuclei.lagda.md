@@ -20,6 +20,7 @@ open import HeytingImplication
 open import Frame
 open import Spectral
 open import Regular
+open import Stone
 open import RightAdjoint hiding (hasBasis)
 ```
 -->
@@ -576,6 +577,27 @@ We define a new version of the patch frame using the `⊑s` relation
 
     nts : _
     nts = nts₀ , nts₁ , nts₂ , dist (Patch F)
+
+  ≪patch↔≪s : (𝒿 𝓀 : ScottContNucleus F) → [ _≪_ Patch′ 𝒿 𝓀 ] → [ _≪_ (Patch F) 𝒿 𝓀 ]
+  ≪patch↔≪s 𝒿 𝓀 𝒿≪𝓀 S S-dir p =
+    ∥∥-rec
+      (isProp[] ∥ (Σ[ i ∈ index S ] [ 𝒿 ⊑[ pos (Patch F ) ] (S $ i) ]) ∥Ω)
+      nts
+      (𝒿≪𝓀 S S-dir′ q )
+    where
+    S-dir′ : [ isDirected (pos Patch′) S ]
+    π₀ S-dir′     = π₀ S-dir
+    π₁ S-dir′ i j = ∥∥-rec (∥∥-prop _) rem (π₁ S-dir i j)
+      where
+      rem : _
+      rem (k , i≤k , j≤k) = ∣ k , π₀ (⊑patch↔⊑s (S $ i) (S $ k)) i≤k , π₀ (⊑patch↔⊑s (S $ j) (S $ k)) j≤k ∣
+
+    q : [ 𝓀 ⊑[ pos Patch′ ] (⋁[ Patch′ ] S) ]
+    q = π₀ (⊑patch↔⊑s 𝓀 (⋁[ Patch′ ] S)) p
+
+    nts : Σ[ i ∈ index S ] [ 𝒿 ⊑[ pos Patch′ ] (S $ i) ]
+        → [ ∥ Σ[ i ∈ index S ] [ 𝒿 ⊑[ pos (Patch F) ] (S $ i) ] ∥Ω ]
+    nts (i , φ) = ∣ i , (π₁ (⊑patch↔⊑s 𝒿 (S $ i)) φ) ∣
 ```
 
 We now prove that `Patch` and `Patch′` are equivalent
@@ -774,6 +796,8 @@ We now prove that `Patch` and `Patch′` are equivalent
 ```agda
 module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F) where
 
+  open import PatchFrame
+
   sp : isSpectral F
   sp = spec′→spec F spec′
 
@@ -786,57 +810,55 @@ module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F)
 
   open import WayBelow F
 
-  graph-thm : (bs : hasBasis F) → (G : Frame (𝓤 ⁺) 𝓤 𝓤) → isSpectral′ G → (bs′ : hasBasis G)
-            → (f : ∣ F ∣F → ∣ G ∣F) → isScottContinuous F G f
-            → (x : ∣ F ∣F) → [ x ≪ x ] → [ isSup (pos G) (𝕨 bs G bs′ f x) (f x) ]
-  graph-thm bs@(ℬ , _) G spec bs′@(ℬ′ , _) f f-sc x x-comp = nts₀ , nts₁
-    where
-    open PosetReasoning (pos G)
-
-    nts₀ : [ ∀[ x₁ ε (𝕨 bs  G bs′ f x) ] (x₁ ⊑[ pos G ] f x) ]
-    nts₀ z ((i , j , (p , q)) , eq) = subst (λ - → [ rel (pos G) - (f x) ]) eq G𝟏
-      where
-      G𝟏 : [ (ℬ′ $ j) ⊑[ pos G ] f x ]
-      G𝟏 = ℬ′ $ j ⊑⟨ q ⟩ f (ℬ $ i) ⊑⟨ sc→mono F G f f-sc _ _ p ⟩ f x ■
-
-    nts₁ : (y : ∣ pos G ∣ₚ) → [ ∀[ x₁ ε (𝕨 bs G bs′ f x) ] (x₁ ⊑[ pos G ] y) ]
-         → [ f x ⊑[ pos G ] y ]
-    nts₁ y ϕ = f x                           ⊑⟨ {!!} ⟩
-               f (⋁[ F ] ⁅ ℬ $ i ∣ i ε Wₓ ⁆) ⊑⟨ {!!} ⟩
-               ⋁[ G ] ⁅ f (ℬ $ i) ∣ i ε Wₓ ⁆ ⊑⟨ ⦅𝟐⦆ ⟩
-               y                             ■
-      where
-      Wₓ : Fam 𝓤 (index ℬ)
-      Wₓ = π₀ (π₁ bs x)
-
-      ⦅𝟐a⦆ : [ ∀[ z ε ⁅ f (ℬ $ i) ∣ i ε Wₓ ⁆ ] (z ⊑[ pos G ] y) ]
-      ⦅𝟐a⦆ z (i , eq) =
-        subst (λ - → [ - ⊑[ pos G ] y ]) eq (ϕ (f (ℬ $ (Wₓ $ i))) ((Wₓ $ i , {!!}) , {!!}))
-
-      ⦅𝟐⦆ : _
-      ⦅𝟐⦆ = ⋁[ G ]-least _ _ ⦅𝟐a⦆
-
-  -- clopen-basis : ∥ hasClopenBasis F ∥
-  -- clopen-basis = ∥∥-rec (∥∥-prop (hasClopenBasis F)) G𝟏 spec′
+  -- graph-thm : (bs : hasBasis F) → (G : Frame (𝓤 ⁺) 𝓤 𝓤) → isSpectral′ G → (bs′ : hasBasis G)
+  --           → (f : ∣ F ∣F → ∣ G ∣F) → isScottContinuous F G f
+  --           → (x : ∣ F ∣F) → [ x ≪ x ] → [ isSup (pos G) (𝕨 bs G bs′ f x) (f x) ]
+  -- graph-thm bs@(ℬ , _) G spec bs′@(ℬ′ , _) f f-sc x x-comp = nts₀ , nts₁
   --   where
-  --   G𝟏 : _ → ∥ hasClopenBasis F ∥
+  --   open PosetReasoning (pos G)
+
+  --   nts₀ : [ ∀[ x₁ ε (𝕨 bs  G bs′ f x) ] (x₁ ⊑[ pos G ] f x) ]
+  --   nts₀ z ((i , j , (p , q)) , eq) = subst (λ - → [ rel (pos G) - (f x) ]) eq G𝟏
+  --     where
+  --     G𝟏 : [ (ℬ′ $ j) ⊑[ pos G ] f x ]
+  --     G𝟏 = ℬ′ $ j ⊑⟨ q ⟩ f (ℬ $ i) ⊑⟨ sc→mono F G f f-sc _ _ p ⟩ f x ■
+
+  --   nts₁ : (y : ∣ pos G ∣ₚ) → [ ∀[ x₁ ε (𝕨 bs G bs′ f x) ] (x₁ ⊑[ pos G ] y) ]
+  --        → [ f x ⊑[ pos G ] y ]
+  --   nts₁ y ϕ = f x                           ⊑⟨ {!!} ⟩
+  --              f (⋁[ F ] ⁅ ℬ $ i ∣ i ε Wₓ ⁆) ⊑⟨ {!!} ⟩
+  --              ⋁[ G ] ⁅ f (ℬ $ i) ∣ i ε Wₓ ⁆ ⊑⟨ ⦅𝟐⦆ ⟩
+  --              y                             ■
+  --     where
+  --     Wₓ : Fam 𝓤 (index ℬ)
+  --     Wₓ = π₀ (π₁ bs x)
+
+  --     ⦅𝟐a⦆ : [ ∀[ z ε ⁅ f (ℬ $ i) ∣ i ε Wₓ ⁆ ] (z ⊑[ pos G ] y) ]
+  --     ⦅𝟐a⦆ z (i , eq) =
+  --       subst (λ - → [ - ⊑[ pos G ] y ]) eq (ϕ (f (ℬ $ (Wₓ $ i))) ((Wₓ $ i , {!!}) , {!!}))
+
+  --     ⦅𝟐⦆ : _
+  --     ⦅𝟐⦆ = ⋁[ G ]-least _ _ ⦅𝟐a⦆
+
+  -- clopen-basis : [ isZeroDimensional (Patch F) ]
+  -- clopen-basis = ∥∥-rec (isProp[] (isZeroDimensional (Patch F))) G𝟏 spec′
+  --   where
+  --   G𝟏 : (Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ] _) → [ isZeroDimensional (Patch F) ]
   --   G𝟏 (ℬ , p , (q , f)) = {!!}
   --     where
   --     basis : hasBasis F
   --     basis = ℬ , q
 
   --     open SomeMoreResults F spec′ basis
-  --     open import PatchFrame F
   --     open OpenNuclei F
   --     open Complements F
-  --     open import WayBelow F
   --     open Definition F basis hiding (ℬ)
   --     open PosetReasoning (pos F)
 
   --     ℬ-comp : [ ∀[ b ε ℬ ] (b ≪ b) ]
   --     ℬ-comp b (i , eq) = subst (λ - → [ - ≪ - ]) eq (p i)
 
-  --     perfect-nucleus-lemma₀ : (j k : ∣ Patch ∣F)
+  --     perfect-nucleus-lemma₀ : (j k : ∣ Patch F ∣F)
   --                            → ((x : ∣ F ∣F) → [ x ≪ x ] → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ])
   --                            → (x : ∣ F ∣F) → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ]
   --     perfect-nucleus-lemma₀ 𝒿@((j , j-n) , j-sc) 𝓀@((k , k-n) , k-sc) ρ x =
@@ -864,12 +886,12 @@ module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F)
 
   --       nts = ⋁[ F ]-least _ _ goal
 
-  --     nucleus-lemma : (j : ∣ Patch ∣F)
-  --                   → j ≡ ⋁[ Patch ] ⁅ εε F (π₀ (π₀ j) (ℬ $ i)) ⊓[ Patch ] μ sp basis (ℬ $ i) (p i) ∣ i ∶ index ℬ ⁆
+  --     nucleus-lemma : (j : ∣ Patch F ∣F)
+  --                   → j ≡ ⋁[ Patch F ] ⁅ εε F (j .π₀ .π₀ (ℬ $ i)) ⊓[ Patch F ] μ sp basis (ℬ $ i) (p i) ∣ i ∶ index ℬ ⁆
   --     nucleus-lemma 𝒿@((j , j-n) , j-sc) = G𝟐′
   --       where
-  --       𝕜 : index ℬ → ∣ Patch ∣F
-  --       𝕜 i = εε F (j (ℬ $ i)) ⊓[ Patch ] μ sp basis (ℬ $ i) (p i)
+  --       𝕜 : index ℬ → ∣ Patch F ∣F
+  --       𝕜 i = εε F (j (ℬ $ i)) ⊓[ Patch F ] μ sp basis (ℬ $ i) (p i)
 
   --       𝕜₀ : index ℬ → ∣ F ∣F → ∣ F ∣F
   --       𝕜₀ i x = π₀ (π₀ (𝕜 i)) x
@@ -901,7 +923,7 @@ module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F)
   --           ⦅𝟐b⦆ : [ j (ℬ $ i) ⊑[ pos F ] j (ℬ $ i) ∨[ F ] (ℬ $ i) ]
   --           ⦅𝟐b⦆ = ⋁[ F ]-upper _ (j (ℬ $ i)) (true , refl)
 
-  --       lemma-js : (i : index ℬ) → [ 𝕜 i ⊑[ pos Patch ] 𝒿 ]
+  --       lemma-js : (i : index ℬ) → [ 𝕜 i ⊑[ pos (Patch F) ] 𝒿 ]
   --       lemma-js i x =
   --         𝕜₀ i x                                                     ⊑⟨ ⊑[ pos F ]-refl _ ⟩
   --         (j (ℬ $ i) ∨[ F ] x) ⊓[ F ] ((ℬ $ i) ==> x)                ⊑⟨ ⦅𝟏⦆               ⟩
@@ -923,21 +945,18 @@ module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F)
   --         ⦅𝟏⦆ : _
   --         ⦅𝟏⦆ = cright F _ ⦅𝟏a⦆
 
-  --       k : ∣ Patch ∣F
-  --       k = ⋁[ Patch ] ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆
+  --       k : ∣ Patch F ∣F
+  --       k = ⋁[ Patch F ] ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆
 
-  --       thm : [ isSup (pos F) {!!} {!!} ]
-  --       thm = {!!}
-
-  --       G𝟐′ : 𝒿 ≡ (⋁[ Patch ] ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆)
-  --       G𝟐′ = ⋁-unique Patch _ _ G𝟐′a G𝟐′b
+  --       G𝟐′ : 𝒿 ≡ (⋁[ Patch F ] ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆)
+  --       G𝟐′ = ⋁-unique (Patch F) _ _ G𝟐′a G𝟐′b
   --         where
-  --         G𝟐′a : [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos Patch ] 𝒿) ]
-  --         G𝟐′a z (i , eq) = subst (λ - → [ - ⊑[ pos Patch ] 𝒿 ]) eq (lemma-js i)
+  --         G𝟐′a : [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos (Patch F) ] 𝒿) ]
+  --         G𝟐′a z (i , eq) = subst (λ - → [ - ⊑[ pos (Patch F) ] 𝒿 ]) eq (lemma-js i)
 
-  --         G𝟐′b : (𝓀 : ∣ Patch ∣F)
-  --              → [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos Patch ] 𝓀) ]
-  --              → [ 𝒿 ⊑[ pos Patch ] 𝓀 ]
+  --         G𝟐′b : (𝓀 : ∣ (Patch F) ∣F)
+  --              → [ ∀[ z ε ⁅ 𝕜 i ∣ i ∶ index ℬ ⁆ ] (z ⊑[ pos (Patch F) ] 𝓀) ]
+  --              → [ 𝒿 ⊑[ pos (Patch F) ] 𝓀 ]
   --         G𝟐′b 𝓀@((k , k-n) , k-sc) θ x =
   --           perfect-nucleus-lemma₀ 𝒿 𝓀 ξ x
   --           where

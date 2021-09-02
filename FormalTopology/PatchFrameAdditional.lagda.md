@@ -95,9 +95,8 @@ clopen→compact-in-compact-locale F F-comp x x-clopen = ⋜→≪ F F-comp x x 
 ```
 
 ```agda
-isSpectralMap : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G) → _ ̇
-isSpectralMap F G ((f , _) , _) =
-  (x : ∣ F ∣F) → [ isCompactOpen F x ] → [ isCompactOpen G (f x) ]
+isSpectralMap : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G) → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺ ∨ 𝓤′ ∨ 𝓥′)
+isSpectralMap F G ((f , _) , _) = ∀[ x ∶ ∣ F ∣F ] isCompactOpen F x ⇒ isCompactOpen G (f x)
 ```
 
 ```agda
@@ -176,6 +175,25 @@ basic-eq {𝓦 = 𝓦} F G ((f , _) , (_ , _ , f-resp-⋁)) ((g , _) , (_ , _ , 
 
       eq : x ≡ ⋁[ F ] ⁅ ℬ $ i ∣ i ε 𝒥 ⁆
       eq =  uncurry (⋁-unique F ⁅ ℬ $ i ∣ i ε 𝒥 ⁆ x) (π₁ (π₁ (basis x)))
+```
+
+```agda
+module SpectralityOfε (F : Frame (𝓤 ⁺) 𝓤 𝓤) (σ : isSpectral′ F) where
+
+  main : [ isSpectralMap F (Patch F) (εεε F) ]
+  main = ∥∥-rec (isProp[] (isSpectralMap F (Patch F) (εεε F))) nts σ
+    where
+    nts : _ → [ isSpectralMap F (Patch F) (εεε F) ]
+    nts (ℬ , p , base , q) x x≪x = ≪patch↔≪s (εε F x) (εε F x) (main-lemma x x≪x)
+      where
+      F-has-basis : hasBasis F
+      F-has-basis = ℬ , base
+
+      open SomeMoreResults F σ F-has-basis renaming (Patch′ to Patch′-F)
+      open PerfectMap F Patch′-F F-has-basis
+
+      main-lemma : [ isSpectralMap F Patch′-F δδδ ]
+      main-lemma x x≪x = perfection-lemma δδδ δδδ-perfect x≪x
 ```
 
 ```agda

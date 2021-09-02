@@ -32,7 +32,11 @@ isComplemented S = (x : ∣ F ∣F) → x ε S → hasComplement F x
 ```
 
 ```agda
-isStone′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
-isStone′ =
-  ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ] isBasisFor F ℬ × isComplemented ℬ ∥
+isZeroDimensional : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
+isZeroDimensional = ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ] isBasisFor F ℬ × isComplemented ℬ ∥Ω
+```
+
+```agda
+isStone′ : hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
+isStone′ = isCompact F ⊓ isZeroDimensional
 ```
