@@ -16,6 +16,7 @@ module Stone (F : Frame 𝓤 𝓥 𝓦) where
 open import Poset
 open import WayBelow
 open import Regular
+open import Base
 ```
 -->
 

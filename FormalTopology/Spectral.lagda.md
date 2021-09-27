@@ -18,6 +18,7 @@ open import Poset
 open import WayBelow
 open import PatchFrame
 open import RightAdjoint
+open import Base
 ```
 -->
 
@@ -47,7 +48,7 @@ isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 isSpectral′ =
   ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ]
       ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
-    × formsBasis F ℬ × closedUnderFinMeets ℬ ∥
+    × isDirBasisFor F ℬ × closedUnderFinMeets ℬ ∥
 
 ∥∥-functorial : {A : Type 𝓤} {B : Type 𝓥} → ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
 ∥∥-functorial {B = B} f x = ∥∥-rec (∥∥-prop B) (λ g → ∥∥-rec (∥∥-prop B) (λ y → ∣ g y ∣) x) f
@@ -58,7 +59,7 @@ spec′→basis sp = ∥∥-rec (∥∥-prop (hasBasis F)) nts sp
   nts : Σ-syntax (Fam 𝓦 ∣ F ∣F)
           (λ ℬ →
              ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ]) ×
-             formsBasis F ℬ × closedUnderFinMeets ℬ) →
+             isDirBasisFor F ℬ × closedUnderFinMeets ℬ) →
           ∥ hasBasis F ∥
   nts (ℬ , _ , fb , _)= ∣ ℬ , fb ∣
 

@@ -10,20 +10,15 @@ author: Ayberk Tosun (j.w.w. Martín Escardó)
 open import Basis
 open import Poset
 open import Frame
+open import Base
 
 module RightAdjoint where
 ```
 -->
 
 ```agda
-formsBasis : (F : Frame 𝓤 𝓥 𝓦) → Fam 𝓦 ∣ F ∣F → (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
-formsBasis {𝓥 = 𝓥} {𝓦} F B =
-  ((x : ∣ F ∣F) →
-     Σ[ U ∈ Fam 𝓦 (index B) ]
-       [ isDirected (pos F) ⁅ B $ u ∣ u ε U ⁆ ⊓ isSup (pos F) ⁅ B $ u ∣ u ε U ⁆ x ])
-
 hasBasis : (F : Frame 𝓤 𝓥 𝓦) → (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
-hasBasis {𝓦 = 𝓦} F = Σ[ B ∈ Fam 𝓦 ∣ F ∣F ] formsBasis F B
+hasBasis {𝓦 = 𝓦} F = Σ[ B ∈ Fam 𝓦 ∣ F ∣F ] isDirBasisFor F B
 ```
 
 ```agda

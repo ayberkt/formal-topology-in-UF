@@ -1,17 +1,20 @@
 <!--
 ```agda
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --safe --experimental-lossy-unification #-}
 
 open import Basis
 open import Poset
+open import Base
 open import Frame
 open import WayBelow
 open import ClosedNuclei
 open import PatchFrame
 open import Spectral
 open import Stone
+open import Nucleus
 open import RightAdjoint hiding (hasBasis)
 open import Regular
+open import Cubical.Foundations.Function using (curry)
 open import Cubical.Data.List hiding ([_])
 open import HeytingImplication hiding (formsBasis)
 open import Cubical.Foundations.Function using (uncurry)
@@ -28,21 +31,16 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
     I = Σ[ i  ∈ index ℬ ] Σ[ j ∈ index ℬ′ ]
           [ (ℬ $ i) ⊑[ pos F ] x ] × [ (ℬ′ $ j) ⊑[ pos G ] f (ℬ $ i) ]
 
-  -- graph-thm : (bs : hasBasis F) (G : Frame (𝓤 ⁺) 𝓤 𝓤) → isSpectral′ G → (bs′ : hasBasis G)
-  --           → (f : ∣ F ∣F → ∣ G ∣F) → isScottContinuous F G f
-  --           → (x : ∣ F ∣F) → [ _≪_ F x x ] → [ isSup (pos G) (𝕨 bs G bs′ f x) (f x) ]
-  -- graph-thm bs G spec′ bs′ f f-sc = {!!}
+  σ : isSpectral F
+  σ = spec′→spec F spec′
 
   module Main (𝔹 : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ]
                      ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
-                     × formsBasis F ℬ
+                     × isDirBasisFor F ℬ
                      × closedUnderFinMeets F ℬ) where
 
     ℬ = π₀ 𝔹
     open Complements F
-
-    σ : isSpectral F
-    σ = spec′→spec F ∣ 𝔹 ∣
 
     κ : (i : index ℬ) → [ isCompactOpen F (ℬ $ i) ]
     κ = π₀ (π₁ 𝔹)
@@ -53,6 +51,29 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
     ν : index ℬ → ∣ Patch F ∣F
     ν i = μ σ basis (ℬ $ i) (κ i) -- μ sp basis (ℬ $ i) (κ i)
 
+    ⊤i : index ℬ
+    ⊤i = π₀ (π₀ (π₁ (π₁ (π₁ 𝔹))))
+
+    ℬ∧ : (i j : index ℬ) → Σ[ k ∈ index ℬ ] ℬ $ k ≡ (ℬ $ i) ⊓[ F ] (ℬ $ j)
+    ℬ∧ i j = k , nts
+      where
+      k : index ℬ
+      k = π₀ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j)
+
+      abstract
+        nts : ℬ $ k ≡ (ℬ $ i) ⊓[ F ] (ℬ $ j)
+        nts = ⊓-unique F (ℬ $ i) (ℬ $ j) (ℬ $ k)
+                (π₀ (π₀ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j))))
+                (π₁ (π₀ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j))))
+                (curry ∘ π₁ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j)))
+
+    ℬ-patch : Fam 𝓤 ∣ Patch F ∣F
+    ℬ-patch = ⁅ εε F (ℬ $ k) ⊓[ Patch F ] μ σ basis (ℬ $ l) (κ l) ∣ (k , l) ∶ (index ℬ × index ℬ) ⁆
+
+    ℬ-restrict : (𝒿 : ∣ Patch F ∣F) → Fam 𝓤 ∣ Patch F ∣F
+    ℬ-restrict ((j , _) , _) =
+      ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] ⁆
+
     comp→basic : (x : ∣ F ∣F) → [ isCompactOpen F x ] → ∥ x ε ℬ ∥
     comp→basic x x≪x =
       ∥∥-rec (∥∥-prop (x ε ℬ)) nts (x≪x ⁅ ℬ $ j ∣ j ε 𝒥 ⁆ (π₀ (π₁ (π₁ basis x))) (≡⇒⊑ (pos F) eq))
@@ -60,20 +81,25 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
       𝒥 : Fam 𝓤 (index ℬ)
       𝒥 = π₀ (π₁ basis x)
 
-      eq : x ≡ ⋁[ F ] ⁅ ℬ $ j ∣ j ε 𝒥 ⁆
-      eq = uncurry (⋁-unique F _ _) (π₁ (π₁ (π₁ basis x)))
+      abstract
+        eq : x ≡ ⋁[ F ] ⁅ ℬ $ j ∣ j ε 𝒥 ⁆
+        eq = uncurry (⋁-unique F _ _) (π₁ (π₁ (π₁ basis x)))
 
       nts : Σ[ j ∈ index 𝒥 ] [ x ⊑[ pos F ] (ℬ $ (𝒥 $ j)) ]
           → ∥ x ε ℬ ∥
-      nts (j , p) = ∣ (𝒥 $ j) , ⊑[ pos F ]-antisym _ _ nts₀ nts₁ ∣
+      nts (j , p) = ∣ (𝒥 $ j) , ⊑[ pos F ]-antisym _ _ nts₀ p ∣
         where
         nts₀ = subst (λ - → [ (ℬ $ (𝒥 $ j)) ⊑[ pos F ] - ]) (sym eq) (⋁[ F ]-upper _ _ (j , refl))
 
-        nts₁ = p
+    basis-closed-under-∨ : (i j : index ℬ) → ∥ ((ℬ $ i) ∨[ F ] (ℬ $ j)) ε ℬ ∥
+    basis-closed-under-∨ i j =
+      comp→basic
+        ((ℬ $ i) ∨[ F ] (ℬ $ j))
+        (compactness-closed-under-joins F (ℬ $ i) (ℬ $ j) (κ i) (κ j))
 
-    perfect-nucleus-lemma₀ : (j k : ∣ Patch F ∣F)
-                            → ((x : ∣ F ∣F) → [ _≪_ F x x ] → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ])
-                            → (x : ∣ F ∣F) → [ π₀ (π₀ j) x ⊑[ pos F ] π₀ (π₀ k) x ]
+    perfect-nucleus-lemma₀ : (((j , _) , _) ((k , _) , _) : ∣ Patch F ∣F)
+                           → ((x : ∣ F ∣F) → [ _≪_ F x x ] → [ j x ⊑[ pos F ] k x ])
+                           → (x : ∣ F ∣F) → [ j x ⊑[ pos F ] k x ]
     perfect-nucleus-lemma₀ 𝒿@((j , j-n) , j-sc) 𝓀@((k , k-n) , k-sc) ρ x =
       j x                    ⊑⟨ ≡⇒⊑ (pos F) (cong j eq) ⟩
       j (⋁[ F ] W)           ⊑⟨ ≡⇒⊑ (pos F) (j-sc W W-dir) ⟩
@@ -90,8 +116,9 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
       W-dir : [ isDirected (pos F) W ]
       W-dir = π₀ (π₁ (π₁ basis x))
 
-      eq : x ≡ ⋁[ F ] W
-      eq = ⋁-unique F _ _ (π₀ (π₁ (π₁ (π₁ basis x)))) (π₁ (π₁ (π₁ (π₁ basis x))))
+      abstract
+        eq : x ≡ ⋁[ F ] W
+        eq = ⋁-unique F _ _ (π₀ (π₁ (π₁ (π₁ basis x)))) (π₁ (π₁ (π₁ (π₁ basis x))))
 
       goal : _
       goal z (i , eq)  = z                       ⊑⟨ ≡⇒⊑ (pos F) (sym eq)         ⟩
@@ -202,7 +229,7 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
               final = ⋁[ F ]-upper _ _ (l ∷ [] , refl)
 
     johnstones-lemma : (𝒿 : ∣ Patch F ∣F)
-                     → 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F (𝒿 .π₀ .π₀ (ℬ $ i)) ⊓[ Patch F ] μ σ basis (ℬ $ i) (κ i) ∣ i ∶ index ℬ ⁆
+                    → 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F (𝒿 .π₀ .π₀ (ℬ $ i)) ⊓[ Patch F ] μ σ basis (ℬ $ i) (κ i) ∣ i ∶ index ℬ ⁆
     johnstones-lemma 𝒿@((j , j-n@(𝓃₀ , 𝓃₁ , 𝓃₂)) , j-sc) = G𝟐′
       where
       open PosetReasoning (pos F)
@@ -222,7 +249,7 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
         j (ℬ $ i) ⊓[ F ] ⊤[ F ]                                 ≡⟨ x∧⊤=x F (j (ℬ $ i))              ⟩
         j (ℬ $ i)                                               ∎
         where
-        ⦅𝟏⦆ : _
+        ⦅𝟏⦆ : (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] ((ℬ $ i) ==> (ℬ $ i)) ≡ (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] ⊤[ F ]
         ⦅𝟏⦆ = cong (λ - → (j (ℬ $ i) ∨[ F ] (ℬ $ i)) ⊓[ F ] -) (==>-id (ℬ $ i))
 
         ⦅𝟐⦆ : j (ℬ $ i) ∨[ F ] (ℬ $ i) ≡ j (ℬ $ i)
@@ -320,9 +347,70 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
                       → 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (𝒿 .π₀ .π₀ (ℬ $ k)) ] ⁆
     the-nucleus-lemma 𝒿@((j , _) , _) =
       𝒿                                                                   ≡⟨ johnstones-lemma 𝒿 ⟩
-      ⋁[ Patch F ] ⁅ εε F (j (ℬ $ i)) ⊓[ Patch F ] ν i ∣ i ∶ index ℬ ⁆    ≡⟨ last-step 𝒿 ⟩
+      ⋁[ Patch F ] ⁅ εε F (j (ℬ $ i)) ⊓[ Patch F ] ν i ∣ i ∶ index ℬ ⁆    ≡⟨ last-step 𝒿        ⟩
       ⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k
                      ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ]
                                        [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] ⁆ ∎
+
+    is-basis : isBasisFor (Patch F) ℬ-patch
+    is-basis 𝒿@((j , _) , _) =
+      ((Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ]) , proj) , sup
+      where
+      proj : Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] → index ℬ × index ℬ
+      proj (k , l , _) = k , l
+
+      sup : [ isSup (pos (Patch F)) (⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆) 𝒿 ]
+      sup =
+        subst
+          (λ - → [ isSup (pos (Patch F)) (⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆) - ])
+          (sym (the-nucleus-lemma 𝒿))
+          nts
+        where
+        nts : [ isSup (pos (Patch F)) ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆ (⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆) ]
+        nts = (⋁[ Patch F ]-upper ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆)
+            , (⋁[ Patch F ]-least ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆)
 ```
--->
+
+```agda
+    complementation : (𝒿 : ∣ Patch F ∣F)
+                    → 𝒿 ε ⁅ εε F (ℬ $ k) ⊓[ Patch F ] ν l ∣ (k , l) ∶ (index ℬ × index ℬ) ⁆
+                    → hasComplement (Patch F) 𝒿
+                    -- { ‘ b ’ ∧ ¬‘ b′ ’ ∣ b ⊑ j(b′), b ∈ ℬ }
+    complementation 𝒿 (i@(k , l) , eq) = subst (hasComplement (Patch F)) eq nts
+      where
+      𝓏 : ∣ Patch F ∣F
+      𝓏 = ν k ∨[ Patch F ] εε F (ℬ $ l)
+
+      nts : hasComplement (Patch F) (εε F (ℬ $ k) ⊓[ Patch F ] ν l)
+      nts = 𝓏 ,  ∧-complement (Patch F) (εε F (ℬ $ k)) (ν l) (ν k) (εε F (ℬ $ l)) G𝟏 G𝟐
+        where
+        G𝟏 = complement-thm′ σ basis (ℬ $ k) (κ k)
+        G𝟐 = complement-thm  σ basis (ℬ $ l) (κ l)
+```
+
+```agda
+  stone : [ isStone′ (Patch F) ]
+  stone = ∥∥-rec (isProp[] (isStone′ (Patch F))) nts spec′
+    where
+
+    nts : _ → [ isStone′ (Patch F) ]
+    nts ins@(ℬ , σ , fb , _) = patch-is-compact , clopen-basis
+      where
+      open Main ins hiding (ℬ)
+
+      bs : hasBasis F
+      bs = ℬ , fb
+
+      open SomeMoreResults F spec′ bs
+
+      clopen-basis : [ isZeroDimensional (Patch F) ]
+      clopen-basis = ∣ ℬ-patch , is-basis , is-comp ∣
+        where
+        open Complements
+
+        is-comp : isComplemented (Patch F) ℬ-patch
+        is-comp j (i , p) = complementation j (i , p)
+
+        sp : isSpectral F
+        sp = spec′→spec F spec′
+```

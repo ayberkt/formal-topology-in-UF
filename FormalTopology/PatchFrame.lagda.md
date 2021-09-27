@@ -551,7 +551,7 @@ Some shorthand notation that we will use when defining the join.
   J*-prenuclear : (is : index J*) → isPrenuclear F (J* $ is)
   J*-prenuclear = ℜ-fam-prenucleus _ λ i → 𝓃₀ F (J $ i) , 𝓃₁ F (J $ i)
 
-  J*-sc : (is : index J*) → (isScottCont′ (J *⦅ is ⦆_))
+  J*-sc : (is : index J*) → isScottCont′ (J *⦅ is ⦆_)
   J*-sc = J*-scott-continuous J J-sc
 
   β-n₀ : (is : index J*) (x y : ∣ F ∣F)

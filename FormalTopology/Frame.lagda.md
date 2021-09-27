@@ -7,7 +7,7 @@ title: Frame
 
 module Frame where
 
-open import Basis                        hiding (A)
+open import Basis                        hiding (A; _∨_)
 open import Cubical.Foundations.Function using (uncurry)
 open import Cubical.Foundations.SIP
 open import Cubical.Structures.Axioms
@@ -286,6 +286,15 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   x∧⊥=⊥ x =
     ⊑[ pos F ]-antisym (glb-of F x ⊥[ F ]) ⊥[ F ] (⊓[_]-lower₁ _ _) (⊥[_]-bottom _)
 
+  x∨⊤=⊤ : (x : ∣ F ∣F) → x ∨[ F ] ⊤[ F ] ≡ ⊤[ F ]
+  x∨⊤=⊤ x = ⊑[ pos F ]-antisym _ _ G𝟏 G𝟐
+    where
+    G𝟏 : [ (x ∨[ F ] ⊤[ F ]) ⊑[ pos F ] ⊤[ F ] ]
+    G𝟏 = ⊤[_]-top (x ∨[ F ] ⊤[ F ])
+
+    G𝟐 : [ ⊤[ F ] ⊑[ pos F ] (x ∨[ F ] ⊤[ F ]) ]
+    G𝟐 = ⊔[_]-upper₁ x ⊤[ F ]
+
   ∨-comm : (x y : ∣ F ∣F) → x ∨[ F ] y ≡ y ∨[ F ] x
   ∨-comm x y = ⊑[ pos F ]-antisym _ _ (Ψ x y) (Ψ y x)
     where
@@ -373,6 +382,39 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
                         z           ⊑⟨ ⋁[_]-upper _ _ (false , refl) ⟩
                         y ∨[ F ] z  ⊑⟨ p (y ∨[ F ] z) (false , refl) ⟩
                         w           ■
+
+  bin-dist-op : (x y z : ∣ F ∣F)
+              → x ∨[ F ] (y ⊓[ F ] z) ≡ (x ∨[ F ] y) ⊓[ F ] (x ∨[ F ] z)
+  bin-dist-op x y z = sym nts
+    where
+    _∨_ : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
+    _∨_ = λ x y → x ∨[ F ] y
+
+    _∧_ : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
+    x ∧ y = x ⊓[ F ] y
+
+    ⦅𝟏⦆ = bin-dist (x ∨ y) x z
+
+    ⦅𝟐⦆ =
+      ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (_∨ (_ ∧ z)) (comm (x ∨ y) x)    ⟩
+      (x ∧ (x ∨ y)) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (_∨ (_ ∧ z)) (absorption-op x y) ⟩
+      x ∨ ((x ∨ y) ∧ z)             ≡⟨ cong (x ∨_) (comm (x ∨ y) z)          ⟩
+      x ∨ (z ∧ (x ∨ y))             ∎
+
+    ⦅𝟑⦆ = cong (x ∨_) (bin-dist z x y)
+
+    ⦅𝟒⦆ = x ∨ ((z ∧ x) ∨ (z ∧ y)) ≡⟨ sym (∨[_]-assoc x (z ∧ x) (z ∧ y))        ⟩
+          (x ∨ (z ∧ x)) ∨ (z ∧ y) ≡⟨ cong (λ - → (x ∨ -) ∨ (z ∧ y)) (comm z x) ⟩
+          (x ∨ (x ∧ z)) ∨ (z ∧ y) ≡⟨ cong (λ - → - ∨ _) (absorption x z)       ⟩
+          (x ∨ (z ∧ y))           ≡⟨ cong (λ - → x ∨ -) (comm z y)             ⟩
+          (x ∨ (y ∧ z))           ∎
+
+    nts : ((x ∨[ F ] y) ⊓[ F ] (x ∨[ F ] z)) ≡ x ∨[ F ] (y ⊓[ F ] z)
+    nts = (x ∨ y) ∧ (x ∨ z)              ≡⟨ ⦅𝟏⦆ ⟩
+          ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z)  ≡⟨ ⦅𝟐⦆ ⟩
+          x ∨ (z ∧ (x ∨ y))              ≡⟨ ⦅𝟑⦆ ⟩
+          x ∨ ((z ∧ x) ∨ (z ∧ y))        ≡⟨ ⦅𝟒⦆ ⟩
+          x ∨ (y ∧ z)                    ∎
 
   ⊓[_]-assoc : (x y z : ∣ F ∣F) → (x ⊓[ F ] y) ⊓[ F ] z ≡ x ⊓[ F ] (y ⊓[ F ] z)
   ⊓[_]-assoc x y z = ⊑[ pos F ]-antisym _ _ down up
@@ -1032,12 +1074,6 @@ frame-is-univ-str = SNS→UnivalentStr isHomoEqv frame-is-SNS
 
 ≅ₚ≃≅f : (F G : Frame ℓ₀ ℓ₁ ℓ₂) → (pos F ≅ₚ pos G) ≃ (F ≅f G)
 ≅ₚ≃≅f F G = pos F ≅ₚ pos G ≃⟨ ≃f≃≅ₚ F G ⟩ F ≃f G ≃⟨ ≃f≃≅f F G ⟩ F ≅f G 𝔔𝔈𝔇
-
-isBasisFor : (F : Frame 𝓤 𝓥 𝓦) → Fam 𝓦 ∣ F ∣F → Type (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
-isBasisFor {𝓦 = 𝓦} F ℬ =
-  (x : ∣ F ∣F) →
-    Σ[ I ∈ Fam 𝓦 (index ℬ) ]
-      [ isDirected (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ ] × [ isSup (pos F) ⁅ ℬ $ i ∣ i ε I ⁆ x ]
 
 -- --}
 -- --}

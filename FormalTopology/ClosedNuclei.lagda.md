@@ -40,42 +40,13 @@ module OpenNuclei (F : Frame 𝓤 𝓥 𝓦) where
 ```
 
 ```agda
-  bin-dist-op : (x y z : ∣ F ∣F)
-              → x ∨[ F ] (y ⊓[ F ] z) ≡ (x ∨[ F ] y) ⊓[ F ] (x ∨[ F ] z)
-  bin-dist-op x y z = sym nts
-    where
-    _∨_ : ∣ F ∣F → ∣ F ∣F → ∣ F ∣F
-    _∨_ = λ x y → x ∨[ F ] y
-
-    ⦅𝟏⦆ = bin-dist F (x ∨ y) x z
-
-    ⦅𝟐⦆ =
-      ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (_∨ (_ ∧ z)) (comm F (x ∨ y) x)    ⟩
-      (x ∧ (x ∨ y)) ∨ ((x ∨ y) ∧ z) ≡⟨ cong (_∨ (_ ∧ z)) (absorption-op F x y) ⟩
-      x ∨ ((x ∨ y) ∧ z)             ≡⟨ cong (x ∨_) (comm F (x ∨ y) z)          ⟩
-      x ∨ (z ∧ (x ∨ y))             ∎
-
-    ⦅𝟑⦆ = cong (x ∨_) (bin-dist F z x y)
-
-    ⦅𝟒⦆ = x ∨ ((z ∧ x) ∨ (z ∧ y)) ≡⟨ sym (∨[ F ]-assoc x (z ∧ x) (z ∧ y))        ⟩
-          (x ∨ (z ∧ x)) ∨ (z ∧ y) ≡⟨ cong (λ - → (x ∨ -) ∨ (z ∧ y)) (comm F z x) ⟩
-          (x ∨ (x ∧ z)) ∨ (z ∧ y) ≡⟨ cong (λ - → - ∨ _) (absorption F x z)       ⟩
-          (x ∨ (z ∧ y))           ≡⟨ cong (λ - → x ∨ -) (comm F z y)             ⟩
-          (x ∨ (y ∧ z))           ∎
-
-    nts : ((x ∨[ F ] y) ⊓[ F ] (x ∨[ F ] z)) ≡ x ∨[ F ] (y ⊓[ F ] z)
-    nts = (x ∨ y) ∧ (x ∨ z)              ≡⟨ ⦅𝟏⦆ ⟩
-          ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z)  ≡⟨ ⦅𝟐⦆ ⟩
-          x ∨ (z ∧ (x ∨ y))              ≡⟨ ⦅𝟑⦆ ⟩
-          x ∨ ((z ∧ x) ∨ (z ∧ y))        ≡⟨ ⦅𝟒⦆ ⟩
-          x ∨ (y ∧ z)                    ∎
 ```
 
 ```agda
   “”-preserves-meets : (U V W : ∣ F ∣F) → “ U ” (V ⊓[ F ] W) ≡ “ U ” V ⊓[ F ] “ U ” W
   “”-preserves-meets U V W =
     “ U ” (V ⊓[ F ] W)               ≡⟨ refl ⟩
-    U ∨[ F ] (V ⊓[ F ] W)            ≡⟨ bin-dist-op U V W ⟩
+    U ∨[ F ] (V ⊓[ F ] W)            ≡⟨ bin-dist-op F U V W ⟩
     (U ∨[ F ] V) ⊓[ F ] (U ∨[ F ] W) ≡⟨ refl ⟩
     “ U ” V ⊓[ F ] “ U ” W           ∎
 ```
@@ -204,12 +175,12 @@ module _ (F : Frame 𝓤 𝓥 𝓦) where
   εε-resp-∧ x y = Σ≡Prop isScottCont-prop (Σ≡Prop (isNuclear-prop F) (funExt nts))
     where
     nts : (z : ∣ F ∣F) → εε (glb-of F x y) .π₀ .π₀ z ≡ glb-of Patch (εε x) (εε y) .π₀ .π₀ z
-    nts z = εε (glb-of F x y) .π₀ .π₀ z          ≡⟨ refl ⟩
-            (x ⊓[ F ] y) ∨[ F ] z                ≡⟨ ∨-comm F (x ⊓[ F ] y) z ⟩
-            z ∨[ F ] (x ⊓[ F ] y)                ≡⟨ bin-dist-op z x y  ⟩
+    nts z = εε (glb-of F x y) .π₀ .π₀ z          ≡⟨ refl                                              ⟩
+            (x ⊓[ F ] y) ∨[ F ] z                ≡⟨ ∨-comm F (x ⊓[ F ] y) z                           ⟩
+            z ∨[ F ] (x ⊓[ F ] y)                ≡⟨ bin-dist-op F z x y                               ⟩
             (z ∨[ F ] x) ⊓[ F ] (z ∨[ F ] y)     ≡⟨ cong (λ - → - ⊓[ F ] (z ∨[ F ] y)) (∨-comm F z x) ⟩
             (x ∨[ F ] z) ⊓[ F ] (z ∨[ F ] y)     ≡⟨ cong (λ - → (x ∨[ F ] z) ⊓[ F ] -) (∨-comm F z y) ⟩
-            (x ∨[ F ] z) ⊓[ F ] (y ∨[ F ] z)     ≡⟨ refl ⟩
+            (x ∨[ F ] z) ⊓[ F ] (y ∨[ F ] z)     ≡⟨ refl                                              ⟩
             ((εε x) ⊓[ Patch ] (εε y)) .π₀ .π₀ z ∎
 
   εε-resp-⋁ : (U : Fam 𝓦 ∣ F ∣F) → εε (⋁[ F ] U) ≡ (⋁[ Patch ] ⁅ εε u ∣ u ε U ⁆)
@@ -381,36 +352,53 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
     where
     open PosetReasoning (pos Patch) renaming (_⊑⟨_⟩_ to _⊑P⟨_⟩_; _■ to _■P)
 
-    rem : (V : ∣ F ∣F) → [ (¬“ U ” V ⊓[ F ] “ U ” V) ⊑[ pos F ] π₀ (π₀ ⊥[ Patch ]) V ]
-    rem V = subst (λ - → [ rel (pos F) (¬“ U ” V ⊓[ F ] “ U ” V) - ]) (sym (⊥-Patch-id V)) nts
-      where
-      fin′ : _
-      fin′ W (true , eq) = W ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ (U ==> V) ⊓[ F ] U ⊑⟨ mp-op U V ⟩ V ■
-      fin′ W (false , eq) = subst (λ - → [ - ⊑[ pos F ] V ]) eq (⊓[ F ]-lower₁ (U ==> V) V)
+    abstract
+      rem : (V : ∣ F ∣F) → [ (¬“ U ” V ⊓[ F ] “ U ” V) ⊑[ pos F ] π₀ (π₀ ⊥[ Patch ]) V ]
+      rem V = subst (λ - → [ rel (pos F) (¬“ U ” V ⊓[ F ] “ U ” V) - ]) (sym (⊥-Patch-id V)) nts
+        where
+        ℱ : Fam 𝓥 ∣ F ∣F
+        ℱ = Bool 𝓥 , λ b → if b then (U ==> V) ⊓[ F ] U else ((U ==> V) ⊓[ F ] V)
 
-      fin : [ rel (pos F) (bin-join F (glb-of F (U ==> V) U) (glb-of F (U ==> V) V)) V ]
-      fin = ⋁[ F ]-least ⁅ glb-of F (U ==> V) U , glb-of F (U ==> V) V ⁆ V fin′
+        fin′ : (W : ∣ F ∣F) → W ε ℱ → [ W ⊑[ pos F ] V ]
+        fin′ W (true , eq) = W ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩ (U ==> V) ⊓[ F ] U ⊑⟨ mp-op U V ⟩ V ■
+        fin′ W (false , eq) = subst (λ - → [ - ⊑[ pos F ] V ]) eq (⊓[ F ]-lower₁ (U ==> V) V)
 
-      nts : [ ((¬“ U ” V) ⊓[ F ] (“ U ” V)) ⊑[ pos F ] V ]
-      nts =
-          (U ==> V) ⊓[ F ] (U ∨[ F ] V)                     ⊑⟨ ≡⇒⊑ (pos F) (bin-dist F (U ==> V) U V) ⟩
-          ((U ==> V) ⊓[ F ] U) ∨[ F ] ((U ==> V) ⊓[ F ] V)  ⊑⟨ fin ⟩
-          V                                                 ■
+        fin : [ rel (pos F) (bin-join F (glb-of F (U ==> V) U) (glb-of F (U ==> V) V)) V ]
+        fin = ⋁[ F ]-least ⁅ glb-of F (U ==> V) U , glb-of F (U ==> V) V ⁆ V fin′
+
+        nts : [ ((¬“ U ” V) ⊓[ F ] (“ U ” V)) ⊑[ pos F ] V ]
+        nts =
+            (U ==> V) ⊓[ F ] (U ∨[ F ] V)                     ⊑⟨ ≡⇒⊑ (pos F) (bin-dist F (U ==> V) U V) ⟩
+            ((U ==> V) ⊓[ F ] U) ∨[ F ] ((U ==> V) ⊓[ F ] V)  ⊑⟨ fin ⟩
+            V                                                 ■
 
 
-    nts₀ : (openn U γ) ⊓[ Patch ] (close U) ≡ ⊥[ Patch ]
-    nts₀ = ⊑[ pos Patch ]-antisym _ _ rem (⊥[ Patch ]-bottom ((openn U γ) ⊓[ Patch ] (close U)))
+      nts₀ : (openn U γ) ⊓[ Patch ] (close U) ≡ ⊥[ Patch ]
+      nts₀ = ⊑[ pos Patch ]-antisym _ _ rem (⊥[ Patch ]-bottom ((openn U γ) ⊓[ Patch ] (close U)))
 
-    rem₁ : [ ⊤[ Patch ] ⊑[ pos Patch ] (openn U γ) ∨[ Patch ] (close U)  ]
-    rem₁ V = ⊤[ F ]                                   ⊑⟨ δ ⟩
-             U ==> (U ∨[ F ] V)                       ⊑⟨ ⋁[ F ]-upper _ _ (false ∷ true ∷ [] , refl) ⟩
-             π₀ (π₀ (openn U γ ∨[ Patch ] close U)) V ■
-      where
-      δ : _
-      δ = π₁ (==>-is-HI U (bin-join F U V) ⊤[ F ]) (U ⊓[ F ] ⊤[ F ] ⊑⟨ ⊓[ F ]-lower₀ U ⊤[ F ] ⟩ U ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩ U ∨[ F ] V ■)
+      rem₁ : [ ⊤[ Patch ] ⊑[ pos Patch ] (openn U γ) ∨[ Patch ] (close U)  ]
+      rem₁ V = ⊤[ F ]                                   ⊑⟨ δ ⟩
+              U ==> (U ∨[ F ] V)                       ⊑⟨ ⋁[ F ]-upper _ _ (false ∷ true ∷ [] , refl) ⟩
+              π₀ (π₀ (openn U γ ∨[ Patch ] close U)) V ■
+        where
+        δ : [ ⊤[ F ] ⊑[ pos F ] (U ==> (U ∨[ F ] V)) ]
+        δ = π₁ (==>-is-HI U (bin-join F U V) ⊤[ F ]) (U ⊓[ F ] ⊤[ F ] ⊑⟨ ⊓[ F ]-lower₀ U ⊤[ F ] ⟩ U ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩ U ∨[ F ] V ■)
 
-    nts₁ : (openn U γ) ∨[ Patch ] (close U) ≡ ⊤[ Patch ]
-    nts₁ = ⊑[ pos Patch ]-antisym _ _ (⊤[ Patch ]-top ((openn U γ) ∨[ Patch ] (close U))) rem₁
+      nts₁ : (openn U γ) ∨[ Patch ] (close U) ≡ ⊤[ Patch ]
+      nts₁ = ⊑[ pos Patch ]-antisym _ _ (⊤[ Patch ]-top ((openn U γ) ∨[ Patch ] (close U))) rem₁
+
+  complement-thm′ : (x : ∣ F ∣F) → (κ : [ x ≪ x ]) → complements Patch (close x) (openn x κ)
+  complement-thm′ x κ = G𝟏 , G𝟐
+    where
+    G𝟏 : close x ⊓[ Patch ] openn x κ ≡ ⊥[ Patch ]
+    G𝟏 = close x ⊓[ Patch ] openn x κ   ≡⟨ comm Patch (close x) (openn x κ)  ⟩
+         openn x κ ⊓[ Patch ] close x   ≡⟨ π₀ (complement-thm x κ)           ⟩
+         ⊥[ Patch ]                     ∎
+
+    G𝟐 : close x ∨[ Patch ] openn x κ ≡ ⊤[ Patch ]
+    G𝟐 = close x ∨[ Patch ] openn x κ   ≡⟨ ∨-comm Patch (close x) (openn x κ)  ⟩
+         openn x κ ∨[ Patch ] close x   ≡⟨ π₁ (complement-thm x κ)             ⟩
+         ⊤[ Patch ]                     ∎
 ```
 
 ```agda
@@ -996,6 +984,7 @@ module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F)
   --               rem = j (ℬ $ iy)     ⊑⟨ ≡⇒⊑ (pos F) (sym (foo iy)) ⟩
   --                     𝕜₀ iy (ℬ $ iy) ⊑⟨ goal                       ⟩
   --                     k (ℬ $ iy)     ■
+-- --}
 ```
 
 Given some f : F → G where F is a compact frame, if f is Scott-continuous then G is compact as well.
