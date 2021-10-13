@@ -241,4 +241,20 @@ regularity-lemma F p x = upper , subst goal (sym x=⋁𝔘) ψ
     ⦅𝟖⦆  = ∨[ F ]-assoc x′ y′ y
     ⦅𝟗⦆  = cong (λ - → x′ ∨ -) (_ ≡⟨ ∨-comm F y′ y ⟩ y ∨[ F ] y′ ≡⟨ y∨y′=⊤ ⟩ _ ∎)
     ⦅𝟏𝟎⦆ = x∨⊤=⊤ F x′
+
+complements-sym : (F : Frame 𝓤 𝓥 𝓦)
+                → {x x′ : ∣ F ∣F}
+                → complements F x  x′
+                → complements F x′ x
+complements-sym F {x} {x′} (p , q) = G𝟏 , G𝟐
+  where
+  G𝟏 : x′ ⊓[ F ] x ≡ ⊥[ F ]
+  G𝟏 = x′ ⊓[ F ] x  ≡⟨ comm F x′ x ⟩
+       x  ⊓[ F ] x′ ≡⟨ p ⟩
+       ⊥[ F ]       ∎
+
+  G𝟐 : x′ ∨[ F ] x ≡ ⊤[ F ]
+  G𝟐 = x′ ∨[ F ] x  ≡⟨ ∨-comm F x′ x ⟩
+       x  ∨[ F ] x′ ≡⟨ q ⟩
+       ⊤[ F ]       ∎
 ```

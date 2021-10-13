@@ -10,7 +10,7 @@ author: Ayberk Tosun (j.w.w. Martín Escardó)
 open import Basis
 open import Poset
 open import Frame
-open import Base
+open import Base hiding (hasBasis)
 
 module RightAdjoint where
 ```
@@ -130,4 +130,7 @@ module AdjointFunctorTheorem (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 
 
   ^*-RA : (f : pos F ─m→ pos G) → (rem : (S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ π₀ f s ∣ s ε S ⁆) ≡ f $ₘ (⋁[ F ] S)) → [ f ⊣ (_^*ᴹ f rem) ]
   ^*-RA f = π₁ ∘ aft-2 f
+
+  RA-of-homo : (F ─f→ G) → ∣ G ∣F → ∣ F ∣F
+  RA-of-homo (f , _ , _ , p) = π₀ (_^*ᴹ f λ S → sym (p S))
 ```

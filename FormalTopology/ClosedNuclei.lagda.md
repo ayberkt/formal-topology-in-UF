@@ -1,11 +1,11 @@
----
+--
 title: Closed Nuclei
 author: Ayberk Tosun
 ---
 
 <!--
 ```agda
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --safe --experimental-lossy-unification #-}
 
 open import Basis renaming (_∨_ to _⊔_)
 open import Frame
@@ -262,7 +262,7 @@ module _ (F : Frame 𝓤 𝓥 𝓦) where
 ## Complements
 
 ```agda
-module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : hasBasis F) where
+module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral′ F) (basis : hasBasis F) where
 
   open Definition F basis
   open import WayBelow F
@@ -327,7 +327,7 @@ module Complements (F : Frame 𝓤 𝓥 𝓥) (spec : isSpectral F) (basis : has
     δ = π₁ (==>-is-HI U (V ⊓[ F ] U) V) (≡⇒⊑ (pos F) (comm F U V))
 
     ε : [ (V ⊓[ F ] U) ≪ (V ⊓[ F ] U) ]
-    ε = π₁ (π₁ spec) V U V-comp U-comp
+    ε = spec→compacts-closed-under-∧ F spec V U V-comp U-comp
 
   ¬“”-sc : (U : ∣ F ∣F) → [ U ≪ U ] → isScottCont (¬‘ U ’)
   ¬“”-sc U U-comp S S-dir =
@@ -475,9 +475,6 @@ module SomeMoreResults (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′
   private
     ℬ : Fam 𝓤 ∣ F ∣F
     ℬ = π₀ basis
-
-  spec : isSpectral F
-  spec = spec′→spec F spec′
 
   _⊑s_ : ScottContNucleus F → ScottContNucleus F → hProp 𝓤
   ((j , _) , _) ⊑s ((k , _) , _) = ∀[ i ∶ index ℬ ] j (ℬ $ i) ⊑[ pos F ] k (ℬ $ i)
@@ -733,7 +730,7 @@ We now prove that `Patch` and `Patch′` are equivalent
   --     nts = {!!}
 
   patch′-is-compact : [ isCompact Patch′ ]
-  patch′-is-compact = compactness-lemma δδδ δδδ-perfect (π₀ (π₁ spec))
+  patch′-is-compact = compactness-lemma δδδ δδδ-perfect (spec→compact F spec′)
     where
     open CompactnessLemma F Patch′ basis
 
@@ -762,7 +759,7 @@ We now prove that `Patch` and `Patch′` are equivalent
     G𝟐 : [ ⊤[ Patch′ ] ⊑[ pos Patch′ ] ((WayBelow.⋁ Patch′) 𝒥) ]
     G𝟐 = π₀ (⊑patch↔⊑s ⊤[ Patch′ ] (⋁[ Patch′ ] 𝒥)) p
 
-  open Complements F spec basis
+  open Complements F spec′ basis
   open DefnOfHeytingImplication F
   open Definition F basis
 
@@ -785,9 +782,6 @@ We now prove that `Patch` and `Patch′` are equivalent
 module NucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpectral′ F) where
 
   open import PatchFrame
-
-  sp : isSpectral F
-  sp = spec′→spec F spec′
 
   𝕨 : hasBasis F → (G : Frame (𝓤 ⁺) 𝓤 𝓤) → hasBasis G → (f : ∣ F ∣F → ∣ G ∣F) → ∣ F ∣F → Fam 𝓤 ∣ G ∣F
   𝕨 (ℬ , p) G (ℬ′ , p′) f x = I , λ { (i , j , p) → ℬ′ $ j }

@@ -4,7 +4,7 @@
 
 open import Basis
 open import Poset
-open import Base
+open import Base hiding (hasBasis)
 open import Frame
 open import WayBelow
 open import ClosedNuclei
@@ -31,9 +31,6 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
     I = Σ[ i  ∈ index ℬ ] Σ[ j ∈ index ℬ′ ]
           [ (ℬ $ i) ⊑[ pos F ] x ] × [ (ℬ′ $ j) ⊑[ pos G ] f (ℬ $ i) ]
 
-  σ : isSpectral F
-  σ = spec′→spec F spec′
-
   module Main (𝔹 : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ]
                      ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
                      × isDirBasisFor F ℬ
@@ -49,26 +46,10 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
     basis = ℬ , π₀ (π₁ (π₁ 𝔹))
 
     ν : index ℬ → ∣ Patch F ∣F
-    ν i = μ σ basis (ℬ $ i) (κ i) -- μ sp basis (ℬ $ i) (κ i)
-
-    ⊤i : index ℬ
-    ⊤i = π₀ (π₀ (π₁ (π₁ (π₁ 𝔹))))
-
-    ℬ∧ : (i j : index ℬ) → Σ[ k ∈ index ℬ ] ℬ $ k ≡ (ℬ $ i) ⊓[ F ] (ℬ $ j)
-    ℬ∧ i j = k , nts
-      where
-      k : index ℬ
-      k = π₀ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j)
-
-      abstract
-        nts : ℬ $ k ≡ (ℬ $ i) ⊓[ F ] (ℬ $ j)
-        nts = ⊓-unique F (ℬ $ i) (ℬ $ j) (ℬ $ k)
-                (π₀ (π₀ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j))))
-                (π₁ (π₀ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j))))
-                (curry ∘ π₁ (π₁ (π₁ (π₁ (π₁ (π₁ 𝔹))) i j)))
+    ν i = μ spec′ basis (ℬ $ i) (κ i)
 
     ℬ-patch : Fam 𝓤 ∣ Patch F ∣F
-    ℬ-patch = ⁅ εε F (ℬ $ k) ⊓[ Patch F ] μ σ basis (ℬ $ l) (κ l) ∣ (k , l) ∶ (index ℬ × index ℬ) ⁆
+    ℬ-patch = ⁅ εε F (ℬ $ k) ⊓[ Patch F ] μ spec′ basis (ℬ $ l) (κ l) ∣ (k , l) ∶ (index ℬ × index ℬ) ⁆
 
     ℬ-restrict : (𝒿 : ∣ Patch F ∣F) → Fam 𝓤 ∣ Patch F ∣F
     ℬ-restrict ((j , _) , _) =
@@ -229,14 +210,14 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
               final = ⋁[ F ]-upper _ _ (l ∷ [] , refl)
 
     johnstones-lemma : (𝒿 : ∣ Patch F ∣F)
-                    → 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F (𝒿 .π₀ .π₀ (ℬ $ i)) ⊓[ Patch F ] μ σ basis (ℬ $ i) (κ i) ∣ i ∶ index ℬ ⁆
+                    → 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F (𝒿 .π₀ .π₀ (ℬ $ i)) ⊓[ Patch F ] μ spec′ basis (ℬ $ i) (κ i) ∣ i ∶ index ℬ ⁆
     johnstones-lemma 𝒿@((j , j-n@(𝓃₀ , 𝓃₁ , 𝓃₂)) , j-sc) = G𝟐′
       where
       open PosetReasoning (pos F)
       open Definition F basis hiding (ℬ)
 
       𝕜 : index ℬ → ∣ Patch F ∣F
-      𝕜 i = εε F (j (ℬ $ i)) ⊓[ Patch F ] μ σ basis (ℬ $ i) (κ i)
+      𝕜 i = εε F (j (ℬ $ i)) ⊓[ Patch F ] μ spec′ basis (ℬ $ i) (κ i)
 
       𝕜₀ : index ℬ → ∣ F ∣F → ∣ F ∣F
       𝕜₀ i x = π₀ (π₀ (𝕜 i)) x
@@ -384,8 +365,8 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
       nts : hasComplement (Patch F) (εε F (ℬ $ k) ⊓[ Patch F ] ν l)
       nts = 𝓏 ,  ∧-complement (Patch F) (εε F (ℬ $ k)) (ν l) (ν k) (εε F (ℬ $ l)) G𝟏 G𝟐
         where
-        G𝟏 = complement-thm′ σ basis (ℬ $ k) (κ k)
-        G𝟐 = complement-thm  σ basis (ℬ $ l) (κ l)
+        G𝟏 = complement-thm′ spec′ basis (ℬ $ k) (κ k)
+        G𝟐 = complement-thm  spec′ basis (ℬ $ l) (κ l)
 ```
 
 ```agda
@@ -410,7 +391,4 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
 
         is-comp : isComplemented (Patch F) ℬ-patch
         is-comp j (i , p) = complementation j (i , p)
-
-        sp : isSpectral F
-        sp = spec′→spec F spec′
 ```
