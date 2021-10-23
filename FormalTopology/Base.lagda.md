@@ -32,6 +32,13 @@ isDirBasisFor {𝓥 = 𝓥} {𝓦} F B =
 ```
 
 ```agda
+dir-basis→basis : (F : Frame 𝓤 𝓥 𝓦)
+                → (ℬ : Fam 𝓦 ∣ F ∣F) → isDirBasisFor F ℬ → isBasisFor F ℬ
+dir-basis→basis F ℬ ψ x with ψ x
+dir-basis→basis F ℬ ψ x | (U , _ , sup) = U , sup
+```
+
+```agda
 hasBasis : (F : Frame 𝓤 𝓥 𝓦) → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 hasBasis {𝓦 = 𝓦} F = ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ] isBasisFor F ℬ ∥Ω
 ```
