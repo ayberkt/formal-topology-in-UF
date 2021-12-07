@@ -54,6 +54,11 @@ isCompactOpen : ∣ F ∣F → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺)
 isCompactOpen x = x ≪ x
 ```
 
+```agda
+compacts-of : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
+compacts-of = Σ[ x ∈ ∣ F ∣F ] [ isCompactOpen x ]
+```
+
 ## Definition of a compact frame
 
 ```agda

@@ -90,3 +90,4 @@ bin-meets′→bin-meets P (g , Δ⊣g) = inf , inf-is-glb
 meets⇔meets′ : (P : Poset ℓ₀ ℓ₁) → hasBinMeets P ↔ hasBinMeets′ P
 meets⇔meets′ P = bin-meets→bin-meets′ P , bin-meets′→bin-meets P
 ```
+

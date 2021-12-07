@@ -59,6 +59,13 @@ hasComplement : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Type ℓ₀
 hasComplement F x =
   Σ[ y ∈ ∣ F ∣F ] (x ⊓[ F ] y ≡ ⊥[ F ]) × (x ∨[ F ] y ≡ ⊤[ F ])
 
+hasComplement′ : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Type (ℓ-max (ℓ-max ℓ₀ ℓ₁) ℓ₂)
+hasComplement′ {ℓ₂ = ℓ₂} F x =
+  Σ[ y ∈ ∣ F ∣F ] [ isInf (pos F) ⊥[ F ] x y ] × [ isSup {ℓ₂ = ℓ₂} (pos F) ⁅ x , y ⁆ ⊤[ F ] ]
+
+fclopens : (F : Frame ℓ₀ ℓ₁ ℓ₂) → ∣ F ∣F → Fam ℓ₀ ∣ F ∣F
+fclopens F x = (Σ[ x ∈ ∣ F ∣F ] hasComplement F x) , π₀
+
 complements-unique : (F : Frame 𝓤 𝓥 𝓦)
                    → (x y₀ y₁ : ∣ F ∣F)
                    → complements F x y₀ → complements F x y₁ → y₀ ≡ y₁
@@ -257,4 +264,11 @@ complements-sym F {x} {x′} (p , q) = G𝟏 , G𝟐
   G𝟐 = x′ ∨[ F ] x  ≡⟨ ∨-comm F x′ x ⟩
        x  ∨[ F ] x′ ≡⟨ q ⟩
        ⊤[ F ]       ∎
+
+∧-has-complement : (F : Frame 𝓤 𝓥 𝓦) (x y : ∣ F ∣F)
+                 → hasComplement F x
+                 → hasComplement F y
+                 → hasComplement F (x ⊓[ F ] y)
+∧-has-complement F x y (¬x , ¬x-complements-x) (¬y , ¬y-complements-y) =
+  ¬x ∨[ F ] ¬y , ∧-complement F x y ¬x ¬y ¬x-complements-x ¬y-complements-y
 ```

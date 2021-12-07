@@ -23,7 +23,7 @@ open CE  public using     (_≡_; Type; Σ; Σ-syntax; _,_; _≃_; equivFun; isE
 open DΣ  public using     (Σ≡Prop; ΣPathTransport→PathΣ; PathΣ→ΣPathTransport; _×_; _,_)
                 renaming  (fst to π₀; snd to π₁)
 open DS  public using     (inl; inr; _⊎_)
-open FP  public using     (funExt; funExt⁻; subst; isContr; isProp; isPropIsProp; isSet;
+open FP  public using     (funExt; funExt⁻; subst; isContr; isProp; isPropIsProp; isPropIsContr; isSet;
                            isProp→isSet; cong; refl; sym; _≡⟨_⟩_; _∎; transport;
                            transportRefl; J; JRefl)
 open FE  public using     (idEquiv; invEquiv; secEq; retEq; fiber; equivToIso;
@@ -79,7 +79,7 @@ Universe : Type₀
 Universe = Level
 
 variable
-  𝒰 𝒱 𝒲 𝓤 𝓥 𝓦 𝓤′ 𝓥′ 𝓦′ : Universe
+  𝒰 𝒱 𝒲 𝓤 𝓥 𝓦 𝓤′ 𝓥′ 𝓦′ 𝓤′′ 𝓥′′ 𝓦′′ : Universe
 
 _∨_ : Level → Level → Level
 ℓ₀ ∨ ℓ₁ = ℓ-max ℓ₀ ℓ₁

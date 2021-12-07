@@ -16,7 +16,6 @@ open import Cubical.Foundations.Function using    (const; _∘_; idfun; uncurry;
 open import Cubical.Data.List            hiding   ([_])
 open import Cubical.Data.List.Properties
 open import Basis                        renaming (_⊓_ to _∧_; π₀ to fst; π₁ to snd) hiding (J)
-open import Stone
 open import WayBelow hiding (⋁_)
 ```
 -->
@@ -745,11 +744,11 @@ sc-dist j@(jn@(𝒿 , n₀ , n₁ , n₂) , _) J =
   J*-prenuclear : (is : List (index K)) → isPrenuclear F (K *⦅ is ⦆_)
   J*-prenuclear = ℜ-fam-prenucleus ∣J∣ Jᵢ-prenuclear
 
-  cofinal₀ : (x : ∣ F ∣F) → ⁅ 𝒿 x ⊓[ F ] α x ∣ α ε K ^* ⁆ cofinal-in ⁅ β x ∣ β ε ((jn ⊓n_) ⟨$⟩ K) ^* ⁆
+  cofinal₀ : (x : ∣ F ∣F)
+           → ⁅ 𝒿 x ⊓[ F ] α x ∣ α ε K ^* ⁆ cofinal-in ⁅ β x ∣ β ε ((jn ⊓n_) ⟨$⟩ K) ^* ⁆
   cofinal₀ x []       = [] , (⊓[ F ]-lower₁ _ _)
   cofinal₀ x (i ∷ is) = i ∷ js , rem
     where
-    ih : _
     ih = cofinal₀ (𝒿 x ⊓[ F ] (K ⦅ i ⦆ x)) is
 
     js = fst ih

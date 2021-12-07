@@ -19,71 +19,16 @@ open import Cubical.Data.List hiding ([_])
 open import Cubical.Functions.Logic renaming (_⊓_ to _∧_)
 open import Cubical.Foundations.Function using (uncurry)
 open import Cubical.Foundations.Isomorphism using (isIso)
+open import Cubical.Functions.Surjection
+open import Cubical.Functions.Embedding
+open import Cubical.HITs.PropositionalTruncation using (propTruncIsProp)
+                                                 renaming (rec to ∥∥-rec′; ∥_∥ to ∥_∥₀; ∣_∣ to ∣_∣₀)
 
 module PatchFrameAdditional where
 ```
 -->
 
 ```agda
-⋜→≪ : (F : Frame 𝓤 𝓥 𝓦)
-    → [ isCompact F ]
-    → (x y : ∣ F ∣F) → x ⋜[ F ] y → [ _≪_ F x y ]
-⋜→≪ F F-comp x y (z , comp₀ , comp₁) S S-dir p =
-  ∥∥-rec (∥∥-prop _) main rem
-  where
-  open PosetReasoning (pos F)
-
-  nts : [ ⊤[ F ] ⊑[ pos F ] ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆ ]
-  nts = ⊤[ F ]                          ⊑⟨ ≡⇒⊑ (pos F) (sym comp₁) ⟩
-        y ∨[ F ] z                      ⊑⟨ ∨-cleft F _ _ _ p       ⟩
-        (⋁[ F ] S) ∨[ F ] z             ⊑⟨ G𝟏                      ⟩
-        (⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆) ■
-    where
-    G𝟏 : [ (⋁[ F ] S) ∨[ F ] z ⊑[ pos F ] ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆ ]
-    G𝟏 = ⋁[ F ]-least _ _ G𝟐
-      where
-      G𝟐 : [ ∀[ w ε ⁅ (⋁[ F ] S) , z ⁆ ] (w ⊑[ pos F ] ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆) ]
-      G𝟐 = ∥∥-rec (isProp[] (∀[ w ε ⁅ (⋁[ F ] S) , z ⁆ ] (_ ⊑[ pos F ] _))) G𝟑 (π₀ S-dir)
-        where
-        G𝟑 : index S
-           → [ ∀[ w ε ⁅ (⋁[ F ] S) , z ⁆ ] (w ⊑[ pos F ] ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆) ]
-        G𝟑 i w (true  , eq) = w                             ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
-                              ⋁[ F ] S                      ⊑⟨ ⋁[ F ]-least _ _ G𝟒  ⟩
-                              ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆ ■
-          where
-          G𝟒 : _
-          G𝟒 v (k , eq′) =
-            v                             ⊑⟨ ≡⇒⊑ (pos F) (sym eq′)          ⟩
-            S $ k                         ⊑⟨ ⋁[ F ]-upper _ _ (true , refl) ⟩
-            (S $ k) ∨[ F ] z              ⊑⟨ ⋁[ F ]-upper _ _ (k , refl)    ⟩
-            ⋁[ F ] ⁅ s ∨[ F ] z ∣ s ε S ⁆ ■
-        G𝟑 i w (false , eq) =
-          w                ⊑⟨ ≡⇒⊑ (pos F) (sym eq) ⟩
-          z                ⊑⟨ ⋁[ F ]-upper _ _ (false , refl) ⟩
-          (S $ i) ∨[ F ] z ⊑⟨ ⋁[ F ]-upper _ _ (i , refl)  ⟩
-          _                ■
-
-  dir : [ isDirected (pos F) (⁅ s ∨[ F ] z ∣ s ε S ⁆) ]
-  π₀ dir = π₀ S-dir
-  π₁ dir i j = ∥∥-rec (∥∥-prop _) G𝟏 (π₁ S-dir i j)
-    where
-    G𝟏 : _
-    G𝟏 (k , p , q) = ∣ k , (∨-cleft F _ _ _ p , ∨-cleft F _ _ _ q) ∣
-
-  rem : ∥ Σ[ i ∈ index S ] (S $ i) ∨[ F ] z ≡ ⊤[ F ] ∥
-  rem = ∥∥-rec (∥∥-prop _) goal (F-comp (⁅ s ∨[ F ] z ∣ s ε S ⁆) dir nts)
-    where
-    goal : _
-    goal (i , ϕ) = ∣ i , ⊑[ pos F ]-antisym _ _ (⊤[ F ]-top _) ϕ ∣
-
-  main : Σ[ i ∈ index S ] (S $ i) ∨[ F ] z ≡ ⊤[ F ]
-       → ∥ Σ[ i ∈ index S ] [ x ⊑[ pos F ] (S $ i) ] ∥
-  main (i , ϕ) = ∣ i , G𝟏 ∣
-    where
-    open SomePropertiesOf⋜ F
-
-    G𝟏 : [ x ⊑[ pos F ] (S $ i) ]
-    G𝟏 = a⋜b→a⊑b x (S $ i) (z , (comp₀ , ϕ))
 ```
 
 ```agda
@@ -126,15 +71,6 @@ comp→basic {𝓦 = 𝓦} F ℬ basis x x≪x =
 ```
 
 ```agda
-clopen→compact-in-compact-locale : (F : Frame 𝓤 𝓥 𝓦)
-                                 → [ isCompact F ]
-                                 → (x : ∣ F ∣F)
-                                 → hasComplement F x
-                                 → [ _≪_ F x x ]
-clopen→compact-in-compact-locale F F-comp x x-clopen = ⋜→≪ F F-comp x x x-clopen
-```
-
-```agda
 -- stone→spec : (F : Frame 𝓤 𝓥 𝓦)
 --            → [ isStone′ F ] → isSpectral′ F
 -- stone→spec F (comp , zero-dim) = ∥∥-rec (∥∥-prop _) nts zero-dim
@@ -159,39 +95,6 @@ isSpectralMap F G ((f , _) , _) = ∀[ x ∶ ∣ F ∣F ] isCompactOpen F x ⇒ 
 ```
 
 ```agda
-directify-clopen : (F : Frame 𝓤 𝓥 𝓦)
-                 → (ℬ : Fam 𝓦 ∣ F ∣F)
-                 → isComplemented F ℬ
-                 → isComplemented F (directify F ℬ)
-directify-clopen F ℬ@(I , β) ψ b (is , eq) = subst (hasComplement F) eq (nts is)
-  where
-  nts : (is : List I) → hasComplement F (directify F ℬ $ is)
-  nts []       = subst (hasComplement F) refl (⊤[ F ] , G𝟏 , G𝟐)
-                   where
-                   G𝟏 : ⊥[ F ] ⊓[ F ] ⊤[ F ] ≡ ⊥[ F ]
-                   G𝟏 = x∧⊤=x F ⊥[ F ]
-
-                   G𝟐 : ⊥[ F ] ∨[ F ] ⊤[ F ] ≡ ⊤[ F ]
-                   G𝟐 = x∨⊥=x F ⊤[ F ]
-  nts (i ∷ is) = subst (hasComplement F) refl goal
-    where
-    ¬βᵢ : ∣ F ∣F
-    ¬βᵢ = π₀ (ψ (β i) (i , refl))
-
-    ¬dir : ∣ F ∣F
-    ¬dir = π₀ (nts is)
-
-    goal : hasComplement F (β i ∨[ F ] (directify F ℬ $ is))
-    goal = (¬βᵢ ⊓[ F ] ¬dir)
-         , (complements-sym F (∧-complement F _ _ _ _ (complements-sym F (π₁ (ψ (β i) (i , refl)))) ((complements-sym F (π₁ (nts is))))))
-
-clopen-basis-∧-complement : (F : Frame 𝓤 𝓥 𝓦)
-                      → (ℬ : Fam 𝓦 ∣ F ∣F)
-                      → isComplemented F ℬ
-                      → (i j : index ℬ)
-                      → hasComplement F ((ℬ $ i) ⊓[ F ] (ℬ $ j))
-clopen-basis-∧-complement = {!!}
-
 compact→clopen-in-stone-locale : (F : Frame 𝓤 𝓥 𝓦)
                                → [ isStone′ F ]
                                → (x : ∣ F ∣F) → [ _≪_ F x x ] → hasComplement F x
@@ -217,12 +120,9 @@ compact→clopen-in-stone-locale {𝓦 = 𝓦} F F-stone x x≪x =
 compact↔clopen-in-stone-locale : (F : Frame 𝓤 𝓥 𝓦)
                                → [ isStone′ F ]
                                → (x : ∣ F ∣F) → [ _≪_ F x x ] ↔ hasComplement F x
-compact↔clopen-in-stone-locale F F-stone@(F-comp , _) x =
+compact↔clopen-in-stone-locale F F-stone@(⊤≪⊤ , _) x =
     (compact→clopen-in-stone-locale F F-stone x)
-  , (clopen→compact-in-compact-locale F F-comp x)
-  where
-  F-compact : [ isCompact F ]
-  F-compact = F-comp
+  ,  clopen→compact-in-compact-locale F ⊤≪⊤ x
 ```
 
 ```agda
@@ -264,8 +164,8 @@ clopen→basic : (F : Frame (𝓤 ⁺) 𝓤 𝓤)
              → [ isStone′ F ]
              → ((ℬ , _) : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ] isDirBasisFor F ℬ)
              → (x : ∣ F ∣F) → hasComplement F x → ∥ x ε ℬ ∥
-clopen→basic F F-stone (ℬ , p) x x-comp =
-  comp→basic F ℬ p x (clopen→compact-in-compact-locale F (π₀ F-stone) x x-comp)
+clopen→basic F (⊤≪⊤ , _) (ℬ , p) x x-comp =
+  comp→basic F ℬ p x (clopen→compact-in-compact-locale F ⊤≪⊤ x x-comp)
 ```
 
 ```agda
@@ -290,21 +190,16 @@ module SpectralityOfε (F : Frame (𝓤 ⁺) 𝓤 𝓤) (σ : isSpectral′ F) w
 ```agda
 open import AdditionalFrameTheorems
 
-ε-is-mono : (F G : Frame (𝓤 ⁺) 𝓤 𝓤)
+ε-is-mono : (F : Frame (𝓤 ⁺) 𝓤 𝓤) (G : Frame 𝓤′ 𝓥′ 𝓤)
           → (F-spec : isSpectral′ F)
           → (f g : (Patch F) ─f→ G)
-          → [ isSpectralMap (Patch F) G f ]
-          → [ isSpectralMap (Patch F) G g ]
           → ((x : ∣ F ∣F) → f .π₀ .π₀ (εε F x) ≡ g .π₀ .π₀ (εε F x))
           → f ≡ g
-ε-is-mono {𝓤 = 𝓤} F G F-spec 𝒻@((f , _) , (_ , f-resp-∧ , f-resp-⋁)) ℊ@((g , _) , (_ , g-resp-∧ , g-resp-⋁)) f-spec g-spec ψ =
+ε-is-mono {𝓤 = 𝓤} F G F-spec 𝒻@((f , _) , (_ , f-resp-∧ , f-resp-⋁)) ℊ@((g , _) , (_ , g-resp-∧ , g-resp-⋁)) ψ =
   Σ≡Prop (isFrameHomomorphism-prop (Patch F) G)
   (Σ≡Prop (isMonotonic-prop (pos (Patch F)) (pos G)) (funExt nts))
   where
   open SpectralityOfε F F-spec
-
-  ε-spectral : [ isSpectralMap F (Patch F) (εεε F) ]
-  ε-spectral = ε-spec
 
   nts : (𝒿 : ∣ Patch F ∣F) → f 𝒿 ≡ g 𝒿
   nts 𝒿@((j , j-n) , j-sc) =
@@ -376,57 +271,6 @@ open import AdditionalFrameTheorems
 ```
 
 ```agda
--- clopen-basis-fin-meets : (F : Frame (𝓤 ⁺) 𝓤 𝓤)
---                        → [ isStone′ F ]
---                        → (ℬ : Fam 𝓤 ∣ F ∣F)
---                        → isDirBasisFor F ℬ
---                        → isComplemented F ℬ
---                        → ∥ closedUnderFinMeets F ℬ ∥
--- clopen-basis-fin-meets F F-stone ℬ  b comp =
---   ∥∥-rec {!!} nts foo
---   where
---   foo : ∥ ⊤[ F ] ε ℬ ∥
---   foo = clopen→basic F F-stone (ℬ , b) ⊤[ F ] (⊥[ F ] , (G𝟏 , G𝟐))
---     where
---     G𝟏 = ⊤[ F ] ⊓[ F ] ⊥[ F ] ≡⟨ x∧⊥=⊥ F ⊤[ F ]       ⟩
---          ⊥[ F ]               ∎
-
---     G𝟐 = {!!}
-
---   baz : {!!}
---   baz = {!comp→basic!}
-
---   bar : (i j : index ℬ) → ∥ Σ[ k ∈ index ℬ ] ℬ $ k ≡ (ℬ $ i) ⊓[ F ] (ℬ $ j) ∥
---   bar i j = clopen→basic F F-stone (ℬ , b) ((ℬ $ i) ⊓[ F ] (ℬ $ j)) ϕ
---     where
---     ¬ℬ : index ℬ → ∣ F ∣F
---     ¬ℬ i = π₀ (comp (ℬ $ i) (i , refl))
-
---     ϕ : hasComplement F ((ℬ $ i) ⊓[ F ] (ℬ $ j))
---     ϕ = (¬ℬ i ∨[ F ] ¬ℬ j)
---       , ∧-complement F (ℬ $ i) (ℬ $ j) (¬ℬ i) (¬ℬ j) (π₁ (comp (ℬ $ i) (i , refl))) ((π₁ (comp (ℬ $ j) (j , refl))))
-
---   nts : ⊤[ F ] ε ℬ → ∥ closedUnderFinMeets F ℬ ∥
---   nts (k , eq) =
---     {!!} -- ∣ (k , subst (λ - → [ isTop (pos F) - ]) (sym eq) ⊤[ F ]-top) , G𝟏 ∣
---     where
---     G𝟏 : (i j : index ℬ)
---        → Σ-syntax (index ℬ) (λ k → [ isInf (pos F) (ℬ $ k) (ℬ $ i) (ℬ $ j) ])
-    -- G𝟏 i j = {!!}
-```
-
-```agda
-isInjective : {A : 𝓤 ̇ } {B : 𝓥 ̇ }
-            → isSet A → isSet B → (f : A → B) → hProp (𝓤 ∨ 𝓥)
-isInjective {A = A} A-set B-set f =
-  ∀[ x ∶ A ] ∀[ y ∶ A ] ((f x ≡ f y) , B-set (f x) (f y)) ⇒ ((x ≡ y) , A-set x y)
-
-isSurjective : {A : 𝓤 ̇ } {B : 𝓥 ̇ } → isSet A → isSet B → (f : A → B) → hProp (𝓤 ∨ 𝓥)
-isSurjective {A = A} {B} A-set B-set f = ∀[ y ∶ B ] ∥ Σ[ x ∈ A ] f x ≡ y ∥Ω
-
-isIsomorphism : {A : 𝓤 ̇ } {B : 𝓥 ̇ } → isSet A → isSet B → (f : A → B) → hProp (𝓤 ∨ 𝓥)
-isIsomorphism A-set B-set f = isInjective A-set B-set f ∧ isSurjective A-set B-set f
-
 module Lemma3-3-V (F : Frame (𝓤 ⁺) 𝓤 𝓤) (stone : [ isStone′ F ]) where
 
   F-spec : isSpectral′ F
@@ -446,20 +290,15 @@ module Lemma3-3-V (F : Frame (𝓤 ⁺) 𝓤 𝓤) (stone : [ isStone′ F ]) wh
       ϕ = directified-basis-gives-basis F ℬ b
 
       κ : (is : List (index ℬ)) → [ isCompactOpen F (directify F ℬ $ is) ]
-      κ is = clopen→compact-in-compact-locale F F-compact
-               (directify F ℬ $ is)
-               (directify-clopen F ℬ comp (directify F ℬ $ is) (is , refl))
+      κ is = clopen→compact-in-compact-locale F (π₀ stone) (directify F ℬ $ is) (directify-clopen F ℬ comp (directify F ℬ $ is) (is , refl))
 
       ⊤εℬ : ∥ ⊤[ F ] ε directify F ℬ ∥
       ⊤εℬ = comp→basic F (directify F ℬ) ϕ ⊤[ F ] F-compact
 
       goal : ⊤[ F ] ε directify F ℬ
            → ∥ Σ[ ℬ₁ ∈ (Fam 𝓤 ∣ F ∣F) ] (((i : index ℬ₁) → [ isCompactOpen F (ℬ₁ $ i) ]) × isDirBasisFor F ℬ₁ × closedUnderFinMeets F ℬ₁) ∥
-      goal (i , eq) = ∣ directify F ℬ , ζ , directified-basis-gives-basis F ℬ b , γ ∣
+      goal (i , eq) = ∣ directify F ℬ , κ , directified-basis-gives-basis F ℬ b , γ ∣
         where
-        ζ : (j : index (directify F ℬ)) → [ isCompactOpen F (directify F ℬ $ j) ]
-        ζ js = clopen→compact-in-compact-locale F (π₀ stone) (directify F ℬ $ js) (directify-clopen F ℬ comp (directify F ℬ $ js) (js , refl))
-
         γ : closedUnderFinMeets F (directify F ℬ)
         γ = ∣ i , (subst (λ - → [ isTop (pos F) - ]) (sym eq) ⊤[ F ]-top) ∣ , rem
           where
@@ -483,12 +322,12 @@ module Lemma3-3-V (F : Frame (𝓤 ⁺) 𝓤 𝓤) (stone : [ isStone′ F ]) wh
 
 
   stone-basis : (𝒿 : ∣ Patch F ∣F)
-              → ∥ Σ[ S ∈ Fam 𝓤 ∣ F ∣F ] 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ∥
-  stone-basis 𝒿@((j , _) , _) = ∥∥-rec (∥∥-prop _) main-goal (π₁ stone)
+              → ∥ Σ[ S ∈ Fam 𝓤 ∣ F ∣F ] 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ∥₀
+  stone-basis 𝒿@((j , _) , _) = ∥∥-rec propTruncIsProp main-goal (π₁ stone)
     where
     main-goal : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ] isBasisFor F ℬ × isComplemented F ℬ
-              → ∥ Σ[ S ∈ Fam 𝓤 ∣ F ∣F ] 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ∥
-    main-goal (ℬ , basis , comp) = ∣ S , G𝟑 ∣
+              → ∥ Σ[ S ∈ Fam 𝓤 ∣ F ∣F ] 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ∥₀
+    main-goal (ℬ , basis , comp) = ∣ S , G𝟑 ∣₀
       where
       ℬ↑ : Fam 𝓤 ∣ F ∣F
       ℬ↑ = directify F ℬ
@@ -544,7 +383,7 @@ module Lemma3-3-V (F : Frame (𝓤 ⁺) 𝓤 𝓤) (stone : [ isStone′ F ]) wh
         foo = complement-preservation F (Patch F) (εεε F) x x′ (p , q)
 
       G𝟒 : _ ≡ _
-      G𝟒 = cong (λ - → ⋁[ Patch F ] -) (ΣPathTransport→PathΣ _ _ (refl , {!!}))
+      G𝟒 = cong (λ - → ⋁[ Patch F ] -) (ΣPathTransport→PathΣ _ _ (refl , (transport refl _ ≡⟨ transportRefl _ ⟩ _ ≡⟨ funExt G𝟒a ⟩ _ ∎)))
         where
         G𝟒a : ((is , ks , p) : Σ[ i ∈ index ℬ↑ ] Σ[ k ∈ index ℬ↑ ] [ (ℬ↑ $ i) ⊑[ pos F ] (j (ℬ↑ $ k)) ])
             → ((εε F (ℬ↑ $ is)) ⊓[ Patch F ] ν ks) ≡ εε F ((ℬ↑ $ is) ⊓[ F ] not ks)
@@ -564,98 +403,135 @@ module Lemma3-3-V (F : Frame (𝓤 ⁺) 𝓤 𝓤) (stone : [ isStone′ F ]) wh
            ⋁[ Patch F ] ⁅ εε F (ℬ↑ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ↑ ] Σ[ k ∈ index ℬ↑ ] [ (ℬ↑ $ i) ⊑[ pos F ] (j (ℬ↑ $ k)) ] ⁆   ≡⟨ G𝟒 ⟩
            ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆    ∎
 
-    -- nts : _
-    -- nts si@(ℬ , comp , _) = ∥∥-rec (∥∥-prop _) nts′ (π₁ stone)
-    --   where
-    --   open Main F F-spec si hiding (ℬ)
+  εε-is-iso-on-stone-locales : isFrameIso (εεε F)
+  εε-is-iso-on-stone-locales =
+    iso-inj-surj F (Patch F) (εεε F) inj surj
+    where
+    surj : isSurjection (εε F)
+    surj 𝒿 = ∥∥-rec′ propTruncIsProp main-goal (stone-basis 𝒿)
+      where
+      main-goal : Σ[ S ∈ Fam 𝓤 ∣ F ∣F ] 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆
+                → ∥ fiber (εε F) 𝒿 ∥₀
+      main-goal (S , eq) =
+        subst (λ - → ∥ fiber (εε F) - ∥₀) (sym eq) ∣ ⋁[ F ] S , εε-resp-⋁ F S ∣₀
 
-    --   nts′ : Σ-syntax (Fam 𝓤 ∣ F ∣F) (λ ℬ₁ → isBasisFor F ℬ₁ × isComplemented F ℬ₁)
-    --        → ∥ Σ-syntax (Fam 𝓤 ∣ F ∣F) (λ S → 𝒿 ≡ ⋁[ Patch F ] fmap (εε F) S) ∥
-    --   nts′ (ℬ′ , _ , κ) = ∣ S , G𝟏 ∣
-    --     where
-    --     open PosetReasoning (pos (Patch F))
-
-    --     not : index ℬ′ → ∣ F ∣F
-    --     not i = π₀ (κ (ℬ′ $ i) (i , refl))
-
-    --     S : Fam 𝓤 ∣ F ∣F
-    --     S = (Σ[ k ∈ index ℬ′ ] Σ[ l ∈ index ℬ′ ] [ (ℬ′ $ k) ⊑[ pos F ] j (ℬ′ $ l) ])
-    --       , λ { (k , l , _) → (ℬ′ $ k) ⊓[ F ] not l }
-
-    --     G𝟐 : _
-    --     G𝟐 = ⋁[ Patch F ]-least _ (⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆) G𝟐a
-    --       where
-    --       G𝟐a : [ ∀[ k ε ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] ⁆ ]
-    --                 (k ⊑[ pos (Patch F) ] ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆) ]
-    --       G𝟐a z ((k , l , p) , eq) =
-    --         subst (λ - → [ rel (pos (Patch F)) - (⋁[ Patch F ] (fmap (λ s → εε F s)) S) ]) eq G𝟐b
-    --         where
-    --         G𝟐b : [ (εε F (ℬ $ k) ⊓[ Patch F ] ν l) ⊑[ pos (Patch F) ] ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ]
-    --         G𝟐b = εε F (ℬ $ k) ⊓[ Patch F ] ν l          ⊑⟨ {!!} ⟩
-    --               εε F (ℬ $ k) ⊓[ Patch F ] εε F {!!}    ⊑⟨ {!!} ⟩
-    --               {!!}                                   ■
-
-    --     G𝟑 : _
-    --     G𝟑 = {!!}
-
-    --     † : ⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] ⁆
-    --       ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆
-    --     † = ⊑[ pos (Patch F) ]-antisym _ _ G𝟐 G𝟑
-
-    --     G𝟏 : 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆
-    --     G𝟏 = 𝒿                                  ≡⟨ the-nucleus-lemma 𝒿 ⟩
-    --         ⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] ν k ∣ (i , k , _) ∶ Σ[ i ∈ index ℬ ] Σ[ k ∈ index ℬ ] [ (ℬ $ i) ⊑[ pos F ] j (ℬ $ k) ] ⁆  ≡⟨ {!!} ⟩
-    --         ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆    ∎
-
-      -- goal : _
-      -- goal (ℬ , b , comp) = ∣ S , G𝟏 ∣
-      --   where
-      --   basis : hasBasis F
-      --   basis = directify F ℬ , directified-basis-gives-basis F ℬ b
+    inj : isEmbedding (εε F)
+    inj = injEmbedding (carrier-is-set (pos F)) (carrier-is-set (pos (Patch F))) goal
+      where
+      goal : {x y : ∣ pos F ∣ₚ} → εε F x ≡ εε F y → x ≡ y
+      goal {x = x} {y} p =
+        x          ≡⟨ sym (x∨x=x F x) ⟩
+        x ∨[ F ] x ≡⟨ ψ x             ⟩
+        y ∨[ F ] x ≡⟨ ∨-comm F y x    ⟩
+        x ∨[ F ] y ≡⟨ ψ y             ⟩
+        y ∨[ F ] y ≡⟨ x∨x=x F y       ⟩
+        y          ∎
+        where
+        ψ : (z : ∣ F ∣F) → x ∨[ F ] z ≡ y ∨[ F ] z
+        ψ = funExt⁻ (λ i → π₀ (π₀ (p i)))
+```
 
 
-      --   κ : {!!}
-      --   κ = {!!}
+```agda
+Patch-map : (X : Frame (𝓤 ⁺) 𝓤 𝓤) (A : Frame (𝓤 ⁺) 𝓤 𝓤)
+          → isZeroDimensionalₛ A
+          → [ isCompact A ]
+          → isSpectralₛ X
+          → (f : X ─f→ A)
+          → [ isSpectralMap X A f ]
+          → ∣ Patch X ∣F → ∣ Patch A ∣F
+Patch-map X A zd@(ℬA , basis-A , cl) ⊤≪⊤ X-spec@(ℬX , β , γ , ϕ) f f-spec = g
+  where
+  A-stone : [ isStone′ A ]
+  A-stone = ⊤≪⊤ , ∣ zd ∣
+
+  A-specₛ : isSpectralₛ A
+  A-specₛ = stone→spectral A (⊤≪⊤ , zd)
+
+  A-basis : formsBasis A (directify A ℬA)
+  A-basis = π₀ (π₁ (π₁ A-specₛ))
+
+  A-spec : isSpectral′ A
+  A-spec = ∣ A-specₛ ∣
+
+  open Complements A A-spec
+  open PatchFrameNucleusLemma.Main X ∣ X-spec ∣ X-spec renaming (κ to κ₀)
+  open SomeMoreResults A A-spec (directify A ℬA , A-basis)
+
+  ξ : (i : index ℬX) → ∣ Patch A ∣F
+  ξ i = μ (directify A ℬA , A-basis) (f $f (ℬX $ i)) (f-spec (ℬX $ i) (β i))
+
+  g : ∣ Patch X ∣F → ∣ Patch A ∣F
+  g 𝒿@((j , _) , _) =
+    ⋁[ Patch A ]
+      ⁅ εε A (f $f (ℬX $ i)) ⊓[ Patch A ] ξ k
+        ∣ (i , k , _) ∶ Σ[ i ∈ index ℬX ] Σ[ k ∈ index ℬX ] [ (ℬX $ i) ⊑[ pos X ] j (ℬX $ k) ] ⁆
+
+naturality : (X : Frame (𝓤 ⁺) 𝓤 𝓤) (A : Frame (𝓤 ⁺) 𝓤 𝓤)
+           → (zd : isZeroDimensionalₛ A)
+           → (comp : [ isCompact A ])
+           → (spec : isSpectralₛ X)
+           → (f : X ─f→ A)
+           → (f-spec : [ isSpectralMap X A f ])
+           → (x : ∣ X ∣F)
+           → εε A (f $f x) ≡ Patch-map X A zd comp spec f f-spec (εε X x)
+naturality X A zd comp spec f f-spec x = {!!}
+  -- PatchA-compact : [ isCompact (Patch A) ]
+  -- PatchA-compact = π₀ (stone A A-spec)
+
+  -- PatchA-zd : [ isZeroDimensional (Patch A) ]
+  -- PatchA-zd = π₁ (stone A A-spec)
+
+  -- PatchA-spectral : isSpectral′ (Patch A)
+  -- PatchA-spectral =
+  --   ∥∥-rec (∥∥-prop (isSpectralₛ (Patch A))) goal PatchA-zd
+  --   where
+  --   goal : isZeroDimensionalₛ (Patch A) → ∥ isSpectralₛ (Patch A) ∥
+  --   goal zd = ∣ stone→spectral (Patch A) (PatchA-compact , zd) ∣
+
+  -- g-resp-⊤ : g ⊤[ Patch X ] ≡ ⊤[ Patch A ]
+  -- g-resp-⊤ = ∥∥-rec (carrier-is-set (pos (Patch A)) _ _) goal PatchA-spectral
+  --   where
+  --   open PosetReasoning (pos (Patch A))
+
+  --   goal : isSpectralₛ (Patch A) → g ⊤[ Patch X ] ≡ ⊤[ Patch A ]
+  --   goal (ℬ , _ , _ , (p , _)) = ∥∥-rec {!!} G𝟏 p
+  --     where
+  --     G𝟏 : Σ[ i ∈ index ℬ ] [ isTop (pos (Patch A)) (ℬ $ i) ]
+  --        → g ⊤[ Patch X ] ≡ ⊤[ Patch A ]
+  --     G𝟏 (t , top) = ⊑[ pos (Patch A) ]-antisym (g ⊤[ Patch X ]) ⊤[ Patch A ] (⊤[ Patch A ]-top _) q
+  --       where
+  --       eq : ℬ $ t ≡ ⊤[ Patch A ]
+  --       eq = {!!}
+
+  --       q : [ ⊤[ Patch A ] ⊑[ pos (Patch A) ] (g ⊤[ Patch X ]) ]
+  --       q = ⊤[ Patch A ]      ⊑⟨ {!!} ⟩
+  --           {!!}              ⊑⟨ {!!} ⟩
+  --           g ⊤[ Patch X ]    ■
 
 
-      --   G𝟏 : 𝒿 ≡ ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆
-      --   G𝟏 = 𝒿                                                    ≡⟨ {!!} ⟩
-      --        ⋁[ Patch F ] ⁅ εε F (ℬ $ i) ⊓[ Patch F ] μ (ℬ $ k) {!!}  ∣ (i , k , _) ∶ Σ[ i ∈ _ ] Σ[ k ∈ _ ] [ (ℬ $ i) ⊑[ pos F ] (j (ℬ $ k)) ] ⁆                               ≡⟨ {!!} ⟩
-      --        ⋁[ Patch F ] ⁅ εε F s ∣ s ε S ⁆ ∎
+universal-property : (X A : Frame (𝓤 ⁺) 𝓤 𝓤)
+                   → [ isStone′ X ]
+                   → isSpectral′ A
+                   → (f : A ─f→ X)
+                   → isContr (Σ[ f⁻ ∈ (Patch A) ─f→ X ] f  ≡ comp-homo A (Patch A) X f⁻ (εεε A))
+universal-property {𝓤 = 𝓤} X A stone spec 𝒻 = ∥∥-rec isPropIsContr main-goal spec
+  where
+  open Lemma3-3-V X stone
 
---   -- F-has-basis : {!!}
---   -- F-has-basis = {!!}
+  main-goal : Σ[ ℬ ∈ Fam 𝓤 ∣ A ∣F ] _
+            → isContr (Σ[ f⁻ ∈ Patch A ─f→ X ] 𝒻 ≡ comp-homo A (Patch A) X f⁻ (εεε A))
+  main-goal (ℬ , _) = {!!}
+    where
+    ε⁻¹ : Patch X ─f→ X
+    ε⁻¹ = π₀ εε-is-iso-on-stone-locales
 
---   -- open SomeMoreResults F
+    𝒻⁻ : Patch A ─f→ X
+    𝒻⁻ = ? -- comp-homo (Patch A) (Patch X) X ε⁻¹ (Patch-map A X stone spec 𝒻)
 
---   F-set : isSet ∣ F ∣F
---   F-set = carrier-is-set (pos F)
+    G𝟏a : (x : ∣ A ∣F) → 𝒻 $f x ≡ ε⁻¹ $f ?
+    G𝟏a = {!!}
 
---   P-set : isSet ∣ Patch F ∣F
---   P-set = carrier-is-set (pos (Patch F))
-
---   εε-is-iso-on-stone-locales : [ isIsomorphism F-set P-set (εε F) ]
---   εε-is-iso-on-stone-locales =
---     ∥∥-rec (isProp[] (isIsomorphism F-set P-set (εε F))) nts (π₁ stone)
---     where
---     nts : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ] (isBasisFor F ℬ × isComplemented F ℬ)
---         → [ isIsomorphism F-set P-set (εε F) ]
---     nts (ℬ , b , comp) = G𝟏 , G𝟐
---       where
---       postulate F-spec : isSpectral′ F
-
---       basis : hasBasis F
---       basis = directify F ℬ , directified-basis-gives-basis F ℬ b
-
---       open SomeMoreResults F F-spec basis renaming (Patch′ to Patch′-F)
---       open AdjointFunctorTheorem F Patch′-F
-
---       ε* : ∣ Patch F ∣F → ∣ F ∣F
---       ε* = RA-of-homo basis δδδ
-
---       G𝟏 : [ isInjective F-set P-set (εε F) ]
---       G𝟏 = {!ε-is-mono F Patch′-F F-spec !}
-
---       G𝟐 : [ isSurjective F-set P-set (εε F) ]
---       G𝟐 𝒿 = {!!}
+    G𝟏 : 𝒻 ≡ comp-homo A (Patch A) X 𝒻⁻ (εεε A)
+    G𝟏 = forget-homo A X 𝒻 (comp-homo A (Patch A) X 𝒻⁻ (εεε A)) G𝟏a
 ```

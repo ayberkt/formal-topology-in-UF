@@ -42,11 +42,15 @@ closedUnderFinMeets′ S =
     ∥ Σ[ i ∈ index S ] [ isTop (pos F) (S $ i) ] ∥Ω
   ∧ (∀[ i ∶ index S ] ∀[ j ∶ index S ] ∥ Σ[ k ∈ index S ] [ isInf (pos F) (S $ k) (S $ i) (S $ j) ] ∥Ω)
 
-isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
-isSpectral′ =
-  ∥ Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ]
+isSpectralₛ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇ 
+isSpectralₛ =
+  Σ[ ℬ ∈ Fam 𝓦 ∣ F ∣F ]
       ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
-    × isDirBasisFor F ℬ × closedUnderFinMeets ℬ ∥
+    × isDirBasisFor F ℬ
+    × closedUnderFinMeets ℬ
+
+isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
+isSpectral′ = ∥ isSpectralₛ ∥
 
 ∥∥-functorial : {A : Type 𝓤} {B : Type 𝓥} → ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
 ∥∥-functorial {B = B} f x = ∥∥-rec (∥∥-prop B) (λ g → ∥∥-rec (∥∥-prop B) (λ y → ∣ g y ∣) x) f

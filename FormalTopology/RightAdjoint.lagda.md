@@ -133,4 +133,51 @@ module AdjointFunctorTheorem (F : Frame 𝓤 𝓥 𝓥) (G : Frame 𝓤′ 𝓥 
 
   RA-of-homo : (F ─f→ G) → ∣ G ∣F → ∣ F ∣F
   RA-of-homo (f , _ , _ , p) = π₀ (_^*ᴹ f λ S → sym (p S))
+
+  closure : (f : pos F ─m→ pos G)
+          → (f⋆ : pos G ─m→ pos F)
+          → [ f ⊣ f⋆ ]
+          → (x : ∣ G ∣F) → [ f $ₘ (f⋆ $ₘ x) ⊑[ pos G ] x ]
+  closure f f⋆ f⊣f⋆ x = π₁ (f⊣f⋆ (f⋆ $ₘ x) x) (⊑[ pos F ]-refl (f⋆ $ₘ x))
+
+  RAPL : (f : pos F ─m→ pos G)
+       → (f⋁ : ((S : Fam 𝓥 ∣ F ∣F) → (⋁[ G ] ⁅ f $ₘ  s ∣ s ε S ⁆) ≡ f $ₘ (⋁[ F ] S)))
+       → (x y : ∣ G ∣F) → _^* f f⋁ (x ⊓[ G ] y) ≡ (_^* f f⋁ x) ⊓[ F ] (_^* f f⋁ y)
+  RAPL 𝒻@(f , _) f⋁ x y = ⊑[ pos F ]-antisym _ _ G𝟏 G𝟐
+    where
+    f⊣f⋆ : [ 𝒻 ⊣ _^*ᴹ 𝒻 f⋁ ]
+    f⊣f⋆ = ^*-RA 𝒻 f⋁
+
+    𝒻⋆ : pos G ─m→ pos F
+    𝒻⋆ = _^*ᴹ 𝒻 f⋁
+
+    f⋆ : ∣ G ∣F → ∣ F ∣F
+    f⋆ = _^* 𝒻 f⋁
+
+    G𝟏 : [ (𝒻 ^*) f⋁ (x ⊓[ G ] y) ⊑[ pos F ] (𝒻 ^*) f⋁ x ⊓[ F ] (𝒻 ^*) f⋁ y ]
+    G𝟏 = ⊓[ F ]-greatest _ _ _ G𝟏a G𝟏b
+      where
+      G𝟏a : [ (𝒻 ^*) f⋁ (x ⊓[ G ] y) ⊑[ pos F ] (𝒻 ^*) f⋁ x ]
+      G𝟏a = π₁ ((𝒻 ^*ᴹ) f⋁) _ _ (⊓[ G ]-lower₀ x y)
+
+      G𝟏b : [ (𝒻 ^*) f⋁ (x ⊓[ G ] y) ⊑[ pos F ] (𝒻 ^*) f⋁ y ]
+      G𝟏b = (π₁ ((𝒻 ^*ᴹ) f⋁) _ _ (⊓[ G ]-lower₁ x y))
+
+    G𝟐 : [ (𝒻 ^*) f⋁ x ⊓[ F ] (𝒻 ^*) f⋁ y ⊑[ pos F ] (𝒻 ^*) f⋁ (x ⊓[ G ] y) ]
+    G𝟐 = π₀ (f⊣f⋆ (glb-of F ((𝒻 ^*) f⋁ x) ((𝒻 ^*) f⋁ y)) (x ⊓[ G ] y)) G𝟐a
+      where
+      G𝟐a : [ f (f⋆ x ⊓[ F ] f⋆ y) ⊑[ pos G ] x ⊓[ G ] y ]
+      G𝟐a = ⊓[ G ]-greatest x y (f (f⋆ x ⊓[ F ] f⋆ y)) G𝟐b G𝟐c
+        where
+        G𝟐b : [ f (f⋆ x ⊓[ F ] f⋆ y) ⊑[ pos G ] x ]
+        G𝟐b = f (f⋆ x ⊓[ F ] f⋆ y) ⊑⟨ ⦅𝟏⦆ ⟩ f (f⋆ x) ⊑⟨ ⦅𝟐⦆ ⟩ x ■
+          where
+          ⦅𝟏⦆ = π₁ 𝒻 _ _ (⊓[ F ]-lower₀ _ _)
+          ⦅𝟐⦆ = closure 𝒻 𝒻⋆ (^*-RA 𝒻 f⋁) x
+
+        G𝟐c : [ f (f⋆ x ⊓[ F ] f⋆ y) ⊑[ pos G ] y ]
+        G𝟐c = f (f⋆ x ⊓[ F ] f⋆ y) ⊑⟨ ⦅𝟏⦆ ⟩ f (f⋆ y) ⊑⟨ ⦅𝟐⦆ ⟩ y ■
+          where
+          ⦅𝟏⦆ = π₁ 𝒻 _ _ (⊓[ F ]-lower₁ _ _)
+          ⦅𝟐⦆ = closure 𝒻 𝒻⋆ (^*-RA 𝒻 f⋁) y
 ```

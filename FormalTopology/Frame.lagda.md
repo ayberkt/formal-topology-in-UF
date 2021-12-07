@@ -624,6 +624,34 @@ isFrameHomomorphism-prop (A , s , _) (B , s′ , _) = isRawFrameHomo-prop (A , s
 _─f→_ : Frame ℓ₀ ℓ₁ ℓ₂ → Frame ℓ₀′ ℓ₁′ ℓ₂ → Type _
 _─f→_ {ℓ₂ = ℓ₂} F G = Σ[ f ∈ (pos F ─m→ pos G) ] (isFrameHomomorphism F G f)
 
+comp-homo : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (H : Frame 𝓤′′ 𝓥′′ 𝓦)
+          → (G ─f→ H)
+          → (F ─f→ G)
+          → (F ─f→ H)
+comp-homo {𝓦 = 𝓦} F G H ℊ@(g , g⊤ , g∧ , g⋁) 𝒻@(f , f⊤ , f∧ , f⋁) =
+  _∘m_ {P = pos F} {Q = pos G} {R = pos H} g f , resp-⊤ , (resp-∧ , resp-⋁)
+  where
+  g∘f : ∣ F ∣F → ∣ H ∣F
+  g∘f = π₀ (_∘m_ {P = pos F} {Q = pos G} {R = pos H} g f)
+
+  resp-⊤ : g∘f ⊤[ F ] ≡ ⊤[ H ]
+  resp-⊤ = g∘f ⊤[ F ]          ≡⟨ refl            ⟩
+           g $ₘ (f $ₘ ⊤[ F ])  ≡⟨ cong (g $ₘ_) f⊤ ⟩
+           g $ₘ ⊤[ G ]         ≡⟨ g⊤              ⟩
+           ⊤[ H ]              ∎
+
+  resp-∧ : (x y : ∣ F ∣F) → g∘f (x ⊓[ F ] y) ≡ g∘f x ⊓[ H ] g∘f y
+  resp-∧ x y =
+    g $ₘ (f $ₘ (x ⊓[ F ] y))               ≡⟨ cong (g $ₘ_) (f∧ x y) ⟩
+    (g $ₘ ((f $ₘ x) ⊓[ G ] (f $ₘ y)))      ≡⟨ g∧ (f $ₘ x) (f $ₘ y)  ⟩
+    (g $ₘ (f $ₘ x)) ⊓[ H ] (g $ₘ (f $ₘ y)) ∎
+
+  resp-⋁ : (S : Fam 𝓦 ∣ F ∣F) → g∘f (⋁[ F ] S) ≡ ⋁[ H ] ⁅ g∘f s ∣ s ε S ⁆
+  resp-⋁ S =
+    g∘f (⋁[ F ] S)                     ≡⟨ cong (g $ₘ_) (f⋁ S)   ⟩
+    g $ₘ (⋁[ G ] ⁅ f $ₘ s ∣ s ε S ⁆)   ≡⟨ g⋁ ⁅ f $ₘ s ∣ s ε S ⁆ ⟩
+    ⋁[ H ] ⁅ g $ₘ (f $ₘ s) ∣ s ε S ⁆   ∎
+
 forget-homo : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦)
             → (f g : F ─f→ G)
             → ((x : ∣ F ∣F) → f .π₀ .π₀ x ≡ g .π₀ .π₀ x)

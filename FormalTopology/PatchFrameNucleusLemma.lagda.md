@@ -31,10 +31,7 @@ module PatchFrameNucleusLemma (F : Frame (𝓤 ⁺) 𝓤 𝓤) (spec′ : isSpec
     I = Σ[ i  ∈ index ℬ ] Σ[ j ∈ index ℬ′ ]
           [ (ℬ $ i) ⊑[ pos F ] x ] × [ (ℬ′ $ j) ⊑[ pos G ] f (ℬ $ i) ]
 
-  module Main (𝔹 : Σ[ ℬ ∈ Fam 𝓤 ∣ F ∣F ]
-                     ((i : index ℬ) → [ isCompactOpen F (ℬ $ i) ])
-                     × isDirBasisFor F ℬ
-                     × closedUnderFinMeets F ℬ) where
+  module Main (𝔹 : isSpectralₛ F) where
 
     ℬ = π₀ 𝔹
     open Complements F
