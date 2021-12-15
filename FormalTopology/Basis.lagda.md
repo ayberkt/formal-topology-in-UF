@@ -119,6 +119,9 @@ top 𝓤 = Unit 𝓤 , Unit-prop
 ```
 data 𝟘 (ℓ : Level) : Type ℓ where
 
+𝟘-elim : {A : Type ℓ} → 𝟘 ℓ′ → A
+𝟘-elim ()
+
 bot : (ℓ : Level) → hProp ℓ
 bot ℓ = 𝟘 ℓ , λ ()
 ```
@@ -291,6 +294,19 @@ _∪f_ (I , f) (J , g) = I ⊎ J , λ { (inl i) → f i ; (inr j) → g j }
 
 ⁅_,_⁆ : {A : 𝓤 ̇} {𝓦 : Universe} → A → A → Fam 𝓦 A
 ⁅_,_⁆ {𝓦 = 𝓦} x y = Bool 𝓦 , λ b → if b then x else y
+
+⁅⁆-distr : {A : 𝓤 ̇ } {B : 𝓥 ̇ } {𝓦 : Universe} (x y : A) (f : A → B)
+         → fmap {X = A} {B} f (⁅_,_⁆ {𝓦 = 𝓦} x y) ≡ ⁅_,_⁆ {𝓦 = 𝓦} (f x) (f y)
+⁅⁆-distr x y f = ΣPathTransport→PathΣ (f ⟨$⟩ ⁅ x , y ⁆) ⁅ f x , f y ⁆ (refl , γ)
+  where
+  β : π₁ (f ⟨$⟩ ⁅ x , y ⁆) ≡ π₁ ⁅ f x , f y ⁆
+  β = funExt λ { true → refl ; false → refl }
+
+  γ : transport refl (π₁ (f ⟨$⟩ ⁅ x , y ⁆))
+    ≡ π₁ ⁅ f x , f y ⁆
+  γ = transport refl (π₁ (f ⟨$⟩ ⁅ x , y ⁆)) ≡⟨ transportRefl (π₁ (f ⟨$⟩ ⁅ x , y ⁆)) ⟩
+      π₁ (f ⟨$⟩ ⁅ x , y ⁆)                  ≡⟨ β ⟩
+      π₁ ⁅ f x , f y ⁆                      ∎
 ```
 
 ## Truncation

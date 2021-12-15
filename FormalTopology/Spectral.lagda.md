@@ -52,6 +52,12 @@ isSpectralₛ =
 isSpectral′ : (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺) ̇
 isSpectral′ = ∥ isSpectralₛ ∥
 
+
+isSpectralMap : (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G)
+              → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺ ∨ 𝓤′ ∨ 𝓥′)
+isSpectralMap G ((f , _) , _) =
+  ∀[ x ∶ ∣ F ∣F ] isCompactOpen F x ⇒ isCompactOpen G (f x)
+
 ∥∥-functorial : {A : Type 𝓤} {B : Type 𝓥} → ∥ (A → B) ∥ → ∥ A ∥ → ∥ B ∥
 ∥∥-functorial {B = B} f x = ∥∥-rec (∥∥-prop B) (λ g → ∥∥-rec (∥∥-prop B) (λ y → ∣ g y ∣) x) f
 

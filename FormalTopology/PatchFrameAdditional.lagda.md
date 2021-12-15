@@ -29,9 +29,6 @@ module PatchFrameAdditional where
 -->
 
 ```agda
-```
-
-```agda
 ⇊′ : (F : Frame 𝓤 𝓥 𝓦) → ∣ F ∣F → hasBasis F → Fam (𝓤 ∨ 𝓦) ∣ F ∣F
 ⇊′ F x (ℬ , _) = ⁅ ℬ $ i ∣ (i , _) ∶ (Σ[ i ∈ index ℬ ] (ℬ $ i) ⋜[ F ] x ) ⁆
 ```
@@ -87,11 +84,6 @@ comp→basic {𝓦 = 𝓦} F ℬ basis x x≪x =
 
 --     G𝟐 : closedUnderFinMeets F ℬ
 --     G𝟐 = {!!} , {!!}
-```
-
-```agda
-isSpectralMap : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G) → hProp (𝓤 ∨ 𝓥 ∨ 𝓦 ⁺ ∨ 𝓤′ ∨ 𝓥′)
-isSpectralMap F G ((f , _) , _) = ∀[ x ∶ ∣ F ∣F ] isCompactOpen F x ⇒ isCompactOpen G (f x)
 ```
 
 ```agda
@@ -466,16 +458,21 @@ Patch-map X A zd@(ℬA , basis-A , cl) ⊤≪⊤ X-spec@(ℬX , β , γ , ϕ) f 
     ⋁[ Patch A ]
       ⁅ εε A (f $f (ℬX $ i)) ⊓[ Patch A ] ξ k
         ∣ (i , k , _) ∶ Σ[ i ∈ index ℬX ] Σ[ k ∈ index ℬX ] [ (ℬX $ i) ⊑[ pos X ] j (ℬX $ k) ] ⁆
+```
 
-naturality : (X : Frame (𝓤 ⁺) 𝓤 𝓤) (A : Frame (𝓤 ⁺) 𝓤 𝓤)
-           → (zd : isZeroDimensionalₛ A)
-           → (comp : [ isCompact A ])
-           → (spec : isSpectralₛ X)
-           → (f : X ─f→ A)
-           → (f-spec : [ isSpectralMap X A f ])
-           → (x : ∣ X ∣F)
-           → εε A (f $f x) ≡ Patch-map X A zd comp spec f f-spec (εε X x)
-naturality X A zd comp spec f f-spec x = {!!}
+```agda
+```
+
+```agda
+-- naturality : (X : Frame (𝓤 ⁺) 𝓤 𝓤) (A : Frame (𝓤 ⁺) 𝓤 𝓤)
+--            → (zd : isZeroDimensionalₛ A)
+--            → (comp : [ isCompact A ])
+--            → (spec : isSpectralₛ X)
+--            → (f : X ─f→ A)
+--            → (f-spec : [ isSpectralMap X A f ])
+--            → (x : ∣ X ∣F)
+--            → εε A (f $f x) ≡ Patch-map X A zd comp spec f f-spec (εε X x)
+-- naturality X A zd comp spec f f-spec x = {!!}
   -- PatchA-compact : [ isCompact (Patch A) ]
   -- PatchA-compact = π₀ (stone A A-spec)
 
@@ -510,28 +507,28 @@ naturality X A zd comp spec f f-spec x = {!!}
   --           g ⊤[ Patch X ]    ■
 
 
-universal-property : (X A : Frame (𝓤 ⁺) 𝓤 𝓤)
-                   → [ isStone′ X ]
-                   → isSpectral′ A
-                   → (f : A ─f→ X)
-                   → isContr (Σ[ f⁻ ∈ (Patch A) ─f→ X ] f  ≡ comp-homo A (Patch A) X f⁻ (εεε A))
-universal-property {𝓤 = 𝓤} X A stone spec 𝒻 = ∥∥-rec isPropIsContr main-goal spec
-  where
-  open Lemma3-3-V X stone
+-- universal-property : (X A : Frame (𝓤 ⁺) 𝓤 𝓤)
+--                    → [ isStone′ X ]
+--                    → isSpectral′ A
+--                    → (f : A ─f→ X)
+--                    → isContr (Σ[ f⁻ ∈ (Patch A) ─f→ X ] f  ≡ comp-homo A (Patch A) X f⁻ (εεε A))
+-- universal-property {𝓤 = 𝓤} X A stone spec 𝒻 = ∥∥-rec isPropIsContr main-goal spec
+--   where
+--   open Lemma3-3-V X stone
 
-  main-goal : Σ[ ℬ ∈ Fam 𝓤 ∣ A ∣F ] _
-            → isContr (Σ[ f⁻ ∈ Patch A ─f→ X ] 𝒻 ≡ comp-homo A (Patch A) X f⁻ (εεε A))
-  main-goal (ℬ , _) = {!!}
-    where
-    ε⁻¹ : Patch X ─f→ X
-    ε⁻¹ = π₀ εε-is-iso-on-stone-locales
+--   main-goal : Σ[ ℬ ∈ Fam 𝓤 ∣ A ∣F ] _
+--             → isContr (Σ[ f⁻ ∈ Patch A ─f→ X ] 𝒻 ≡ comp-homo A (Patch A) X f⁻ (εεε A))
+--   main-goal (ℬ , _) = {!!}
+--     where
+--     ε⁻¹ : Patch X ─f→ X
+--     ε⁻¹ = π₀ εε-is-iso-on-stone-locales
 
-    𝒻⁻ : Patch A ─f→ X
-    𝒻⁻ = ? -- comp-homo (Patch A) (Patch X) X ε⁻¹ (Patch-map A X stone spec 𝒻)
+--     𝒻⁻ : Patch A ─f→ X
+--     𝒻⁻ = ? -- comp-homo (Patch A) (Patch X) X ε⁻¹ (Patch-map A X stone spec 𝒻)
 
-    G𝟏a : (x : ∣ A ∣F) → 𝒻 $f x ≡ ε⁻¹ $f ?
-    G𝟏a = {!!}
+--     G𝟏a : (x : ∣ A ∣F) → 𝒻 $f x ≡ ε⁻¹ $f ?
+--     G𝟏a = {!!}
 
-    G𝟏 : 𝒻 ≡ comp-homo A (Patch A) X 𝒻⁻ (εεε A)
-    G𝟏 = forget-homo A X 𝒻 (comp-homo A (Patch A) X 𝒻⁻ (εεε A)) G𝟏a
+--     G𝟏 : 𝒻 ≡ comp-homo A (Patch A) X 𝒻⁻ (εεε A)
+--     G𝟏 = forget-homo A X 𝒻 (comp-homo A (Patch A) X 𝒻⁻ (εεε A)) G𝟏a
 ```

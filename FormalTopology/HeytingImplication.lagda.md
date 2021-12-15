@@ -210,6 +210,17 @@ We now proceed to prove that this is the Heyting implication:
     G𝟐 : [ ⊤[ F ] ⊑[ pos F ] (x ==> x) ]
     G𝟐 = π₁ (==>-is-HI x x ⊤[ F ]) (⊓[ F ]-lower₀ x ⊤[ F ])
 
+  ex-falso-quodlibet : (x : ∣ F ∣F) → ⊥[ F ] ==> x ≡ ⊤[ F ]
+  ex-falso-quodlibet x =
+    ⊑[ pos F ]-antisym (⊥[ F ] ==> x) ⊤[ F ] (⊤[ F ]-top (⊥[ F ] ==> x)) γ
+    where
+    open PosetReasoning (pos F)
+
+    γ : [ ⊤[ F ] ⊑[ pos F ] ⊥[ F ] ==> x ]
+    γ = π₁ (==>-is-HI ⊥[ F ] x ⊤[ F ]) (⊥[ F ] ⊓[ F ] ⊤[ F ] ⊑⟨ ⊓[ F ]-lower₀ _ _ ⟩
+                                        ⊥[ F ]               ⊑⟨ ⊥[ F ]-bottom x   ⟩
+                                        x                    ■)
+
   ==>-nucleus-lemma : (x y : ∣ F ∣F) (j : Nucleus F)
                     → [ (x ==> y) ⊑[ pos F ] (π₀ j x ==> π₀ j y) ]
   ==>-nucleus-lemma x y 𝒿@(j , 𝓃₀ , 𝓃₁ , 𝓃₂) =

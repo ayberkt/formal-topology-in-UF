@@ -212,6 +212,11 @@ module _ (F : Frame 𝓤 𝓥 𝓦) where
             (U $ i ⊑⟨ ⊔[ F ]-upper₀ _ _ ⟩ (U $ i) ∨[ F ] T ⊑⟨ ϕ (εε (U $ i)) (i , refl) T ⟩ j T ■)
       rem₁ S (false , eq) = subst (λ - → [ - ⊑[ pos F ] j T ]) eq (𝓃₁ F 𝒿 T)
 
+  εε-resp-∨ : (x y : ∣ F ∣F) → εε (x ∨[ F ] y) ≡ (εε x) ∨[ Patch ] (εε y)
+  εε-resp-∨ x y = εε (x ∨[ F ] y)                ≡⟨ εε-resp-⋁ ⁅ x , y ⁆                         ⟩
+                  ⋁[ Patch ] (εε ⟨$⟩ ⁅ x , y ⁆)  ≡⟨ cong (λ - → ⋁[ Patch ] -) (⁅⁆-distr x y εε) ⟩
+                  (εε x) ∨[ Patch ] (εε y)       ∎
+
   εε-mono : isMonotonic (pos F) (pos Patch) εε
   εε-mono x y x≤y z = ⋁[ F ]-least _ _ γ
     where

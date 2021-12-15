@@ -5,7 +5,7 @@ author: Ayberk Tosun
 
 <!--
 ```agda
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --safe --experimental-lossy-unification #-}
 
 open import Basis
 open import Poset
@@ -13,6 +13,7 @@ open import Frame
 open import Regular
 open import Cubical.Functions.Embedding
 open import Cubical.Functions.Surjection
+open import WayBelow
 
 module AdditionalFrameTheorems where
 ```
@@ -50,6 +51,16 @@ resp-∨ F G ((f , f-mono) , _ , _ , r) x y =
       G𝟐a : [ ∀[ w ε (f ⟨$⟩ ⁅ x ,  y ⁆) ] (w ⊑[ pos G ] z) ]
       G𝟐a w (true  , eq) = w ⊑⟨ ≡⇒⊑ (pos G) (sym eq) ⟩ f x ⊑⟨ ϕ (f x) (true  , refl) ⟩ z ■
       G𝟐a w (false , eq) = w ⊑⟨ ≡⇒⊑ (pos G) (sym eq) ⟩ f y ⊑⟨ ϕ (f y) (false , refl) ⟩ z ■
+
+resp-⊥ : (A : Frame 𝓤  𝓥  𝓦) (B : Frame 𝓤′ 𝓥′ 𝓦)
+       → (f⋆ : A ─f→ B)
+       → f⋆ $f ⊥[ A ] ≡ ⊥[ B ]
+resp-⊥ A B ((f⋆ , _) , (_ , _ , f⋁)) =
+  f⋆ ⊥[ A ]                    ≡⟨ f⋁ (𝟘 _ , λ ())  ⟩
+  ⋁[ B ] (f⋆ ⟨$⟩ (𝟘 _ , λ ())) ≡⟨ † ⟩
+  ⊥[ B ]                       ∎
+    where
+    † = cong (λ - → ⋁[ B ] (𝟘 _ , -)) (funExt λ ())
 
 complement-preservation : (F : Frame 𝓤 𝓥 𝓦) (G : Frame 𝓤′ 𝓥′ 𝓦) (f : F ─f→ G)
                         → (x x′ : ∣ F ∣F)
@@ -141,4 +152,12 @@ iso-inj-surj F G 𝒻@((f , f-mono) , f-resp-⊤ , f-resp-∧ , f-resp-⋁) f-em
         ⦅𝟏⦆ = sec (⋁[ G ] S)
         ⦅𝟐⦆ = cong (λ - → ⋁[ G ] (index S , -)) (funExt λ i → sym (sec (S $ i)))
         ⦅𝟑⦆ = sym (f-resp-⋁ ⁅ g s ∣ s ε S ⁆)
+```
+
+```agda
+⊥-compact : (A : Frame 𝓤 𝓥 𝓦) → [ _≪_ A ⊥[ A ] ⊥[ A ] ]
+⊥-compact A S dir p = ∥∥-rec (∥∥-prop _) γ (π₀ dir)
+  where
+  γ : index S → ∥ Σ[ i ∈ index S ] [ ⊥[ A ] ⊑[ pos A ] (S $ i) ] ∥
+  γ i = ∣ i , (⊥[ A ]-bottom (S $ i)) ∣
 ```

@@ -305,6 +305,11 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
           NTS z (true  , p) = subst (λ - → [ - ⊑ _ ]) p (⋁[_]-upper _ _ (false , refl))
           NTS z (false , p) = subst (λ - → [ - ⊑ _ ]) p (⋁[_]-upper _ _ (true  , refl))
 
+  ⊥∨x=x : (x : ∣ F ∣F) → x ∨[ F ] ⊥[ F ] ≡ x
+  ⊥∨x=x x = x ∨[ F ] ⊥[ F ]   ≡⟨ ∨-comm x ⊥[ F ]   ⟩
+            ⊥[ F ] ∨[ F ] x   ≡⟨ x∨⊥=x x           ⟩
+            x                 ∎
+
   bin-dist : (x y z : ∣ F ∣F) → x ⊓[ F ] (y ∨[ F ] z) ≡ (x ⊓[ F ] y) ∨[ F ] (x ⊓[ F ] z)
   bin-dist x y z =
     x ⊓[ F ] (y ∨[ F ] z)               ≡⟨ dist x 𝒰′  ⟩
@@ -336,6 +341,14 @@ module _ (F : Frame ℓ₀ ℓ₁ ℓ₂) where
   comm x y = ⊓-unique y x _ (⊓[_]-lower₁ x y) (⊓[_]-lower₀ x y) NTS
     where
       NTS = λ w w⊑y w⊑x → ⊓[_]-greatest x y w w⊑x w⊑y
+
+  bin-dist′ : (x y z : ∣ F ∣F) → (x ∨[ F ] y) ⊓[ F ] z ≡ (x ⊓[ F ] z) ∨[ F ] (y ⊓[ F ] z)
+  bin-dist′ x y z =
+    (x ∨[ F ] y) ⊓[ F ] z            ≡⟨ comm (x ∨[ F ] y) z ⟩
+    z ⊓[ F ] (x ∨[ F ] y)            ≡⟨ bin-dist z x y ⟩
+    (z ⊓[ F ] x) ∨[ F ] (z ⊓[ F ] y) ≡⟨ cong (λ - → - ∨[ F ] (z ⊓[ F ] y)) (comm z x) ⟩
+    (x ⊓[ F ] z) ∨[ F ] (z ⊓[ F ] y) ≡⟨ cong (λ - → (x ⊓[ F ] z) ∨[ F ] -) (comm z y) ⟩
+    (x ⊓[ F ] z) ∨[ F ] (y ⊓[ F ] z) ∎
 
   ∨[_]-assoc : (x y z : ∣ F ∣F)
              → (x ∨[ F ] y) ∨[ F ] z ≡ x ∨[ F ] (y ∨[ F ] z)
