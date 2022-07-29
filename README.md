@@ -11,8 +11,8 @@ as of commit 09cc7134082573cf82436f5d317405812856f7f6.
 
 For an actively
 developed version of the locale theory development here, see the
-[`Locales`][https://github.com/martinescardo/TypeTopology/tree/master/source/Locales]
-in [`TypeTopology`][https://github.com/martinescardo/TypeTopology].
+[`Locales`](https://github.com/martinescardo/TypeTopology/tree/master/source/Locales)
+in [`TypeTopology`](https://github.com/martinescardo/TypeTopology).
 ---
 
 The approach to formal topology implemented here follows an idea of Thierry Coquand [0] to
