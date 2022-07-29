@@ -6,11 +6,10 @@ This is the Agda development accompanying my (upcoming) master's thesis at Chalm
 University of Technology to be titled _Formal Topology in Univalent Foundations_.
 
 ---
-**Note**: This library is not actively maintained. To typecheck, use `cubical`
-as of commit 09cc7134082573cf82436f5d317405812856f7f6.
-
-For an actively
-developed version of the locale theory development here, see the
+**Note**: This library is not actively maintained. The dependency `cubical`
+needs to be checked out to commit `09cc7134082573cf82436f5d317405812856f7f6`.
+For an actively developed version of the locale theory development here, see
+the
 [`Locales`](https://github.com/martinescardo/TypeTopology/tree/master/source/Locales)
 in [`TypeTopology`](https://github.com/martinescardo/TypeTopology).
 ---
