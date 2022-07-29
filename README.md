@@ -5,6 +5,16 @@
 This is the Agda development accompanying my (upcoming) master's thesis at Chalmers
 University of Technology to be titled _Formal Topology in Univalent Foundations_.
 
+---
+**Note**: This library is not actively maintained. To typecheck, use `cubical`
+as of commit 09cc7134082573cf82436f5d317405812856f7f6.
+
+For an actively
+developed version of the locale theory development here, see the
+[`Locales`][https://github.com/martinescardo/TypeTopology/tree/master/source/Locales]
+in [`TypeTopology`][https://github.com/martinescardo/TypeTopology].
+---
+
 The approach to formal topology implemented here follows an idea of Thierry Coquand [0] to
 define formal topologies as posets endowed with [interaction systems][2]. The main novelty
 in this development is the definition of covering as an HIT. This seems to be necessary in
